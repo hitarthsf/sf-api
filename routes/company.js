@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createCompany, getCompany, updateCompany, deleteCompany,updateLocation,getLocation , getAttribute , updateAttribute , deleteAttribute} from '../controllers/company.js';
+import {createCompany, getCompany, updateCompany, deleteCompany,updateLocation,getLocation , getAttribute , addAttribute , updateAttribute , deleteAttribute , migration} from '../controllers/company.js';
 
 const router = express.Router();
 
@@ -12,7 +12,10 @@ router.post('/updateLocation', updateLocation);
 router.post('/deleteCompany',  deleteCompany);
 
 router.get('/fetchAttribute',getAttribute);
-router.post('/updateAttribute', updateAttribute);
+router.post('/addAttribute', addAttribute);
 router.post('/deleteAttribute', deleteAttribute);
+router.post('/updateAttribute', updateAttribute);
 
+
+router.post('/migration', migration);
 export default router;
