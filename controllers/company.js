@@ -83,10 +83,10 @@ export const deleteCompany = async (req, res) => {
 
 export const getAttribute = async (req,res) => {
     //res.send('THIS GOOD');
-    //const  id  = req.body._id;
+    const  id  = req.body._id;
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
-      const AllCompany = await CompanyData.find({"_id":"610c11a6abe1ca0797648fc5"});
+      const AllCompany = await CompanyData.find({"_id":"6111149b961aa70d06fe58ed"});
         res.status(200).json(AllCompany);
     } catch (error) {
         res.status(404).json({message : error.message});
@@ -99,7 +99,7 @@ export const addAttribute = async (req, res) => {
     };
     console.log(objFriends);
    await CompanyData.findOneAndUpdate(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -119,7 +119,7 @@ export const editAttribute = async (req, res) => {
     };
     console.log(objFriends);
    await CompanyData.findOneAndUpdate(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -137,10 +137,10 @@ export const updateAttribute = async (req, res) => {
 
      const  id  = req.body._id;
     
-    const Company = await CompanyData.findOneAndUpdate({"_id":"610c11a6abe1ca0797648fc5"});
-    CompanyData.update( {"_id":"610c11a6abe1ca0797648fc5"}, { $pull: { votes: { $gte: 6 } } } )
+    const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58ed"});
+    CompanyData.update( {"_id":"6111149b961aa70d06fe58ed"}, { $pull: { votes: { $gte: 6 } } } )
     await CompanyData.update(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {
@@ -158,7 +158,7 @@ export const updateAttribute = async (req, res) => {
     };
     console.log(objFriends);
    await CompanyData.findOneAndUpdate(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -175,10 +175,10 @@ export const updateAttribute = async (req, res) => {
 export const deleteAttribute = async (req, res) => {
     const  id  = req.body._id;
     
-    const Company = await CompanyData.findOneAndUpdate({"_id":"610c11a6abe1ca0797648fc5"});
-    CompanyData.update( {"_id":"610c11a6abe1ca0797648fc5"}, { $pull: { votes: { $gte: 6 } } } )
+    const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58ed"});
+    CompanyData.update( {"_id":"6111149b961aa70d06fe58ed"}, { $pull: { votes: { $gte: 6 } } } )
     await CompanyData.update(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {

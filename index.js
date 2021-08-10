@@ -40,39 +40,39 @@ mongoose.set('useFindAndModify', false);
 
 //linkAreaAndLocation();
 // /getCompany();
-mongoose.connect("mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority", function (error, db) {
-    if (error) throw error;
-    var Mysql_Connection = mysql.createConnection({
-      host: '192.168.64.2',
-      user: 'hitarth',
-      password: 'password',
-      database: 'ratings_live'
-  });
-    Mysql_Connection.connect();
-    var jobs = 0;
-    getTABLESfromSQL(Mysql_Connection, function(error, tables) {
-        tables.forEach(function(table) {
-            var collection = db.collection(table);
+// mongoose.connect("mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority", function (error, db) {
+//     if (error) throw error;
+//     var Mysql_Connection = mysql.createConnection({
+//       host: '192.168.64.2',
+//       user: 'hitarth',
+//       password: 'password',
+//       database: 'ratings_live'
+//   });
+//     Mysql_Connection.connect();
+//     var jobs = 0;
+//     getTABLESfromSQL(Mysql_Connection, function(error, tables) {
+//         tables.forEach(function(table) {
+//             var collection = db.collection(table);
 
-            ++jobs;
-            CollectionTable(Mysql_Connection, table, collection, function(error) {
-                if (error) throw error;
-                --jobs;
-            });
-        })
-        console.log("jobs " +jobs);
+//             ++jobs;
+//             CollectionTable(Mysql_Connection, table, collection, function(error) {
+//                 if (error) throw error;
+//                 --jobs;
+//             });
+//         })
+//         console.log("jobs " +jobs);
 
             
-    });
+//     });
     
-    var interval = setInterval(function() {
-        if(jobs<=0) {
-            clearInterval(interval);
-            db.close();
-            Mysql_Connection.end();
-        }
-    }, 300);
-});
+//     var interval = setInterval(function() {
+//         if(jobs<=0) {
+//             clearInterval(interval);
+//             db.close();
+//             Mysql_Connection.end();
+//         }
+//     }, 300);
+// });
 
 
 function getTABLESfromSQL(Mysql_Connectionnection, callback) {
@@ -231,7 +231,7 @@ function getTABLESfromSQL(Mysql_Connectionnection, callback) {
 
 
 // Testnig 
-function CollectionTable(Mysql_Connectionnection, location_area, mongoCollection, callback) {
+async function CollectionTable(Mysql_Connectionnection, location_area, mongoCollection, callback) {
     var sql = 'SELECT * FROM ' + location_area + ';';
      // let db = mongoose.connection.db;
      // db.collection('location_area').rename('companies');
@@ -246,109 +246,37 @@ function CollectionTable(Mysql_Connectionnection, location_area, mongoCollection
                   var location = [] ; 
                   // foreach loop for location
                   var sql_location ;
-                  results.forEach( area  => area_id.push(area.id)    );
+                  //results.forEach( area  => area_id.push(area.id)    );
 
                 
-                  results.forEach((element, index) => area_id.push(element.id)
-                   //results[index].location = []
-                        //sql_location = 'SELECT * FROM  location where location_area_id = '+ area_id[index] + ';' 
-
-                        //    Mysql_Connectionnection.query(sql_location, function (error, results_location, fields ,index) {
-                        
-                        //  results[index].location = [];
-                        //  results[index].location.push(results_location);
-                        //  mongoCollection.insertMany(results[index],{} , function (error,area,area_fields) {
-                                    
-                                    
-                        //               if (error) {
-                        //                   callback(error);
-                        //               } else {
-                        //                   callback(null);
-                        //               }
-                        //           } )
-                              
-                        // })
-                   )
                   var location_array = [] ; 
                   var index  = 0 ;
                   var data ;
                   var count  = 0 ;
                     for ( index = 0; index < results.length - 1; index += 1) {
-                         sql_location = 'SELECT * FROM  location where location_area_id = '+ area_id[index] + ';' 
+                         sql_location = 'SELECT * FROM  location where location_area_id = '+ results[count]['id'] + ' ;' 
                               
                         Mysql_Connectionnection.query(sql_location , [ index,results , count] , function (error, results_location, fields  ) {
-                                 
-                              //location_array[0].push(results_location);           
-                                                            
-                                          console.log(count)
-                                    results[count].location = []
-                                     results[count].location.push(results_location);
+                                            assignLocation(results,count,results_location,mongoCollection,callback);  
+                                            count = count + 1 ;        
+                                  //   console.log(count)
+                                  //   results[count].location = []
+                                  //   results[count].location.push(results_location);
                                      
-                                     mongoCollection.insertOne(results[count],{} , function (error,area,area_fields) {
-                                    
-                                    
-                                      if (error) {
-                                          console.log("jj");
-                                          callback(error);
-                                      } else {
-                                          callback(null);
-                                      }
-                                  } )
-                                  count = count + 1 ; 
+                                  //    mongoCollection.insertOne(results[count],{} , function (error,area,area_fields) {
+                                  //     if (error) {
+                                  //       console.log("Here we have error");
+                                  //         callback(error);
+                                  //     } else {
+                                  //         callback(null);
+                                  //     }
+                                  // } )
+                                  // count = count + 1 ; 
+
                         })
                              
                   }
                   
-                  //console.log(results);
-                   // mongoCollection.insertMany(results,{} , function (error,area,area_fields) {
-                                    
-                                    
-                   //                    if (error) {
-                   //                        console.log("jj");
-                   //                        callback(error);
-                   //                    } else {
-                   //                        callback(null);
-                   //                    }
-                   //                } )
-                  //console.log(results[0]);
-                  // var sql_location = 'SELECT * FROM  location where location_area_id = '+ area_id[index] + ';' 
-                  //  Mysql_Connectionnection.query(sql_location, function (error, results_location, fields ,index) {
-                        
-                  //        results[index].location = [];
-                  //        results[index].location.push(results_location);
-                  //        mongoCollection.insertMany(results[index],{} , function (error,area,area_fields) {
-                                    
-                                    
-                  //                     if (error) {
-                  //                         callback(error);
-                  //                     } else {
-                  //                         callback(null);
-                  //                     }
-                  //                 } )
-                        
-                  // })
-
-
-                  //console.log(area_id);
-
-                  //  var sql_location = 'SELECT * FROM  location where location_area_id = '+ area_id[0] + ';';
-                  
-                  // Mysql_Connectionnection.query(sql_location, function (error, results_location, fields) {
-                        
-                  //        results[0].location = [];
-                  //        results[0].location.push(results_location);
-                  //        // mongoCollection.insertMany(results[0],{} , function (error,area,area_fields) {
-                                    
-                                    
-                  //        //              if (error) {
-                  //        //                  callback(error);
-                  //        //              } else {
-                  //        //                  callback(null);
-                  //        //              }
-                  //        //          } )
-                  //       //console.log(results[0]);
-                  // });
-
                   
             } else {
                 callback(null);
@@ -356,6 +284,28 @@ function CollectionTable(Mysql_Connectionnection, location_area, mongoCollection
         }
     });
     
+}
+
+export const assignLocation = async (results,count,results_location,mongoCollection,callback) => {
+    //res.send('THIS GOOD');
+    try {
+         console.log(count)
+        results[count].location = []
+        results[count].location.push(results_location);
+         
+         await mongoCollection.insertOne(results[count],{} , function (error,area,area_fields) {
+          if (error) {
+            console.log("Here we have error");
+           console.log(error);
+          } else {
+              callback(null);
+          }
+      } )
+      
+    } catch (error) {
+        console.log("lll");
+        console.log(error);
+    }
 }
 
 export const getCompany = async (req,res) => {
