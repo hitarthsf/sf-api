@@ -93,11 +93,71 @@ export const getAttribute = async (req,res) => {
     }
 }
 
-export const updateAttribute = async (req, res) => {
+export const addAttribute = async (req, res) => {
     console.log(req.body.positive_skills)
     var objFriends = { name:req.body.name,positive_skills:req.body.positive_skills,negative_skills:req.body.negative_skills
     };
-   await CompanyData.findOneAndUpdate(b
+    console.log(objFriends);
+   await CompanyData.findOneAndUpdate(
+       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { $push: { attributes: objFriends  } },
+      function (error, success) {
+            if (error) {
+                console.log(error);
+                res.send(error)
+            } else {
+                console.log(success);
+                res.send(success)
+            }
+        });
+    
+}
+
+export const editAttribute = async (req, res) => {
+    console.log(req.body.positive_skills)
+    var objFriends = { name:req.body.name,positive_skills:req.body.positive_skills,negative_skills:req.body.negative_skills
+    };
+    console.log(objFriends);
+   await CompanyData.findOneAndUpdate(
+       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { $push: { attributes: objFriends  } },
+      function (error, success) {
+            if (error) {
+                console.log(error);
+                res.send(error)
+            } else {
+                console.log(success);
+                res.send(success)
+            }
+        });
+    
+}
+
+export const updateAttribute = async (req, res) => {
+
+     const  id  = req.body._id;
+    
+    const Company = await CompanyData.findOneAndUpdate({"_id":"610c11a6abe1ca0797648fc5"});
+    CompanyData.update( {"_id":"610c11a6abe1ca0797648fc5"}, { $pull: { votes: { $gte: 6 } } } )
+    await CompanyData.update(
+       { _id: "610c11a6abe1ca0797648fc5" }, 
+         { $pull: { attributes: { _id: id } } } ,
+         { multi: true },
+      function (error, success) {
+            if (error) {
+                console.log(error);
+                // res.send(error)
+            } else {
+                console.log(success);
+                // res.send(success)
+            }
+        });
+
+    console.log(req.body.positive_skills)
+    var objFriends = { name:req.body.name,positive_skills:req.body.positive_skills,negative_skills:req.body.negative_skills
+    };
+    console.log(objFriends);
+   await CompanyData.findOneAndUpdate(
        { _id: "610c11a6abe1ca0797648fc5" }, 
        { $push: { attributes: objFriends  } },
       function (error, success) {
@@ -142,5 +202,27 @@ export const deleteAttribute = async (req, res) => {
    //              res.send(success)
    //          }
    //      });
+    
+}
+
+export const migration = async (req, res) => {
+    const  id  = req.body._id;
+    
+    const Company = await CompanyData.findOneAndUpdate({"_id":"610c11a6abe1ca0797648fc5"});
+    CompanyData.update( {"_id":"610c11a6abe1ca0797648fc5"}, { $pull: { votes: { $gte: 6 } } } )
+    await CompanyData.update(
+       { _id: "610c11a6abe1ca0797648fc5" }, 
+         { $pull: { attributes: { _id: id } } } ,
+         { multi: true },
+      function (error, success) {
+            if (error) {
+                console.log(error);
+                // res.send(error)
+            } else {
+                console.log(success);
+                // res.send(success)
+            }
+        });
+   
     
 }
