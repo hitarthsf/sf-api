@@ -9,4 +9,5 @@ router.get('/fetchCategory',getCategory);
 router.post('/updateCategory', updateCategory);
 router.post('/deleteCategory',  deleteCategory);
 
+
 export default router;
