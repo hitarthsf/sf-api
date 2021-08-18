@@ -3,7 +3,7 @@ import CompanyData from '../models/CompanyData.js';
 export const createCompany = async(req,res) => {
 
    const company = req.body;
-
+console.log(company);
    const newCompany = new CompanyData({ ...company, createdAt: new Date().toISOString() });
    try {
        await newCompany.save()
@@ -49,13 +49,15 @@ export const updateCompany = async (req, res) => {
     console.log(updatedCompany)
 }
 export const updateLocation = async (req, res) => {
-  //  console.log(req.body)
+    console.log(req.body)
+    console.log("hh")
     var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2, 
         country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
         latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
-        invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost
+        invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
+        installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets  
     };
-   await CompanyData.findOneAndUpdate(
+    CompanyData.findOneAndUpdate(
        { _id: req.body._id }, 
        { $push: { location: objFriends  } },
       function (error, success) {
