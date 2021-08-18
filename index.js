@@ -9,6 +9,8 @@ import categoryRoutes from './routes/category.js';
 import skillRoutes from './routes/skill.js';
 import attributesRoutes from './routes/attributes.js';
 import action_planRoutes from './routes/action_plan.js';
+import abusiveWordsRoutes from './routes/abusiveWords.js';
+//import privacyLocationRoutes from './routes/privacyLocation.js';
 import mysql from 'mysql2';
 import CompanyData from './models/CompanyData.js';
 
@@ -25,6 +27,9 @@ app.use('/category',categoryRoutes);
 app.use('/skill',skillRoutes);
 app.use('/attributes',attributesRoutes);
 app.use('/action_plan',action_planRoutes);
+app.use('/abusiveWords',abusiveWordsRoutes);
+//app.use('/privacyLocation',privacyLocationRoutes);
+
 //const CONNECTION_URL = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
 //const CONNECTION_URL = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings?retryWrites=true&w=majority';
 const CONNECTION_URL = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority';

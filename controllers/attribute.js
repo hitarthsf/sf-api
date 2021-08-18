@@ -19,7 +19,7 @@ export const addAttribute = async (req, res) => {
     
     const  compId  = req.body.compId;
     console.log(compId)
-    var objFriends = { name:req.body.name,positive_skills:req.body.positive_skills,negative_skills:req.body.negative_skills
+    var objFriends = { name:req.body.name,positive_skills: req.body.positiveSkills.split(","),negative_skills:req.body.negativeSkills.split(",")
     };
     console.log(objFriends);
     CompanyData.findOneAndUpdate(
@@ -79,7 +79,7 @@ export const updateAttribute = async (req, res) => {
         });
 
     console.log(req.body.positive_skills)
-    var objFriends = { name:req.body.name,positive_skills:req.body.positive_skills,negative_skills:req.body.negative_skills
+    var objFriends = { name:req.body.name,positive_skills: req.body.positiveSkills.split(","),negative_skills:req.body.negativeSkills.split(",")
     };
     
     CompanyData.findOneAndUpdate(
@@ -103,7 +103,7 @@ export const deleteAttribute = async (req, res) => {
     // const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58f1"});
     // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
     await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58f1" }, 
+       { _id: "6111149b961aa70d06fe58ef" }, 
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {
@@ -127,5 +127,6 @@ export const deleteAttribute = async (req, res) => {
    //              res.send(success)
    //          }
    //      });
+   res.json({ message: "Attribute deleted successfully." });
     
 }
