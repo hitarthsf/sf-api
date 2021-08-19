@@ -22,7 +22,7 @@ export const createAbusiveWords = async(req,res) => {
     var objFriends = { word:req.body.word};
     
     CompanyData.findOneAndUpdate(
-       { _id: req.body._id }, 
+       { _id: "6111149b961aa70d06fe58ed" }, 
        { $push: { abusive_word: objFriends  } },
       function (error, success) {
             if (error) {
