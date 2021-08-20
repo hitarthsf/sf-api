@@ -2,7 +2,7 @@
 import CompanyData from '../models/CompanyData.js';
 
 
-export const getAbusiveWords = async (req,res) => {
+export const getPrivacyLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
     try {
@@ -16,15 +16,16 @@ export const getAbusiveWords = async (req,res) => {
     }
 }
 
-export const createAbusiveWords = async(req,res) => {
+export const createPrivacyLocation = async(req,res) => {
 
    console.log(req.body)
     
-    var objFriends = { word:req.body.word};
-    // make it dynamic
+    var objFriends = { email:req.body.email , location_id:req.body.location_id};
+    
     CompanyData.findOneAndUpdate(
+        // make it dynamic
        { _id: "6111149b961aa70d06fe58ed" }, 
-       { $push: { abusive_word: objFriends  } },
+       { $push: { privacy_location: objFriends  } },
       function (error, success) {
             if (error) {
                 console.log(error);
@@ -37,7 +38,7 @@ export const createAbusiveWords = async(req,res) => {
     
 }
 
-export const deleteAbusiveWords = async(req,res) => {
+export const deletePrivacyLocation = async(req,res) => {
 
    const  id  = req.body._id;
     
@@ -46,7 +47,7 @@ export const deleteAbusiveWords = async(req,res) => {
     // make it dynamic
     await CompanyData.updateOne(
        { _id: "6111149b961aa70d06fe58ed" }, 
-         { $pull: { abusive_word: { _id: id } } } ,
+         { $pull: { privacy_location: { _id: id } } } ,
          { multi: true },
       function (error, success) {
             if (error) {

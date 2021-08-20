@@ -102,6 +102,7 @@ export const deleteAttribute = async (req, res) => {
     
     // const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58f1"});
     // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
+    // make it dynamic
     await CompanyData.updateOne(
        { _id: "6111149b961aa70d06fe58ef" }, 
          { $pull: { attributes: { _id: id } } } ,
@@ -115,18 +116,7 @@ export const deleteAttribute = async (req, res) => {
                 // res.send(success)
             }
         });
-    // const Attribute = Company.findOne( { _id: req.body.id}) 
-   // await CompanyData.findOne(
-   //     { _id: "610bcc0c029f5c040c655a12" },,
-   //    function (error, success) {
-   //          if (error) {
-   //              console.log(error);
-   //              res.send(error)
-   //          } else {
-   //              console.log(success);
-   //              res.send(success)
-   //          }
-   //      });
+
    res.json({ message: "Attribute deleted successfully." });
     
 }
