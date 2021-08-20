@@ -7,6 +7,7 @@ export const getActionPlan = async (req,res) => {
     //const  id  = req.body._id;
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
+      // make it dynamic
       const AllCompany = await CompanyData.find({"_id":"6111149b961aa70d06fe58ed"});
       console.log(AllCompany);
         res.status(200).json(AllCompany);
@@ -22,7 +23,7 @@ export const addActionPlan = async (req, res) => {
     
     
     var objFriends = { title:req.body.title,description:req.body.description,is_active:req.body.is_active};
-
+// make it dynamic
     CompanyData.findOneAndUpdate(
        { _id: "6111149b961aa70d06fe58ed"}, 
        { $push: { action_plan: objFriends  } },
@@ -40,7 +41,8 @@ export const addActionPlan = async (req, res) => {
 
 export const updateActionPlan = async (req, res) => {
 
-       const  id  = req.body._id;
+       const  id  = req.body._id;   
+       // make it dynamic
     
      await CompanyData.updateOne(
         { _id: "6111149b961aa70d06fe58ed" }, 
@@ -57,7 +59,7 @@ export const updateActionPlan = async (req, res) => {
         });
     
    var objFriends = { title:req.body.title,description:req.body.description,is_active:req.body.is_active};
-
+// make it dynamic
     CompanyData.findOneAndUpdate(
        { _id: "6111149b961aa70d06fe58ed"}, 
        { $push: { action_plan: objFriends  } },
@@ -75,7 +77,7 @@ export const updateActionPlan = async (req, res) => {
 
 export const deleteActionPlan = async (req, res) => {
     const  id  = req.body._id;
-    
+    // make it dynamic
      await CompanyData.updateOne(
         { _id: "6111149b961aa70d06fe58ed" }, 
         { $pull: { action_plan: { _id: id } } } ,

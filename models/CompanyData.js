@@ -37,6 +37,10 @@ const company = mongoose.Schema({
         id: String,word: String, createdAt: { type : Date, default: new Date()  },
         updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
     }],
+    privacy_location: [{
+        id: String,location_id: String,email: String, createdAt: { type : Date, default: new Date()  },
+        updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
+    }],
     action_plan: [{
         id: String,title: String,description: String, is_active: String, createdAt: { type : Date, default: new Date()  },
         updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
