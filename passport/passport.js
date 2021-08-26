@@ -1,6 +1,7 @@
 import passportJWT from 'passport-jwt';
 import UsersData from '../models/UsersData.js';
-import passport from 'passport';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // passport & jwt config
 const {
@@ -13,12 +14,8 @@ const User = UsersData;
 
 // define passport jwt strategy
 const opts = {};
-console.log("here 1", process.env.JWT_SCHEME);
 opts.jwtFromRequest = ExtractJWT.fromAuthHeaderWithScheme("jwt");
-console.log({
-    a: opts.jwtFromRequest
-})
-opts.secretOrKey = "sSfFaApPiI112233";
+opts.secretOrKey = process.env.JWT_SECRET_OR_KEY;
 const passportJWTStrategy = new JWTStrategy(opts, function(jwtPayload, done) {
     // retreive mail from jwt payload
     console.log({

@@ -17,7 +17,7 @@ import dotenv from 'dotenv';
 import passport from 'passport';
 import userRoutes from './routes/user.js';
 // load env
-// dotenv.config();
+dotenv.config();
 const app = express();
 app.use(bodyParser.json({ limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true}));
