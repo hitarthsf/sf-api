@@ -10,15 +10,7 @@ const {
     Router,
 } = express;
 
-// import * as passport from '../passport/passport.js';
-
-// router instance
-// cast to our passport client
-// import('../passport/passport.js')(passport);
-// .then(d => console.log)
 import { default as passport } from '../utils/passport.js';
-// require('../passport/passport.js')(passport);
-// import * as passportAuth from 'passport/passport.js';
 
 // eslint-disable-next-line new-cap
 const userRoutes = Router();
@@ -110,7 +102,6 @@ userRoutes.post('/user-delete',
 userRoutes.get('/profile',
     passport.authenticate("jwt", {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        console.log({token})
         if (AuthUtils.isValidToken(token)) {
             // valid token
             response.send(request.user);
