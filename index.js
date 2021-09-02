@@ -11,15 +11,20 @@ import attributesRoutes from './routes/attributes.js';
 import action_planRoutes from './routes/action_plan.js';
 import abusiveWordsRoutes from './routes/abusiveWords.js';
 import privacyLocationRoutes from './routes/privacyLocation.js';
-
-import mysql from 'mysql2';
-import CompanyData from './models/CompanyData.js';
-
+import authRoutes from './routes/auth.js';
+//dot env configuration
+import dotenv from 'dotenv';
+import passport from 'passport';
+import userRoutes from './routes/user.js';
+// load env
+dotenv.config();
 const app = express();
-
 app.use(bodyParser.json({ limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true}));
 app.use(cors());
+
+// init and configure passport
+app.use(passport.initialize());
 
 app.use('/company',companyRoutes);
 app.use('/location',locationRoutes);
@@ -29,6 +34,8 @@ app.use('/skill',skillRoutes);
 app.use('/attributes',attributesRoutes);
 app.use('/action_plan',action_planRoutes);
 app.use('/privacyLocation',privacyLocationRoutes);
+app.use('/auth',authRoutes);
+app.use('/user',userRoutes);
 //app.use('/privacyLocation',privacyLocationRoutes);
 
 //const CONNECTION_URL = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
@@ -44,7 +51,7 @@ mongoose.connect(CONNECTION_URL, {useNewUrlParser: true, useUnifiedTopology: tru
       .then(() => app.listen(PORT, () => console.log(`Server running on port: ${PORT}`)))
       .catch((error) => console.log(error.message));
 
-mongoose.set('useFindAndModify', false);   
+mongoose.set('useFindAndModify', false);
 
 
 
