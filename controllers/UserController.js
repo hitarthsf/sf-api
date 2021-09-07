@@ -17,7 +17,12 @@ const isValidUser = (request) => {
         const password = request.body.password || '';
         const name = request.body.name || '';
         const phone = request.body.phone || '';
-        if (email && password && name && phone) {
+        const type = request.body.type || '';
+        const company_id = request.body.company_id || '';
+        if (type !== 'super_admin' && company_id === '') {
+            return false;
+        }
+        if (email && password && name && phone && type) {
             return true;
         }
     }
