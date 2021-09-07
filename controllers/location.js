@@ -13,7 +13,7 @@ export const createLocation = async(req,res) => {
         autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
         multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit ,
     };
-    
+
     CompanyData.findOneAndUpdate(
        { _id: req.body._id }, 
        { $push: { location: objFriends  } },

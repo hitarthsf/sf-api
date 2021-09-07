@@ -8,8 +8,14 @@ export const getAbusiveWords = async (req,res) => {
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
-      const AllCompany = await CompanyData.find({"_id":"6111149b961aa70d06fe58ed"});
-      console.log(id);
+      const AllCompany = await CompanyData.find(  {"_id":"6111149b961aa70d06fe58ed"} ,{ $lookup:
+           {
+             from: 'location',
+             localField: 'ObjectId(location_id)',
+             foreignField: 'ObjectId(_id)',
+             as: 'location_name'
+           }});
+      console.log(AllCompany);
         res.status(200).json(AllCompany);
     } catch (error) {
         res.status(404).json({message : error.message});
