@@ -19,6 +19,7 @@ const isValidUser = (request) => {
         const phone = request.body.phone || '';
         const type = request.body.type || '';
         const company_id = request.body.company_id || '';
+        const location_id = request.body.location_id || '';
         if (type !== 'super_admin' && company_id === '') {
             return false;
         }
