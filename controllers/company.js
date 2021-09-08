@@ -1,4 +1,8 @@
 import CompanyData from '../models/CompanyData.js';
+import {
+    MesssageProvider,
+    Messages,
+} from '../core/index.js';
 
 export const createCompany = async(req,res) => {
 
@@ -38,7 +42,7 @@ export const updateCompany = async (req, res) => {
     console.log(req.body)
     //const { id } = req.body._id;
     const company = req.body;
-    
+
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
 
     const updatedCompany = { ...company, _id: req.body._id };
@@ -51,14 +55,14 @@ export const updateCompany = async (req, res) => {
 export const updateLocation = async (req, res) => {
     console.log(req.body)
     console.log("hh")
-    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2, 
+    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
         country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
         latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
         invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
-        installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets  
+        installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets
     };
     CompanyData.findOneAndUpdate(
-       { _id: req.body._id }, 
+       { _id: req.body._id },
        { $push: { location: objFriends  } },
       function (error, success) {
             if (error) {
@@ -69,7 +73,7 @@ export const updateLocation = async (req, res) => {
                 res.send(success)
             }
         });
-    
+
 }
 
 export const deleteCompany = async (req, res) => {
@@ -86,11 +90,11 @@ export const deleteCompany = async (req, res) => {
 
 export const migration = async (req, res) => {
     const  id  = req.body._id;
-    
+
     const Company = await CompanyData.findOneAndUpdate({"_id":"610c11a6abe1ca0797648fc5"});
     CompanyData.update( {"_id":"610c11a6abe1ca0797648fc5"}, { $pull: { votes: { $gte: 6 } } } )
     await CompanyData.update(
-       { _id: "610c11a6abe1ca0797648fc5" }, 
+       { _id: "610c11a6abe1ca0797648fc5" },
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {
@@ -102,9 +106,9 @@ export const migration = async (req, res) => {
                 // res.send(success)
             }
         });
-   
 
-    
+
+
 }
 
 export const getActionPlan = async (req,res) => {
@@ -118,4 +122,61 @@ export const getActionPlan = async (req,res) => {
         res.status(404).json({message : error.message});
     }
 }
-   
+
+export const getLocationList = async (req,res) => {
+    const  id  = req.query.company_id;
+    if (!id) {
+        res.status(500).json({message : MesssageProvider.messageByKey(Messages.KEYS.ID_NOT_FOUND)});
+    }
+    try {
+        const fetchedLocations = await CompanyData.findOne({"_id":id}, {location: 1});
+        const companyList = [];
+        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                companyList.push({
+                    _id: location._id,
+                    name: location.name,
+                });
+            });
+        }
+        res.status(200).json(companyList);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
+export const getSkillList = async (req,res) => {
+    const  id  = req.query.company_id;
+    if (!id) {
+        res.status(500).json({message : MesssageProvider.messageByKey(Messages.KEYS.ID_NOT_FOUND)});
+    }
+    try {
+        const fetchAttributes = await CompanyData.findOne({"_id":id}, {attributes: 1});
+        const skillList = [];
+        if (fetchAttributes.attributes !== undefined && fetchAttributes.attributes) {
+            fetchAttributes.attributes.map((attribute) => {
+                if(attribute.positive_skills !== undefined && attribute.positive_skills) {
+                    attribute.positive_skills.map((positiveAttribute) => {
+                        skillList.push({
+                            _id: "",
+                            name: positiveAttribute,
+                            is_positive: true,
+                        });
+                    });
+                }
+                if(attribute.negative_skills !== undefined && attribute.negative_skills) {
+                    attribute.negative_skills.map((negativeAttribute) => {
+                        skillList.push({
+                            _id: "",
+                            name: negativeAttribute,
+                            is_positive: false,
+                        });
+                    });
+                }
+            });
+        }
+        res.status(200).json(skillList);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
