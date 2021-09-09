@@ -1,6 +1,6 @@
 import express from 'express';
 
-import { getPrivacyLocation , createPrivacyLocation , deletePrivacyLocation } from '../controllers/PrivacyLocation.js';
+import { getPrivacyLocation , createPrivacyLocation , deletePrivacyLocation } from '../controllers/privacyLocation.js';
 
 const router = express.Router();
 
