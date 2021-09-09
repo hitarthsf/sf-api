@@ -2,13 +2,19 @@
 import CompanyData from '../models/CompanyData.js';
 
 
+import {
+    MesssageProvider,
+    Messages,
+} from '../core/index.js';
+
 export const getPrivacyLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
+    
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
-      const AllCompany = await CompanyData.find({"_id":"6111149b961aa70d06fe58ed"});
+      const AllCompany = await CompanyData.find({"_id":id});
       console.log(id);
         res.status(200).json(AllCompany);
     } catch (error) {
@@ -24,7 +30,7 @@ export const createPrivacyLocation = async(req,res) => {
     
     CompanyData.findOneAndUpdate(
         // make it dynamic
-       { _id: "6111149b961aa70d06fe58ed" }, 
+       { _id: req.body.company_id }, 
        { $push: { privacy_location: objFriends  } },
       function (error, success) {
             if (error) {
@@ -46,7 +52,7 @@ export const deletePrivacyLocation = async(req,res) => {
     // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
     // make it dynamic
     await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58ed" }, 
+       { _id: req.body.company_id }, 
          { $pull: { privacy_location: { _id: id } } } ,
          { multi: true },
       function (error, success) {
