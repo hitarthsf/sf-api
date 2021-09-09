@@ -5,10 +5,11 @@ import CompanyData from '../models/CompanyData.js';
 export const getAbusiveWords = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
+    res.send(id);
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
-      const AllCompany = await CompanyData.find(  {"_id":"6111149b961aa70d06fe58ed"} ,{ $lookup:
+      const AllCompany = await CompanyData.find(  {"_id":"6111149b961aa70d06fe58f3"} ,{ $lookup:
            {
              from: 'location',
              localField: 'ObjectId(location_id)',
@@ -29,7 +30,7 @@ export const createAbusiveWords = async(req,res) => {
     var objFriends = { word:req.body.word};
     // make it dynamic
     CompanyData.findOneAndUpdate(
-       { _id: "6111149b961aa70d06fe58ed" }, 
+       { _id: "6111149b961aa70d06fe58f3" }, 
        { $push: { abusive_word: objFriends  } },
       function (error, success) {
             if (error) {

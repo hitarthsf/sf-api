@@ -14,6 +14,7 @@ const KEYS = {
     USER_DELETE_ERROR: 'USER_DELETE_ERROR',
     USER_LIST_ERROR: 'USER_LIST_ERROR',
     USER_LIST_DELETE_SUCCESS: 'USER_LIST_DELETE_SUCCESS',
+    ID_NOT_FOUND: 'ID_NOT_FOUND',
 };
 
 // all messages
@@ -89,6 +90,12 @@ const DATA = [
         value: 'User list deleted with success !',
         language: 'en',
         status: 200,
+    },
+    {
+        key: KEYS.ID_NOT_FOUND,
+        value: 'ID not found !',
+        language: 'en',
+        status: 500,
     },
 ];
 
