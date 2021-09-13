@@ -10,11 +10,11 @@ import {
 export const getPrivacyLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
-    
+    const company_id = req.body.company_id;
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
-      const AllCompany = await CompanyData.find({"_id":id});
+      const AllCompany = await CompanyData.find({"_id":company_id});
       console.log(id);
         res.status(200).json(AllCompany);
     } catch (error) {
