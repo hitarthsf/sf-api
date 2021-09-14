@@ -1,4 +1,9 @@
-
+import express from 'express';
+import {
+    MesssageProvider,
+    Messages,
+} from '../core/index.js';
+import AuthUtils from "../utils/AuthUtils.js";
 import CompanyData from '../models/CompanyData.js';
 
 
@@ -16,14 +21,17 @@ export const getAttribute = async (req,res) => {
 }
 
 export const addAttribute = async (req, res) => {
-    
     const  compId  = req.body.compId;
-    console.log(compId)
-    var objFriends = { name:req.body.name,positive_skills: req.body.positiveSkills.split(","),negative_skills:req.body.negativeSkills.split(",")
+    const positiveSkills = req.body.positiveSkills.split(",").map((skill) => {
+        return {name: skill};
+    });
+    const negativeSkills = req.body.negativeSkills.split(",").map((skill) => {
+        return {name: skill};
+    });
+    var objFriends = { name:req.body.name,positive_skills: positiveSkills,negative_skills:negativeSkills
     };
-    console.log(objFriends);
     CompanyData.findOneAndUpdate(
-       { _id: compId}, 
+       { _id: compId},
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -34,7 +42,7 @@ export const addAttribute = async (req, res) => {
                 res.send(success)
             }
         });
-    
+
 }
 
 export const editAttribute = async (req, res) => {
@@ -44,7 +52,7 @@ export const editAttribute = async (req, res) => {
     };
     console.log(objFriends);
    await CompanyData.findOneAndUpdate(
-       { _id: compId }, 
+       { _id: compId },
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -55,7 +63,7 @@ export const editAttribute = async (req, res) => {
                 res.send(success)
             }
         });
-    
+
 }
 
 export const updateAttribute = async (req, res) => {
@@ -65,7 +73,7 @@ export const updateAttribute = async (req, res) => {
     console.log(id);
     console.log(compId);
      await CompanyData.updateOne(
-       { _id: compId }, 
+       { _id: compId },
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {
@@ -81,9 +89,9 @@ export const updateAttribute = async (req, res) => {
     console.log(req.body.positive_skills)
     var objFriends = { name:req.body.name,positive_skills: req.body.positiveSkills.split(","),negative_skills:req.body.negativeSkills.split(",")
     };
-    
+
     CompanyData.findOneAndUpdate(
-       { "_id": compId }, 
+       { "_id": compId },
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
@@ -94,17 +102,17 @@ export const updateAttribute = async (req, res) => {
                 res.send(success)
             }
         });
-    
+
 }
 
 export const deleteAttribute = async (req, res) => {
     const  id  = req.body._id;
-    
+
     // const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58f1"});
     // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
     // make it dynamic
     await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58ef" }, 
+       { _id: "6111149b961aa70d06fe58ef" },
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {
@@ -118,5 +126,5 @@ export const deleteAttribute = async (req, res) => {
         });
 
    res.json({ message: "Attribute deleted successfully." });
-    
+
 }
