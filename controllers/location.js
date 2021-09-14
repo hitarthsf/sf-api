@@ -43,9 +43,10 @@ export const updateLocation = async (req, res) => {
     
     const location = req.body;
     const  id  = req.body._id;
+    const  company_id  = req.body.company_id;
     //delete
-    await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58ed" }, 
+     CompanyData.updateOne(
+       { _id:company_id}, 
          { $pull: { location: { _id: id } } } ,
       function (error, success) {
             if (error) {
@@ -67,7 +68,7 @@ export const updateLocation = async (req, res) => {
     };
     
     CompanyData.findOneAndUpdate(
-       { _id: "6111149b961aa70d06fe58ed"}, 
+       { _id: company_id}, 
        { $push: { location: objFriends  } },
       function (error, success) {
             if (error) {
@@ -92,10 +93,11 @@ export const updateLocation = async (req, res) => {
 export const deleteLocation = async (req, res) => {
     
     const  id  = req.body._id;
+    const  company_id  = req.body.company_id;
     console.log(id)
     
     await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58ed" }, 
+       { _id: company_id }, 
          { $pull: { location: { _id: id } } } ,
       function (error, success) {
             if (error) {
