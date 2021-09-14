@@ -1,15 +1,87 @@
 import express from 'express';
+import {
+    MesssageProvider,
+    Messages,
+} from '../core/index.js';
+import AuthUtils from "../utils/AuthUtils.js";
 
-import { getAttribute , addAttribute , updateAttribute , deleteAttribute } from '../controllers/attribute.js';
+const {
+    Router,
+} = express;
 
-const router = express.Router();
+import {default as passport} from '../utils/passport.js';
 
-router.post('/fetchAttribute',getAttribute);
-router.post('/addAttribute', addAttribute);
-router.post('/deleteAttribute', deleteAttribute);
-router.post('/updateAttribute', updateAttribute);
+const attributesRoutes = Router();
 
-router.get('/test', function (req, res) {
-  res.send('test home page');
-})
-export default router;
+import {getAttribute, addAttribute, updateAttribute, deleteAttribute} from '../controllers/attribute.js';
+
+attributesRoutes.post('/fetchAttribute',
+    passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
+        const token = AuthUtils.retrieveToken(request.headers);
+        if (AuthUtils.hasPermission(token, request.body.compId)) {
+            // valid token
+            return getAttribute(request, response);
+        } else {
+            // invalid token
+            response
+                .status(401)
+                .send({
+                    success: false,
+                    message: MesssageProvider.messageByKey(Messages.KEYS.WRONG_SESSION),
+                });
+        }
+    });
+
+attributesRoutes.post('/addAttribute',
+    passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
+        const token = AuthUtils.retrieveToken(request.headers);
+        const aaaa = AuthUtils.hasPermission(token, request.body.compId);
+        if (AuthUtils.hasPermission(token, request.body.compId)) {
+            // valid token
+            return addAttribute(request, response);
+        } else {
+            // invalid token
+            response
+                .status(401)
+                .send({
+                    success: false,
+                    message: MesssageProvider.messageByKey(Messages.KEYS.WRONG_SESSION),
+                });
+        }
+    });
+
+attributesRoutes.post('/deleteAttribute',
+    passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
+        const token = AuthUtils.retrieveToken(request.headers);
+        if (AuthUtils.hasPermission(token, request.body.compId)) {
+            // valid token
+            return deleteAttribute(request, response);
+        } else {
+            // invalid token
+            response
+                .status(401)
+                .send({
+                    success: false,
+                    message: MesssageProvider.messageByKey(Messages.KEYS.WRONG_SESSION),
+                });
+        }
+    });
+
+attributesRoutes.post('/updateAttribute',
+    passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
+        const token = AuthUtils.retrieveToken(request.headers);
+        if (AuthUtils.hasPermission(token, request.body.compId)) {
+            // valid token
+            return updateAttribute(request, response);
+        } else {
+            // invalid token
+            response
+                .status(401)
+                .send({
+                    success: false,
+                    message: MesssageProvider.messageByKey(Messages.KEYS.WRONG_SESSION),
+                });
+        }
+    });
+
+export default attributesRoutes;

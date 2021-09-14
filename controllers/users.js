@@ -3,7 +3,9 @@ import UsersData from '../models/UsersData.js';
 export const createUser = async(req,res) => {
 
    const user = req.body;
-
+   if (req.body.location_id) {
+        user.location_id = req.body.location_id.split(',');
+   }
    const newUser = new UsersData({ ...user, createdAt: new Date().toISOString() });
    try {
        await newUser.save()
@@ -46,4 +48,8 @@ export const deleteUser = async (req, res) => {
     await UsersData.findByIdAndRemove(id);
 
     res.json({ message: "User deleted successfully." });
+}
+
+export const checkUserHasCompanyAccess = async (req) => {
+
 }
