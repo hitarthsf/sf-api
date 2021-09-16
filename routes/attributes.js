@@ -35,7 +35,6 @@ attributesRoutes.post('/fetchAttribute',
 attributesRoutes.post('/addAttribute',
     passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        const aaaa = AuthUtils.hasPermission(token, request.body.compId);
         if (AuthUtils.hasPermission(token, request.body.compId)) {
             // valid token
             return addAttribute(request, response);
