@@ -1,4 +1,5 @@
 import UsersData from '../models/UsersData.js';
+import AWS from 'aws-sdk';
 
 export const createUser = async(req,res) => {
 
@@ -52,4 +53,39 @@ export const deleteUser = async (req, res) => {
 
 export const checkUserHasCompanyAccess = async (req) => {
 
+}
+
+export const uploadPhoto = async (req, res) => {
+    // AWS.config.update({
+    //     accessKeyId: "AKIATVUCPHF35FWG7ZNI", // Access key ID
+    //     secretAccesskey: "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", // Secret access key
+    //     region: "ap-south-1" //Region
+    // })
+    AWS.config = new AWS.Config();
+    AWS.config.accessKeyId = "AKIATVUCPHF35FWG7ZNI";
+    AWS.config.secretAccessKey = "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";
+    // AWS.config.loadFromPath('./AwsConfig.json');
+    const s3 = new AWS.S3();
+
+    // Binary data base64
+    const fileContent  = Buffer.from(req.files.image.data, 'binary');
+
+    // Setting up S3 upload parameters
+    const params = {
+        Bucket: "sf-ratings-profile-image",
+        Key: req.files.image.name, // File name you want to save as in S3
+        Body: fileContent
+    };
+    // Uploading files to the bucket
+    s3.upload(params, function(err, data) {
+        if (err) {
+            res.json({ message: "User photo uploaded successfully." });
+        }
+        res.send({
+            "response_code": 200,
+            "response_message": "Success",
+            "response_data": data
+        });
+    });
+    res.json({ message: "User photo uploaded successfully." });
 }
