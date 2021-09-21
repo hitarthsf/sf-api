@@ -17,12 +17,14 @@ import stateRoutes from './routes/state.js';
 import dotenv from 'dotenv';
 import passport from 'passport';
 import userRoutes from './routes/user.js';
+import fileUpload from 'express-fileupload';
 // load env
 dotenv.config();
 const app = express();
 app.use(bodyParser.json({ limit: "30mb", extended: true}));
 app.use(bodyParser.urlencoded({ limit: "30mb", extended: true}));
 app.use(cors());
+app.use(fileUpload());
 
 // init and configure passport
 app.use(passport.initialize());

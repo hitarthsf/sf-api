@@ -37,11 +37,9 @@ const retrieveToken = (headers) => {
 const hasPermission = (token, company_id) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET_OR_KEY);
-        if(decoded.company_id === company_id) {
+        if (decoded.type === 'super_admin') {
             return true;
-        } else {
-            return false;
-        }
+        } else return decoded.company_id === company_id;
     } catch (error) {
         // error
         return false;
