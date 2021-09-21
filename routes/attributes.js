@@ -18,7 +18,7 @@ import {getAttribute, addAttribute, updateAttribute, deleteAttribute} from '../c
 attributesRoutes.post('/fetchAttribute',
     passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        if (AuthUtils.hasPermission(token, request.body.compId)) {
+        if (AuthUtils.hasPermission(token, request.body.company_id)) {
             // valid token
             return getAttribute(request, response);
         } else {
@@ -35,7 +35,7 @@ attributesRoutes.post('/fetchAttribute',
 attributesRoutes.post('/addAttribute',
     passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        if (AuthUtils.hasPermission(token, request.body.compId)) {
+        if (AuthUtils.hasPermission(token, request.body.company_id)) {
             // valid token
             return addAttribute(request, response);
         } else {
@@ -52,7 +52,7 @@ attributesRoutes.post('/addAttribute',
 attributesRoutes.post('/deleteAttribute',
     passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        if (AuthUtils.hasPermission(token, request.body.compId)) {
+        if (AuthUtils.hasPermission(token, request.body.company_id)) {
             // valid token
             return deleteAttribute(request, response);
         } else {
@@ -69,7 +69,7 @@ attributesRoutes.post('/deleteAttribute',
 attributesRoutes.post('/updateAttribute',
     passport.authenticate(process.env.JWT_SCHEME, {session: false}), (request, response) => {
         const token = AuthUtils.retrieveToken(request.headers);
-        if (AuthUtils.hasPermission(token, request.body.compId)) {
+        if (AuthUtils.hasPermission(token, request.body.company_id)) {
             // valid token
             return updateAttribute(request, response);
         } else {
