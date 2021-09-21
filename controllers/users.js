@@ -1,4 +1,7 @@
 import UsersData from '../models/UsersData.js';
+import aws from 'aws-sdk';
+import fs from 'fs';
+import {Readable} from 'stream';
 
 export const createUser = async(req,res) => {
 
@@ -6,7 +9,33 @@ export const createUser = async(req,res) => {
    if (req.body.location_id) {
         user.location_id = req.body.location_id.split(',');
    }
-   const newUser = new UsersData({ ...user, createdAt: new Date().toISOString() });
+    user.image = '';
+   if (req.files) {
+       aws.config.update({
+           accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+           secretAccessKey: "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",
+           region: "us-east-1"
+       });
+       const s3 = new aws.S3();
+       var params = {
+           ACL: 'public-read',
+           Bucket: "sf-ratings-profile-image",
+           Body: bufferToStream(req.files.image.data),
+           Key: `userAvatar/${req.files.image.name}`
+       };
+
+       s3.upload(params, (err, data) => {
+           if (err) {
+               console.log('Error occured while trying to upload to S3 bucket', err);
+               res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+           }
+
+           if (data) {
+               user.image = data.Key;
+           }
+       });
+   }
+    const newUser = new UsersData({ ...user, createdAt: new Date().toISOString() });
    try {
        await newUser.save()
        res.status(201).json(newUser);
@@ -52,4 +81,38 @@ export const deleteUser = async (req, res) => {
 
 export const checkUserHasCompanyAccess = async (req) => {
 
+}
+
+function bufferToStream(buffer) {
+    var stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    return stream;
+}
+
+export const uploadPhoto = async (req, res) => {
+    aws.config.update({
+        accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+        secretAccessKey: "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",
+        region: "us-east-1"
+    });
+    const s3 = new aws.S3();
+    var params = {
+        ACL: 'public-read',
+        Bucket: "sf-ratings-profile-image",
+        Body: bufferToStream(req.files.image.data),
+        Key: `userAvatar/${req.files.image.name}`
+    };
+
+    s3.upload(params, (err, data) => {
+        if (err) {
+            console.log('Error occured while trying to upload to S3 bucket', err);
+        }
+
+        if (data) {
+            console.log('locationUrl', key);
+            res.json({ message: "User photo uploaded successfully." });
+        }
+    });
 }
