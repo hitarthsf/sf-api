@@ -6,6 +6,29 @@ import {Readable} from 'stream';
 export const createUser = async(req,res) => {
 
    const user = req.body;
+   if (!user.type) {
+       res.status(409).json({ message : 'User type is missing.'});
+   }
+    if (!user.name || !user.email || !user.password) {
+        res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+    }
+   switch (user.type) {
+       case 'manager':
+            if (!user.location_area || !user.location || !user.company_id) {
+                res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+            }
+            break;
+       case 'employee':
+           if (!user.location_area || !user.location || !user.company_id) {
+               res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+           }
+           break;
+       case 'admin':
+           if (!user.location_area || !user.company_id) {
+               res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+           }
+           break;
+   }
    if (req.body.location_id) {
         user.location_id = req.body.location_id.split(',');
    }

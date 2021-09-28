@@ -7,7 +7,9 @@ import {
 export const createCompany = async(req,res) => {
 
    const company = req.body;
-console.log(company);
+    if (!company.name || !company.skills) {
+        res.status(409).json({ message : 'User type is missing.'});
+    }
    const newCompany = new CompanyData({ ...company, createdAt: new Date().toISOString() });
    try {
        await newCompany.save()
