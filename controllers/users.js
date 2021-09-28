@@ -11,6 +11,7 @@ export const createUser = async(req,res) => {
    }
     user.image = '';
    if (req.files) {
+       user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
        aws.config.update({
            accessKeyId: "AKIATVUCPHF35FWG7ZNI",
            secretAccessKey: "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",
@@ -21,7 +22,7 @@ export const createUser = async(req,res) => {
            ACL: 'public-read',
            Bucket: "sf-ratings-profile-image",
            Body: bufferToStream(req.files.image.data),
-           Key: `userAvatar/${req.files.image.name}`
+           Key: user.image
        };
 
        s3.upload(params, (err, data) => {
@@ -29,13 +30,10 @@ export const createUser = async(req,res) => {
                console.log('Error occured while trying to upload to S3 bucket', err);
                res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
            }
-
-           if (data) {
-               user.image = data.Key;
-           }
        });
    }
-    const newUser = new UsersData({ ...user, createdAt: new Date().toISOString() });
+
+   const newUser = new UsersData({ ...user, createdAt: new Date().toISOString() });
    try {
        await newUser.save()
        res.status(201).json(newUser);
