@@ -8,7 +8,7 @@ export const createCompany = async(req,res) => {
 
    const company = req.body;
     if (!company.name || !company.skills) {
-        res.status(409).json({ message : 'User type is missing.'});
+        res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
     }
    const newCompany = new CompanyData({ ...company, createdAt: new Date().toISOString() });
    try {
