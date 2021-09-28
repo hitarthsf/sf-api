@@ -3,9 +3,11 @@ import CompanyData from '../models/CompanyData.js';
 
 export const createLocation = async(req,res) => {
 
-   console.log(req.body)
-    
-    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2, 
+    if (!req.body.name) {
+        res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+    }
+
+    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
         country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
         latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
         invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
@@ -15,7 +17,7 @@ export const createLocation = async(req,res) => {
     };
 
     CompanyData.findOneAndUpdate(
-       { _id: req.body._id }, 
+       { _id: req.body._id },
        { $push: { location: objFriends  } },
       function (error, success) {
             if (error) {
@@ -26,7 +28,7 @@ export const createLocation = async(req,res) => {
                 res.send(success)
             }
         });
-    
+
 }
 
 export const getLocation = async (req,res) => {
@@ -39,14 +41,17 @@ export const getLocation = async (req,res) => {
     }
 }
 export const updateLocation = async (req, res) => {
-    console.log(req.body)
-    
+
+    if (!req.body.name || !req.body.company_id) {
+        res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+    }
+
     const location = req.body;
     const  id  = req.body._id;
     const  company_id  = req.body.company_id;
     //delete
      CompanyData.updateOne(
-       { _id:company_id}, 
+       { _id:company_id},
          { $pull: { location: { _id: id } } } ,
       function (error, success) {
             if (error) {
@@ -55,10 +60,10 @@ export const updateLocation = async (req, res) => {
                 console.log(success);
             }
         });
-    
-    
-    // add 
-    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2, 
+
+
+    // add
+    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
         country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
         latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
         invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
@@ -66,9 +71,9 @@ export const updateLocation = async (req, res) => {
         autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
         multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit ,
     };
-    
+
     CompanyData.findOneAndUpdate(
-       { _id: company_id}, 
+       { _id: company_id},
        { $push: { location: objFriends  } },
       function (error, success) {
             if (error) {
@@ -81,7 +86,7 @@ export const updateLocation = async (req, res) => {
         });
 
 
-    // below function can be used for optimization 
+    // below function can be used for optimization
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
     // const updatedLocation = { ...location, _id: req.body._id };
     // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
@@ -91,13 +96,13 @@ export const updateLocation = async (req, res) => {
 }
 
 export const deleteLocation = async (req, res) => {
-    
+
     const  id  = req.body._id;
     const  company_id  = req.body.company_id;
     console.log(id)
-    
+
     await CompanyData.updateOne(
-       { _id: company_id }, 
+       { _id: company_id },
          { $pull: { location: { _id: id } } } ,
       function (error, success) {
             if (error) {
@@ -106,7 +111,7 @@ export const deleteLocation = async (req, res) => {
                 console.log(success);
             }
         });
-    // below function can be used for optimization 
+    // below function can be used for optimization
     //if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
     //await LocationData.findByIdAndRemove(id);
 
