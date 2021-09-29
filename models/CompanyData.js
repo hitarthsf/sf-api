@@ -9,7 +9,7 @@ const company = mongoose.Schema({
     mobileiron_group_id:String,
     account_type:String,
     allow_cppq:String,
-    image: Array,
+    image: String,
     //skills: [{id:Number, name:String, type:String}],
     skills: Array,
     location: [{location_area_id:String,location_id:String,customer_location_id:String,skill_id:String,name:String, address_1:String,address_2:String,city:String,state_id:String,
