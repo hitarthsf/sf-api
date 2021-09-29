@@ -35,7 +35,13 @@ export const createUser = async(req,res) => {
    if (req.body.location_id) {
         user.location_id = req.body.location_id.split(',');
    }
-    user.image = '';
+   const userCheck = await UsersData.findOne({
+       email: user.email
+   });
+   if (userCheck) {
+       res.status(409).json({ message : 'User already exist with the same email.'});
+   }
+   user.image = '';
    if (req.files) {
        user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
        aws.config.update({

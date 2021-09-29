@@ -3,12 +3,38 @@ import {
     MesssageProvider,
     Messages,
 } from '../core/index.js';
+import aws from "aws-sdk";
+import {Readable} from "stream";
 
 export const createCompany = async(req,res) => {
 
    const company = req.body;
     if (!company.name || !company.skills) {
         res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
+    }
+
+    company.image = '';
+    if (req.files) {
+        company.image = `company/` + Date.now() + `-${req.files.image.name}`;
+        aws.config.update({
+            accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+            secretAccessKey: "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",
+            region: "us-east-1"
+        });
+        const s3 = new aws.S3();
+        var params = {
+            ACL: 'public-read',
+            Bucket: "sf-ratings-profile-image",
+            Body: bufferToStream(req.files.image.data),
+            Key: company.image
+        };
+
+        s3.upload(params, (err, data) => {
+            if (err) {
+                console.log('Error occured while trying to upload to S3 bucket', err);
+                res.status(409).json({ message : 'Error occurred while trying to upload to S3 bucket'});
+            }
+        });
     }
    const newCompany = new CompanyData({ ...company, createdAt: new Date().toISOString() });
    try {
@@ -181,4 +207,12 @@ export const getSkillList = async (req,res) => {
     } catch (error) {
         res.status(404).json({message : error.message});
     }
+}
+
+function bufferToStream(buffer) {
+    var stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    return stream;
 }
