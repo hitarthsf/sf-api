@@ -5,16 +5,19 @@ import {Readable} from 'stream';
 
 export const createUser = async(req,res) => {
 
-   const user = req.body;
-   if (!user.type) {
+    const user = req.body;
+    if (!user.type) {
        res.status(409).json({ message : 'User type is missing.'});
-   }
+    }
+    if (user.type.includes(['super_admin', 'area_manager', 'location_manager', 'employee'])) {
+        res.status(409).json({ message : 'Invalid user type is passed.'});
+    }
     if (!user.name || !user.email || !user.password) {
         res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
     }
    switch (user.type) {
-       case 'manager':
-            if (!user.location_area || !user.location || !user.company_id) {
+       case 'location_manager':
+            if (!user.location_area || !user.location || !user.company_id || !user.location_area) {
                 res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
             }
             break;
@@ -23,8 +26,8 @@ export const createUser = async(req,res) => {
                res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
            }
            break;
-       case 'admin':
-           if (!user.location_area || !user.company_id) {
+       case 'area_manager':
+           if (!user.location_area || !user.location_area || !user.company_id) {
                res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
            }
            break;
