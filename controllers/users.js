@@ -92,7 +92,7 @@ export const updateUser = async (req, res) => {
     const user = req.body;
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
     const updatedUser = { ...user, _id: req.body._id };
-
+console.log('updatedUser', updatedUser);
     await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
 
     res.json(updatedUser);

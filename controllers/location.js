@@ -1,6 +1,7 @@
 import LocationData from '../models/LocationData.js';
 import CompanyData from '../models/CompanyData.js';
 import aws from "aws-sdk";
+import {Readable} from "stream";
 
 export const createLocation = async(req,res) => {
 
@@ -141,4 +142,12 @@ export const deleteLocation = async (req, res) => {
     //await LocationData.findByIdAndRemove(id);
 
     res.json({ message: "Location deleted successfully." });
+}
+
+function bufferToStream(buffer) {
+    var stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    return stream;
 }
