@@ -91,6 +91,29 @@ export const updateUser = async (req, res) => {
     //const { id } = req.body._id;
     const user = req.body;
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
+     user.image = '';
+   if (req.files) {
+       user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
+       aws.config.update({
+           accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+           secretAccessKey: "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",
+           region: "us-east-1"
+       });
+       const s3 = new aws.S3();
+       var params = {
+           ACL: 'public-read',
+           Bucket: "sf-ratings-profile-image",
+           Body: bufferToStream(req.files.image.data),
+           Key: user.image
+       };
+
+       s3.upload(params, (err, data) => {
+           if (err) {
+               console.log('Error occured while trying to upload to S3 bucket', err);
+               res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+           }
+       });
+   }
     const updatedUser = { ...user, _id: req.body._id };
 console.log('updatedUser', updatedUser);
     await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
