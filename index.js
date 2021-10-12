@@ -14,6 +14,7 @@ import privacyLocationRoutes from './routes/privacy_location.js';
 import authRoutes from './routes/auth.js';
 import stateRoutes from './routes/state.js';
 import ratingRoutes from './routes/ratings.js';
+import migrationRoutes from './routes/migration.js';
 //dot env configuration
 import dotenv from 'dotenv';
 import passport from 'passport';
@@ -43,6 +44,7 @@ app.use('/user',userRoutes);
 app.use('/state',stateRoutes);
 app.use('/abusiveWords',abusiveWordsRoutes);
 app.use('/rating',ratingRoutes);
+app.use('/migration',migrationRoutes);
 
 
 //const CONNECTION_URL = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
