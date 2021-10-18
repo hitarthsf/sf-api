@@ -7,5 +7,11 @@
       <jdbc-driver>com.dbschema.MongoJdbcDriver</jdbc-driver>
       <jdbc-url>mongodb://cluster0.gdowm.mongodb.net:27017/ratings_migration</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="ratings_db@localhost" uuid="69ec3689-ada1-4deb-a03a-1c79918d0eeb">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/ratings_db</jdbc-url>
+    </data-source>
   </component>
 </project>

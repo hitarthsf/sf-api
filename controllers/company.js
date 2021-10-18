@@ -9,7 +9,7 @@ import {Readable} from "stream";
 export const createCompany = async(req,res) => {
 
    const company = req.body;
-    if (!company.name || !company.skills) {
+    if (!company.name) {
         res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
     }
 
