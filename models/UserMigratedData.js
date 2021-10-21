@@ -15,6 +15,7 @@ const user = mongoose.Schema({
     is_active:String,allow_email:String,is_show:String,source_of_creation:String,allow_complain_mails:String,
     createdAt: { type : Date, default: new Date()  },
     updatedAt: {  type : Date,  default: new Date()},
+    old_user_id: String,
 });
 
 const UserMigratedData = mongoose.model('updated_user', user);
