@@ -169,3 +169,16 @@ export const uploadPhoto = async (req, res) => {
         }
     });
 }
+
+export const getUsersByType = async (req,res) => {
+    const  type  = req.query.type;
+    if (!type) {
+        res.status(409).json({ message : 'type is mandatory field.'});
+    }
+    try {
+        const AllUser = await UsersData.find().where('type').equals(type);
+        res.status(200).json(AllUser);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
