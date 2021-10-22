@@ -14,15 +14,14 @@ import privacyLocationRoutes from './routes/privacy_location.js';
 import authRoutes from './routes/auth.js';
 import stateRoutes from './routes/state.js';
 import ratingRoutes from './routes/ratings.js';
-<<<<<<< HEAD
+
 import dashboardRoutes from './routes/dashboard.js';
 
-=======
 import migrationRoutes from './routes/migration.js';
->>>>>>> c303ecbf877cc794ec583af7cfef85e87e83de01
+
 //dot env configuration
 import dotenv from 'dotenv';
-import passport from 'passport';
+//import passport from 'passport';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
 // load env
@@ -34,7 +33,7 @@ app.use(cors());
 app.use(fileUpload());
 
 // init and configure passport
-app.use(passport.initialize());
+//app.use(passport.initialize());
 
 app.use('/company',companyRoutes);
 app.use('/location',locationRoutes);
@@ -49,11 +48,10 @@ app.use('/user',userRoutes);
 app.use('/state',stateRoutes);
 app.use('/abusiveWords',abusiveWordsRoutes);
 app.use('/rating',ratingRoutes);
-<<<<<<< HEAD
+
 app.use('/dashboard',dashboardRoutes);
-=======
+
 app.use('/migration',migrationRoutes);
->>>>>>> c303ecbf877cc794ec583af7cfef85e87e83de01
 
 
 //const CONNECTION_URL = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
