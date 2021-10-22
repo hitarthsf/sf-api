@@ -5,25 +5,88 @@ import RatingSkillData from "../models/RatingSkillData.js";
 
 
 export const getData = async (req, res) => {
-    const company_id    = "61482f56b882280b65acce89";//req.query.company_id;
-    const location_id   = req.query.location_id;
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+    const nps = "";
+    // add try catch 
+     try {
+      // get total counts of rating
+      const count_total         = await RatingData.aggregate([
+                {
+                  $match : {"location_id" : { $in : location_id }, "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                  $count: "rating"
+              }]);
+      
+      // get average of rating
+      const average       = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                 $group:
+                   {
+                     _id: "_id",
+                      average: { $avg: "$rating" }
+                   }
+               }
+              ]);
 
-    const count         = await RatingData.aggregate([{
-              $count: "rating"
-            }]);
+      // Calculate NPS 
+      // Get Promoters
+      const promoters       = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"rating" : {$in : [4,5] },"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                  $count: "rating"
+               }
+              ]);
+
+      // Get Detractor
+      const detractor       = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"rating" : {$in : [1,2,3] },"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                $count: "rating"
+               }
+              ]);
+
+      if (count_total.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+         //res.send("count"+promoters.length);
+      
+        const nps = ( promoters[0]['rating'] /  count_total[0]['rating'] ) - ( detractor[0]['rating'] /  count_total[0]['rating'] ) ; 
+
+      
+      
+      const ratings = [{"count":count_total[0]['rating'] , "average" : average[0]['average'] , "nps" : nps}];
+      
+      res.status(200).json({data:ratings , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
     
-    const average       = await RatingData.aggregate( 
-            [
-             {
-               $group:
-                 {
-                   _id: "_id",
-                    average: { $avg: "$rating" }
-                 }
-             }
-            ]);
+}
 
-     const top_location = await RatingData.aggregate( 
+
+  
+// get top location 
+export const getLocationRank = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+    const order         = parseInt(req.body.order);
+
+    // add try catch 
+    try {
+    const location_rank = await RatingData.aggregate( 
       [
         // { 
         //   $unwind: "$location_id"
@@ -32,23 +95,212 @@ export const getData = async (req, res) => {
         //   $sortByCount: "$location_id" 
         // },
         {
-            $match: {company_id: company_id}
+                  
+          $match : {"company_id": company_id , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
         },
         {
-          $lookup: {
-              from: 'companies',
-              localField: 'comapny_id',
-              foreignField: 'id',
-              "as": "company_name"
-          }
+         $group:
+             {
+               _id: "$location_id",
+                count: { $sum:1},
+                average: { $avg: "$rating" }
+             }
         },
-        
-        { $project: { company_name: {name: 1} } }
+         { $sort : { count : order } }
+
         
       ] 
     );
-
-    const ratings = [{"count":count[0]['rating'] , "average" : average[0]['average'] }];
    
-    res.status(200).json(top_location);
+    if (location_rank.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+      res.status(200).json({data:location_rank , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
+// get ratings diStrubtion+s
+export const getRatingsDistribution = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+ //res.send(end_date);
+ // add try catch 
+     try {
+      const average_count       = await RatingData.aggregate( 
+              [
+                {
+                  
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                   $group:
+                     {
+                       _id: "$rating",
+                        count: { $sum:1}
+                     }
+                }
+              ]);
+
+      const total_count       = await RatingData.aggregate( 
+              [
+              {
+                $match: {"location_id" : { $in : location_id }}
+              },
+               {
+                 $group:
+                   {
+                     _id: "total_count",
+                      count: { $sum:1}
+                   }
+               }
+              ]);
+
+      if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+      res.status(200).json({data:average_count , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+   
+}
+
+// get daily rating ( get ratings date wise)
+export const getRatingData = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+ //res.send(end_date);
+ // add try catch 
+     try {
+      const average_count       = await RatingData.aggregate( 
+              [
+                {
+                  
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                   $group: 
+                   { 
+                      _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt"} }, 
+                      count: { $sum: 1 } ,
+                      average: { $avg: "$rating" }
+                    } ,
+                    
+                }
+              ]);
+
+   
+
+      if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+      res.status(200).json({data:average_count , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+   
+}
+
+
+// Get Latest Reviews 
+export const latestReview = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+ //res.send(end_date);
+ // add try catch 
+     try {
+      const reviews     = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                { 
+                  $sort : { createdAt : -1 } 
+                },
+                {
+                  $limit : 3 
+                },
+                { 
+                  $project: { "location_id": 1, "feedback": 1 , "createdAt" : 1 , "rating" : 1  } 
+                }
+              ]);
+
+      if (reviews.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+      res.status(200).json({data:reviews , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+
+}
+
+
+// Get Skill Rank 
+
+export const getSkillRank = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+    const order         = parseInt(req.body.order);
+    const rating_id     = [] ;
+ 
+   
+    // add try catch 
+    try {
+
+      // Get Ratings Id From 
+      const rating       = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                { 
+                  $project: { "_id": 1 } 
+                }
+              ]);
+
+    // Create an array of ratings id needed 
+    rating.forEach( function(myDoc) { rating_id.push( myDoc._id)  } );
+    
+    // Get count of skills from the ratings id 
+      //res.send(rating_id);
+      // NEED TO USE rating_id INSTEAD OF THE ARRAY IN LINE 246
+      const skill_rank =  await RatingSkillData.aggregate( 
+        [
+          {
+            $match : { "rating_id" : { $in :[
+                                                "615d0d3d899c998639f1fd8e",
+                                                "616d5e737394a438fc3af263",
+                                                "616e75b80a66fc23a0fb6cbf",
+                                                "61712aaba1e73a0bc465bef1",
+                                                "61712f3fbd80793ac46db2d4",
+                                                "61713e743fd1093ed842bf48",
+                                                "6171429fda827a3168f7f366",
+                                                "61715a5c339deb35348e6ff0"
+                                            ]
+                                      } 
+                      }
+          },
+          {
+           $group:
+               {
+                 _id: "$skill_id",
+                  count: { $sum:1}
+               }
+          },
+          { $sort : { count : order } }
+
+          
+        ] 
+      );
+      res.status(200).json({data:skill_rank , message : "Success"} ); 
+  
+      } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+
+    
+    
 }
