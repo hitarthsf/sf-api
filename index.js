@@ -14,16 +14,9 @@ import privacyLocationRoutes from './routes/privacy_location.js';
 import authRoutes from './routes/auth.js';
 import stateRoutes from './routes/state.js';
 import ratingRoutes from './routes/ratings.js';
-<<<<<<< HEAD
-
-import dashboardRoutes from './routes/dashboard.js';
-
-import migrationRoutes from './routes/migration.js';
-
-=======
 import dashboardRoutes from './routes/dashboard.js';
 import migrationRoutes from './routes/migration.js';
->>>>>>> 51040d27dc9bfd2d737960a91b5d99fe3c2e3387
+
 //dot env configuration
 import dotenv from 'dotenv';
 //import passport from 'passport';
@@ -53,13 +46,7 @@ app.use('/user',userRoutes);
 app.use('/state',stateRoutes);
 app.use('/abusiveWords',abusiveWordsRoutes);
 app.use('/rating',ratingRoutes);
-<<<<<<< HEAD
-
 app.use('/dashboard',dashboardRoutes);
-
-=======
-app.use('/dashboard',dashboardRoutes);
->>>>>>> 51040d27dc9bfd2d737960a91b5d99fe3c2e3387
 app.use('/migration',migrationRoutes);
 
 
