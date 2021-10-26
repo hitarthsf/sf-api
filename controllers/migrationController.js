@@ -1,5 +1,8 @@
 import CompanyMigratedData from '../models/CompanyMigratedData.js';
 import UserMigratedData from '../models/UserMigratedData.js';
+import RatingMigratedData from '../models/RatingMigratedData.js';
+import RatingMigratedSkillData from '../models/RatingMigratedSkillData.js';
+import RatingMigratedEmployeeData from '../models/RatingMigratedEmployeeData.js';
 import _ from 'lodash';
 import mysql from 'mysql';
 
@@ -122,6 +125,7 @@ export const migrateUsers = async (req, res) => {
                                 return location.old_location_id == rowUser.location_id
                             });
                             userData['location_id'] = fetchedLocation ? fetchedLocation._id : '';
+                            userData['old_user_id'] = rowUser.id;
                             const mongoUserData = new UserMigratedData({...userData, createdAt: new Date().toISOString()});
                             await mongoUserData.save();
                         }
@@ -131,6 +135,106 @@ export const migrateUsers = async (req, res) => {
             }),
         ).then((value) => {
             res.status(209).json(`total ${mongoCompanyList.length} company users are imported.`);
+        });
+    });
+}
+
+export const migrateRatings = async (req,res) => {
+    const oldCompanyId= req.query['company_id'];
+    if (!oldCompanyId) {
+        res.status(209).json(`company Id is missing from request.`);
+    }
+    console.log('oldCompanyId', oldCompanyId);
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'ratings_db'
+    });
+    connection.connect(async (err) => {
+        if (err) throw err
+        console.log('You are now connected...');
+        const mongoCompanyObj = await CompanyMigratedData.findOne({old_company_id: oldCompanyId});
+
+        mongoCompanyObj.location.map(async (location) => {
+            console.log('location', location);
+
+            await connection.query(`SELECT ratings.*,rating_customer.name as customer_name, rating_customer.email as customer_email, rating_customer.phone as customer_phone
+                from ratings 
+                left join location on ratings.location_id = location.id 
+                left join rating_customer on ratings.id = rating_customer.ratings_id 
+                WHERE ratings.location_id= ${location.old_location_id}`, async (err, ratingRows) => {
+
+                ratingRows.map(async (ratingRow) => {
+
+                    const ratingObj = ratingRow;
+
+                    ratingObj['location_id'] = location._id;
+                    ratingObj['company_id'] = mongoCompanyObj._id;
+
+                    const ratingMongoObj = new RatingMigratedData({...ratingObj, createdAt: new Date().toISOString()});
+                    await ratingMongoObj.save();
+
+                    await connection.query(`SELECT ratings_skill.*, skills.name, skills.type 
+                        from ratings_skill 
+                        left join skills on skills.id = ratings_skill.skills_id 
+                        WHERE ratings_id = ${ratingObj.id}`, async (err, ratingSkills) => {
+                        ratingObj['skills'] = ratingSkills;
+
+                        ratingSkills.map(async (mySqlRatingSkill) => {
+                                if (mySqlRatingSkill.name) {
+                                    let skillId = null;
+                                    mongoCompanyObj.attributes.forEach((attribute) => {
+                                        if (mySqlRatingSkill.type == 1) {
+                                            const matchingObj = _.find(attribute.positive_skills, {name: mySqlRatingSkill.name});
+                                            if (matchingObj) {
+                                                skillId = matchingObj._id;
+                                            }
+                                        } else {
+                                            const matchingObj = _.find(attribute.negative_skills, {name: mySqlRatingSkill.name});
+                                            if (matchingObj) {
+                                                skillId = matchingObj._id;
+                                            }
+                                        }
+                                    });
+                                    if (skillId) {
+                                        const ratingSkillMongoObj = new RatingMigratedSkillData({
+                                            rating_id: ratingMongoObj.id,
+                                            skill_id: skillId,
+                                            rating: ratingObj.rating,
+                                            location_id: ratingObj.location_id,
+                                            company_id: ratingObj.company_id,
+                                        });
+                                        await ratingSkillMongoObj.save();
+                                    }
+                                }
+                        });
+                    });
+
+                    await connection.query(`SELECT rating_user.* 
+                        from rating_user
+                        WHERE ratings_id = ${ratingObj.id}`, async (err, ratingEmployees) => {
+                        ratingObj['employees'] = ratingEmployees;
+
+                        ratingEmployees.map(async (mySqlRatingEmployee) => {
+                            if (mySqlRatingEmployee.user_id) {
+                                const mongoEmployee = await UserMigratedData.findOne({old_user_id: oldCompanyId});
+                                if (mongoEmployee) {
+                                    const ratingEmployeeMongoObj = new RatingMigratedEmployeeData({
+                                        rating_id: ratingMongoObj.id,
+                                        employee_id: mongoEmployee._id,
+                                        rating: ratingObj.rating,
+                                        location_id: ratingObj.location_id,
+                                        company_id: ratingObj.company_id,
+                                    });
+                                    await ratingEmployeeMongoObj.save();
+                                }
+                            }
+                        });
+                    });
+
+                });
+            });
         });
     });
 }
