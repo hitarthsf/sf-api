@@ -171,6 +171,7 @@ export const getRatingData = async (req, res) => {
     const location_id   = req.body.location_id.split(',');
     const start_date    = new Date(req.body.start_date);
     const end_date      = new Date(req.body.end_date);
+    const chart_format  = true ; 
  //res.send(end_date);
  // add try catch 
      try {
@@ -191,10 +192,22 @@ export const getRatingData = async (req, res) => {
                 }
               ]);
 
-   
 
       if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
-      res.status(200).json({data:average_count , message : "Success"} );
+
+      // Convert in chart format 
+       if ( chart_format == true)
+      {
+        const date = [] ;   
+        const count = [] ;   
+        const average = [] ;   
+        average_count.forEach( function(myDoc) { date.push( myDoc._id) ; count.push( myDoc.count) ; average.push( myDoc.average)  } );
+        const rating = [{"date":date , "average" : average , "count" : count}] ;
+      }
+      
+      
+
+      res.status(200).json({data:rating , message : "Success"} );
     } catch (error) {
         res.status(404).json({message : error.message});
     }
@@ -301,6 +314,83 @@ export const getSkillRank = async (req, res) => {
         res.status(404).json({message : error.message});
     }
 
+}
+
+// Get Employee Rank 
+
+export const getEmployeeRank = async (req, res) => {
+    const company_id    = req.body.company_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+    const order         = parseInt(req.body.order);
+    const rating_id     = [] ;
+ 
+   
+    // add try catch 
+    try {
+
+      // Get Ratings Id From 
+      const rating       = await RatingData.aggregate( 
+              [
+                {
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                { 
+                  $project: { "_id": 1 } 
+                }
+              ]);
+
+    // Create an array of ratings id needed 
+    rating.forEach( function(myDoc) { rating_id.push( myDoc._id)  } );
     
-    
+    // Get count of skills from the ratings id 
+     // res.send(rating_id);
+      // NEED TO USE rating_id INSTEAD OF THE ARRAY IN LINE 246
+      const employee_rank =  await RatingEmployeeData.aggregate( 
+        [
+          {
+            $match : { "rating_id" : { $in :[
+    "615d0d3d899c998639f1fd8e",
+    "616d5e737394a438fc3af263",
+    "616e75b80a66fc23a0fb6cbf",
+    "61712aaba1e73a0bc465bef1",
+    "61712f3fbd80793ac46db2d4",
+    "61713e743fd1093ed842bf48",
+    "6171429fda827a3168f7f366",
+    "61715a5c339deb35348e6ff0",
+    "617284d82a9ab91264516a3b",
+    "617647fd050f21044824044d",
+    "6176481b050f210448240453",
+    "6176485f1781d7045b191338",
+    "61764ab1e56b8b04932d6a3a",
+    "61764ac3a549c80498772234",
+    "61764ae083f2e8049d946435",
+    "6176580a0c205d05713e361a",
+    "6176583d0c205d05713e3625",
+    "617658d0d5d6e9057888d69a",
+    "617658f7723299058e6910c3",
+    "617659187665f905938bfd6e"
+]} }
+          },
+          {
+           $group:
+               {
+                 _id: "$employee_id",
+                  count: { $sum:1},
+                  average: { $avg: "$rating" }
+               }
+          },
+         
+          { $sort : { count : order , average: order } }
+
+          
+        ] 
+      );
+      res.status(200).json({data:employee_rank , message : "Success"} ); 
+  
+      } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+
 }

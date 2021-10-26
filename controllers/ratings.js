@@ -2,6 +2,7 @@ import express from 'express';
 import RatingData from '../models/RatingData.js';
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
+import UsersData from "../models/UsersData.js";
 
 export const createRating = async (req, res) => {
     const data = req.body;
@@ -23,8 +24,21 @@ export const createRating = async (req, res) => {
 
     const rating = new RatingData(ratingObj);
     await rating.save();
-    if (employees.length > 0) {
+
+    // if positive rating and no employee is selected then assign rating to all the employee and location manager of that location
+    if (employees.length == 0 && data.rating > 3  )
+    {
+        const employees_ids = await UsersData.aggregate([
+                {
+                  $match : {"location_id" : data.location_id , "type" : { $in :['employee' , 'location_manager'] }}
+                }
+               ]); 
+        employees_ids.forEach( function(myDoc) { employees.push( myDoc._id)  } );
+    }
+    
+    if (employees.length > 0) { 
         employees.map(async (employeeId) => {
+            
             const savedEmployees = new RatingEmployeeData({
                 rating_id: rating._id,
                 employee_id: employeeId,
@@ -32,6 +46,7 @@ export const createRating = async (req, res) => {
                 location_id: data.location_id,
                 company_id: data.company_id,
             });
+            //res.send(savedEmployees);
             await savedEmployees.save();
         });
     }
