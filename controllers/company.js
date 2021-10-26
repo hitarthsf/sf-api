@@ -5,6 +5,7 @@ import {
 } from '../core/index.js';
 import aws from "aws-sdk";
 import {Readable} from "stream";
+import jwt from "jsonwebtoken";
 
 export const createCompany = async(req,res) => {
 
@@ -238,4 +239,22 @@ function bufferToStream(buffer) {
     stream.push(null);
 
     return stream;
+}
+
+export const fetchLocationByLoggedInUser = async (req, res, token) => {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET_OR_KEY);
+    const companyId = req.query.company_id;
+    if (!companyId) {
+        res.status(409).json({ message : 'Invalid request, company ID is missing.'});
+    }
+    if (decoded.type === 'super_admin') {
+        const fetchedLocations = await CompanyData.findOne({"_id":companyId}, {location: 1});
+        res.status(200).json(fetchedLocations);
+    } else {
+        const fetchedLocations = await CompanyData.find({
+                _id: companyId,
+                location: { $in: JSON.parse(decoded.location_id) },
+            });
+        res.status(200).json(fetchedLocations);
+    }
 }
