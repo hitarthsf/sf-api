@@ -2,6 +2,9 @@ import express from 'express';
 import RatingData from '../models/RatingData.js';
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
+import CompanyData from '../models/CompanyData.js';
+import UserData from '../models/UsersData.js';
+import _ from "lodash";
 
 export const createRating = async (req, res) => {
     const data = req.body;
@@ -52,8 +55,11 @@ export const createRating = async (req, res) => {
 }
 
 export const fetchRating = async (req, res) => {
-    const company_id = req.query.company_id;
-    // const ratings = await RatingData.find({company_id: company_id}, {
+    const companyId = req.query.company_id;
+    if (!companyId) {
+        res.status(409).json({ message : 'Invalid request, Company Id is missing'});
+    }
+    // const ratings = await RatingData.find({companyId: companyId}, {
     //     $lookup: {
     //         from: 'rating_skills',
     //         localField: 'rating_id',
@@ -62,9 +68,13 @@ export const fetchRating = async (req, res) => {
     //     }
     // })
 
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
+    const skip = (page - 1) * limit;
+    const companyData = await CompanyData.findOne({"_id":companyId});
     const ratings = await RatingData.aggregate([
         {
-            $match: {company_id: company_id}
+            $match: {company_id: companyId}
         },
         {
             $lookup: {
@@ -74,6 +84,12 @@ export const fetchRating = async (req, res) => {
                 "as": "rating_skills"
             }
         },
+        // {
+        //     $unwind: {
+        //         path: "$rating_skills",
+        //         preserveNullAndEmptyArrays: false
+        //     }
+        // },
         {
             $lookup: {
                 from: 'rating_employees',
@@ -81,7 +97,54 @@ export const fetchRating = async (req, res) => {
                 foreignField: 'id',
                 "as": "rating_employees"
             }
-        }
+        },
+        // {
+        //     $unwind: {
+        //         path: "$rating_employees",
+        //         preserveNullAndEmptyArrays: false
+        //     }
+        // },
+        { "$limit": skip + limit },
+        { "$skip": skip }
     ]);
-    res.status(201).json(ratings);
+    const responseData =  await Promise.all(
+        ratings.map(async (rating) => {
+            rating.companyName = companyData.name;
+
+            rating.locationName = '';
+            const fetchedLocation = _.find(companyData.location, (location) => {
+                return location._id == rating.location_id
+            });
+            if (fetchedLocation) {
+                rating.locationName = fetchedLocation.name;
+            }
+
+            rating.rating_skills.map(async (ratingSkill) => {
+                ratingSkill.skillName = '';
+                companyData.attributes.map((attribute) => {
+                    const matchingObj = _.find(attribute.positive_skills, (skill) => {
+                        return skill._id == ratingSkill.skill_id
+                    });
+                    if (matchingObj) {
+                        ratingSkill.skillName = matchingObj.name;
+                    }
+                    if (ratingSkill.skillName === '') {
+                        const matchingObj = _.find(attribute.negative_skills, {_id: ratingSkill.skill_id});
+                        if (matchingObj) {
+                            ratingSkill.skillName = matchingObj.name;
+                        }
+                    }
+                });
+                return ratingSkill;
+            });
+            await Promise.all(
+                rating.rating_employees.map(async (ratingEmployee) => {
+                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+                    return ratingEmployee;
+                }),
+            );
+            return rating;
+        }),
+    )
+    res.status(201).json(responseData);
 }
