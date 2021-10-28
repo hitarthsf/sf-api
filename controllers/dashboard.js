@@ -2,8 +2,9 @@ import express from 'express';
 import RatingData from '../models/RatingData.js';
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
-
-
+import UserData from '../models/UsersData.js';
+import CompanyData from '../models/CompanyData.js'
+import _ from "lodash";
 export const getData = async (req, res) => {
     const company_id    = req.body.company_id;
     const location_id   = req.body.location_id.split(',');
@@ -61,8 +62,15 @@ export const getData = async (req, res) => {
 
       if (count_total.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
          //res.send("count"+promoters.length);
-      
+         
+      if (promoters.length === 0 )   { const nps = "-1";  }
+      if (detractor.length === 0 )   { const nps = "1" ; }
+       
+      if (detractor.length != 0 && promoters.length != 0 )    
+      { 
         const nps = ( promoters[0]['rating'] /  count_total[0]['rating'] ) - ( detractor[0]['rating'] /  count_total[0]['rating'] ) ; 
+       
+      }
 
       
       
@@ -106,13 +114,29 @@ export const getLocationRank = async (req, res) => {
                 average: { $avg: "$rating" }
              }
         },
-         { $sort : { count : order } }
+         { $sort : { count : order  , average: order } }
 
         
       ] 
     );
-   
+
+
     if (location_rank.length === 0) { res.status(200).json({message:"No data found with above filter"}); } 
+    // get location name 
+    const companyData = await CompanyData.findOne({"_id":company_id});
+    const responseData =  await Promise.all(
+        location_rank.map(async (locationData) => {
+
+            locationData.locationName = '';
+            const fetchedLocation = _.find(companyData.location, (location) => {
+                return location._id == locationData._id
+            });
+            if (fetchedLocation) {
+                locationData.locationName = fetchedLocation.name;
+            }
+        }),
+      )
+
       res.status(200).json({data:location_rank , message : "Success"} );
     } catch (error) {
         res.status(404).json({message : error.message});
@@ -303,7 +327,7 @@ export const getSkillRank = async (req, res) => {
                   count: { $sum:1}
                }
           },
-          { $sort : { count : order } }
+          { $sort : { count : order  }  }
 
           
         ] 
@@ -387,7 +411,17 @@ export const getEmployeeRank = async (req, res) => {
           
         ] 
       );
-      res.status(200).json({data:employee_rank , message : "Success"} ); 
+      const responseData =  await Promise.all(
+        employee_rank.map(async (employee) => {
+          employee.employeeName = '';
+            const fetchedEmployee = await UserData.findOne({"_id":employee._id});
+            if (fetchedEmployee) {
+                employee.employeeName = fetchedEmployee.name;
+            }
+            return employee;
+        }),
+      )
+      res.status(200).json({data:responseData , message : "Success"} ); 
   
       } catch (error) {
         res.status(404).json({message : error.message});
