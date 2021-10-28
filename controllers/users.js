@@ -86,6 +86,18 @@ export const getUser = async (req,res) => {
     }
 }
 
+export const singleUser = async (req,res) => {
+    //console.log(req.body)
+    const  id  = req.query.id;
+    
+    try {
+        const User = await UsersData.find().where('_id').equals(id);
+        res.status(200).json(User);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
 export const updateUser = async (req, res) => {
     console.log(req.body)
     //const { id } = req.body._id;
