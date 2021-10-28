@@ -298,8 +298,7 @@ export const getSkillRank = async (req, res) => {
                 }
               ]);
 
-      const ratingIdArray = rating.map(ratingObj => ratingObj._id);
-
+      const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
     // Create an array of ratings id needed
     // rating.forEach( function(ratings) { ratings.push( myDoc._id)  } );
 
