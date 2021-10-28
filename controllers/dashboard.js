@@ -299,11 +299,11 @@ export const getSkillRank = async (req, res) => {
               ]);
 
     // Create an array of ratings id needed 
-    rating.forEach( function(myDoc) { rating_id.push( myDoc._id)  } );
+    rating.forEach( function(ratings) { ratings.push( myDoc._id)  } );
     
     // Get count of skills from the ratings id 
       //res.send(rating_id);
-      // NEED TO USE rating_id INSTEAD OF THE ARRAY IN LINE 246
+      // NEED TO USE rating_id INSTEAD OF THE ARRAY 
       const skill_rank =  await RatingSkillData.aggregate( 
         [
           {
