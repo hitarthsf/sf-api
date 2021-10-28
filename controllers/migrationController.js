@@ -218,7 +218,7 @@ export const migrateRatings = async (req,res) => {
 
                         ratingEmployees.map(async (mySqlRatingEmployee) => {
                             if (mySqlRatingEmployee.user_id) {
-                                const mongoEmployee = await UserMigratedData.findOne({old_user_id: oldCompanyId});
+                                const mongoEmployee = await UserMigratedData.findOne({old_user_id: mySqlRatingEmployee.user_id});
                                 if (mongoEmployee) {
                                     const ratingEmployeeMongoObj = new RatingMigratedEmployeeData({
                                         rating_id: ratingMongoObj.id,
