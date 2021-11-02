@@ -1,5 +1,7 @@
 import LocationData from '../models/LocationData.js';
 import CompanyData from '../models/CompanyData.js';
+
+import LocationSupportLogData from '../models/LocationSupportLogData.js';
 import aws from "aws-sdk";
 import {Readable} from "stream";
 
@@ -166,6 +168,24 @@ export const deleteLocation = async (req, res) => {
 
     res.json({ message: "Location deleted successfully." });
 }
+
+// Add Support Log of location
+export const addDiscussLog = async (req, res) => 
+{
+    const data = req.body;
+    const logObj = {
+        location_id: data.location_id,
+        text: data.text,
+        option: data.option,
+    };
+
+    const log = new LocationSupportLogData(logObj);
+    await log.save();
+       res.json({ message: "Log added successfully" });
+}
+
+    
+
 
 function bufferToStream(buffer) {
     var stream = new Readable();
