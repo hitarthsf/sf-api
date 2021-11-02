@@ -200,7 +200,7 @@ export const getRatingData = async (req, res) => {
     const location_id   = req.body.location_id.split(',');
     const start_date    = new Date(req.body.start_date);
     const end_date      = new Date(req.body.end_date);
-    const format        = req.body.format; 
+    const format        = req.body.format;
     const order         = parseInt("-1");
  //res.send(end_date);
  // add try catch
@@ -284,23 +284,24 @@ export const latestReview = async (req, res) => {
 // Get Skill Rank
 
 export const getSkillRank = async (req, res) => {
-    const company_id    = req.body.company_id;
-    const location_id   = req.body.location_id.split(',');
-    const start_date    = new Date(req.body.start_date);
-    const end_date      = new Date(req.body.end_date);
+    const companyId    = req.body.company_id;
+    const locationId   = req.body.location_id.split(',');
+    const startDate    = new Date(req.body.start_date);
+    const endDate      = new Date(req.body.end_date);
     const order         = parseInt(req.body.order);
     const format        = req.body.format;
-    const rating_id     = [] ;
+    const ratingId     = [] ;
 
 
     // add try catch
     try {
+        const companyData = await CompanyData.findOne({"_id": companyId});
 
       // Get Ratings Id From
       const rating       = await RatingData.aggregate(
               [
                 {
-                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                  $match : {"location_id" : { $in : locationId } , "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
                 },
                 {
                   $project: { "_id": 1 }
@@ -314,7 +315,7 @@ export const getSkillRank = async (req, res) => {
     // Get count of skills from the ratings id
       //res.send(rating_id);
       // NEED TO USE rating_id INSTEAD OF THE ARRAY
-      const skill_rank =  await RatingSkillData.aggregate(
+      const skillRanks =  await RatingSkillData.aggregate(
         [
           {
             $match : { "rating_id" : { $in :ratingIdArray
@@ -336,15 +337,30 @@ export const getSkillRank = async (req, res) => {
 
       if (format == "chart")
       {
-        const SkillName   = skill_rank.map(skillObj => skillObj._id.toString());
-        const SkillCount  = skill_rank.map(skillObj => skillObj.count.toString());
-        
-        const data = [{"SkillName":SkillName , "SkillCount" :SkillCount}];  
-        
+        const SkillName   = skillRanks.map(skillObj => skillObj._id.toString());
+        const SkillCount  = skillRanks.map(skillObj => skillObj.count.toString());
+
+        const data = [{"SkillName":SkillName , "SkillCount" :SkillCount}];
+
         res.status(200).json({data:data , message : "Success"} );
+      } else {
+          skillRanks.map((skillObj) => {
+              skillObj.name = '';
+              companyData.attributes.forEach((attribute) => {
+                  let matchingObj = _.find(attribute.positive_skills, {_id: skillObj._id});
+                  if (matchingObj) {
+                      skillObj.name = matchingObj.name;
+                  } else {
+                      matchingObj = _.find(attribute.negative_skills, {_id: skillObj._id});
+                      if (matchingObj) {
+                          skillObj.name = matchingObj.name;
+                      }
+                  }
+              });
+          })
       }
-      
-       res.status(200).json({data:skill_rank , message : "Success"} );
+
+       res.status(200).json({data:skillRanks , message : "Success"} );
 
       } catch (error) {
         res.status(404).json({message : error.message});
