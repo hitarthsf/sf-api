@@ -4,6 +4,11 @@ import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
 import UserData from '../models/UsersData.js';
 import CompanyData from '../models/CompanyData.js'
+import CompanyMigratedData from '../models/CompanyMigratedData.js'
+import RatingMigratedData from '../models/RatingMigratedData.js';
+import RatingMigratedEmployeeData from "../models/RatingMigratedEmployeeData.js";
+import RatingMigratedSkillData from "../models/RatingMigratedSkillData.js";
+
 import _ from "lodash";
 export const getData = async (req, res) => {
     const company_id    = req.body.company_id;
