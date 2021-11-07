@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {getData , getLocationRank , getRatingsDistribution , getRatingData , latestReview , getSkillRank , getEmployeeRank} from '../controllers/dashboard.js';
+import {getData , getLocationRank , getRatingsDistribution , getRatingData , latestReview , getSkillRank , getEmployeeRank, getUserStats} from '../controllers/dashboard.js';
 
 const router = express.Router();
 
@@ -11,5 +11,6 @@ router.post('/getRatingData', getRatingData);
 router.post('/latestReview', latestReview);
 router.post('/getSkillRank', getSkillRank);
 router.post('/getEmployeeRank', getEmployeeRank);
+router.get('/getUserStats', getUserStats);
 
 export default router;
