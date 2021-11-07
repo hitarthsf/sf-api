@@ -5,6 +5,7 @@ import {
 } from '../core/index.js';
 import UsersData from '../models/UsersData.js';
 import UserController from './UserController.js';
+import UserLoginData from "../models/UserLoginData.js";
 
 const User = UsersData;
 
@@ -107,6 +108,12 @@ const login = async (request, response) => {
                                 process.env.JWT_SECRET_OR_KEY, {
                                     expiresIn: process.env.JWT_TOKEN_EXPIRATION,
                                 });
+
+                            const entryToUserLogin = new UserLoginData({
+                                user_id: user._id,
+                            });
+
+                            entryToUserLogin.save();
 
                             // return the information including token as JSON
                             response

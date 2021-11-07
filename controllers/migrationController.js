@@ -261,8 +261,8 @@ export const migrateLogins = async (req,res) => {
             if (mongoUser) {
                 const userLoginObj = new UserLoginData({
                     user_id: mongoUser._id,
-                    createdAt: row.created_at,
-                    updatedAt: row.updated_at,
+                    createdAt: new Date(row.created_at),
+                    updatedAt: new Date(row.updated_at),
                     old_user_login_id: row.id
                 });
                 await userLoginObj.save();
