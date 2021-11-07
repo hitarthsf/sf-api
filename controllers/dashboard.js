@@ -8,7 +8,8 @@ import CompanyMigratedData from '../models/CompanyMigratedData.js'
 import RatingMigratedData from '../models/RatingMigratedData.js';
 import RatingMigratedEmployeeData from "../models/RatingMigratedEmployeeData.js";
 import RatingMigratedSkillData from "../models/RatingMigratedSkillData.js";
-
+import UserMigratedData from "../models/UserMigratedData.js";
+import UserLoginData from "../models/UserLoginData.js";
 import _ from "lodash";
 export const getData = async (req, res) => {
     const company_id    = req.body.company_id;
@@ -434,4 +435,17 @@ export const getEmployeeRank = async (req, res) => {
         res.status(404).json({message : error.message});
     }
 
+}
+
+export const getUserStats = async (req, res) => {
+    try {
+        const totalUser = await UserMigratedData.countDocuments();
+        console.log('totalUsertotalUser', totalUser);
+        const responseData = {
+            totalUser: totalUser,
+        }
+        res.status(200).json({data:responseData , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
 }

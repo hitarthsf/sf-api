@@ -13,5 +13,11 @@
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:mysql://localhost:3306/ratings_db</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="ratings_db_live@localhost" uuid="77741a1f-cebb-4e8f-bda7-8e571c6b3b99">
+      <driver-ref>mysql.8</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:mysql://localhost:3306/ratings_db_live</jdbc-url>
+    </data-source>
   </component>
 </project>

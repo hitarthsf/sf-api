@@ -3,8 +3,10 @@ import UserMigratedData from '../models/UserMigratedData.js';
 import RatingMigratedData from '../models/RatingMigratedData.js';
 import RatingMigratedSkillData from '../models/RatingMigratedSkillData.js';
 import RatingMigratedEmployeeData from '../models/RatingMigratedEmployeeData.js';
+import UserLoginData from '../models/UserLoginData.js';
 import _ from 'lodash';
 import mysql from 'mysql';
+import mongoose from "mongoose";
 
 export const migrateCompanies = async (req, res) => {
 
@@ -12,7 +14,7 @@ export const migrateCompanies = async (req, res) => {
         host: 'localhost',
         user: 'root',
         password: 'root',
-        database: 'ratings_db'
+        database: 'ratings_db_live'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -104,7 +106,7 @@ export const migrateUsers = async (req, res) => {
         host: 'localhost',
         user: 'root',
         password: 'root',
-        database: 'ratings_db'
+        database: 'ratings_db_live'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -149,7 +151,7 @@ export const migrateRatings = async (req,res) => {
         host: 'localhost',
         user: 'root',
         password: 'root',
-        database: 'ratings_db'
+        database: 'ratings_db_live'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -172,7 +174,7 @@ export const migrateRatings = async (req,res) => {
                     ratingObj['location_id'] = location._id;
                     ratingObj['company_id'] = mongoCompanyObj._id;
 
-                    const ratingMongoObj = new RatingMigratedData({...ratingObj, createdAt: new Date().toISOString()});
+                    const ratingMongoObj = new RatingMigratedData({...ratingObj, createdAt: ratingObj['created_at']});
                     await ratingMongoObj.save();
 
                     await connection.query(`SELECT ratings_skill.*, skills.name, skills.type 
@@ -204,6 +206,7 @@ export const migrateRatings = async (req,res) => {
                                             rating: ratingObj.rating,
                                             location_id: ratingObj.location_id,
                                             company_id: ratingObj.company_id,
+                                            createdAt: ratingMongoObj.createdAt
                                         });
                                         await ratingSkillMongoObj.save();
                                     }
@@ -226,6 +229,7 @@ export const migrateRatings = async (req,res) => {
                                         rating: ratingObj.rating,
                                         location_id: ratingObj.location_id,
                                         company_id: ratingObj.company_id,
+                                        createdAt: ratingMongoObj.createdAt
                                     });
                                     await ratingEmployeeMongoObj.save();
                                 }
@@ -236,5 +240,35 @@ export const migrateRatings = async (req,res) => {
                 });
             });
         });
+    });
+}
+
+export const migrateLogins = async (req,res) => {
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'ratings_db_live'
+    });
+    connection.connect(async (err) => {
+        if (err) throw err
+        console.log('You are now connected...');
+    });
+
+    await connection.query(`SELECT * FROM user_logins`, async (err, rows) => {
+        rows.map(async (row) => {
+            const mongoUser = await UserMigratedData.findOne({old_user_id: row.user_id});
+            if (mongoUser) {
+                const userLoginObj = new UserLoginData({
+                    user_id: mongoUser._id,
+                    createdAt: row.created_at,
+                    updatedAt: row.updated_at,
+                    old_user_login_id: row.id
+                });
+                await userLoginObj.save();
+                console.log(`userLoginObject ${userLoginObj.id} saved`, userLoginObj);
+            }
+        });
+        res.status(209).json(`total ${rows.length} user login data are imported.`);
     });
 }
