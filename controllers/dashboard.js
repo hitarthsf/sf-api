@@ -11,6 +11,7 @@ import RatingMigratedSkillData from "../models/RatingMigratedSkillData.js";
 import UserMigratedData from "../models/UserMigratedData.js";
 import UserLoginData from "../models/UserLoginData.js";
 import _ from "lodash";
+import moment from "moment";
 export const getData = async (req, res) => {
     const company_id    = req.body.company_id;
     const location_id   = req.body.location_id.split(',');
@@ -440,11 +441,190 @@ export const getEmployeeRank = async (req, res) => {
 export const getUserStats = async (req, res) => {
     try {
         const totalUser = await UserMigratedData.countDocuments();
-        console.log('totalUsertotalUser', totalUser);
+
+        const sevenDaysDateTo = new Date(moment().toISOString());
+        const sevenDaysDateFrom = new Date(moment().subtract(7,'d').toISOString());
+        const lastWeekLoggedInUserList = await UserLoginData.aggregate([
+            {
+                $match : {"createdAt": { $gte: sevenDaysDateFrom , $lte: sevenDaysDateTo} }
+            },
+            {"$group" : {_id:"$user_id", count:{$sum:1}}},
+        ]);
+        const totalLastWeekLoggedInUser = _.sumBy(lastWeekLoggedInUserList, function (data) {
+            return data.count;
+        });
+
+        const riskDaysDateTo = new Date(moment().subtract(8,'d').toISOString());
+        const riskDaysDateFrom = new Date(moment().subtract(21,'d').toISOString());
+        const sevenDaysLoggedInUserArray = _.map(lastWeekLoggedInUserList, '_id');
+
+        const riskLoggedInUserList = await UserLoginData.aggregate([
+            {
+                $match : {
+                    "createdAt": { $gte: riskDaysDateFrom , $lte: riskDaysDateTo},
+                    "user_id": { $nin: sevenDaysLoggedInUserArray }
+                }
+            },
+            {"$group" : {_id:"$user_id", count:{$sum:1}}},
+        ]);
+
+        const totalRiskLoggedInUser = _.sumBy(riskLoggedInUserList, function (data) {
+            return data.count;
+        });
+
+        // const disengagedUserDateFrom = new Date(moment().subtract(22,'d').toISOString());
+        // const sevenDaysAndRiskUserCombinedArray = [...sevenDaysLoggedInUserArray, _.map(riskLoggedInUserList, '_id')];
+        //
+        // const disEngagedLoggedInUserList = await UserLoginData.aggregate([
+        //     {
+        //         $match : {
+        //             "createdAt": { $gte: disengagedUserDateFrom },
+        //             "user_id": { $nin: sevenDaysAndRiskUserCombinedArray }
+        //         }
+        //     },
+        //     {"$group" : {_id:"$user_id", count:{$sum:1}}},
+        // ]);
+        //
+        // const totalDisEngagedLoggedInUser = _.sumBy(disEngagedLoggedInUserList, function (data) {
+        //     return data.count;
+        // });
+
         const responseData = {
-            totalUser: totalUser,
+            totalUserCount: totalUser,
+            activeUserCount: totalLastWeekLoggedInUser,
+            riskUserCount: totalRiskLoggedInUser,
+            disEngagedUserCount: totalUser - totalLastWeekLoggedInUser - totalRiskLoggedInUser,
         }
         res.status(200).json({data:responseData , message : "Success"} );
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
+export const getUserStatDetails = async (req, res) => {
+    const type = req.query.type;
+    const page = req.query.page ? req.query.page : 1;
+    const limit = req.query.limit ? req.query.limit : 10;
+    const skip = (page - 1) * limit;
+    if (!type) {
+        res.status(409).json({ message : 'Invalid request, type is missing.'});
+    }
+    try {
+        if (type === 'activeUsers') {
+            const sevenDaysDateTo = new Date(moment().toISOString());
+            const sevenDaysDateFrom = new Date(moment().subtract(21,'d').toISOString());
+            const lastWeekLoggedInUserList = await UserLoginData.aggregate([
+                {
+                    $match : {"createdAt": { $gte: sevenDaysDateFrom , $lte: sevenDaysDateTo} }
+                },
+                {"$group" : {_id:"$user_id", count:{$sum:1}}},
+                {
+                    $lookup:
+                        {
+                            from: 'updated_users',
+                            localField: "_id",
+                            foreignField: "_id",
+                            as: "user"
+                        }
+                },
+                { "$limit": skip + limit },
+                { "$skip": skip }
+            ]);
+
+            res.status(200).json({data:lastWeekLoggedInUserList , message : "Success"} );
+
+        } else if (type === 'riskUsers') {
+            const sevenDaysDateTo = new Date(moment().toISOString());
+            const sevenDaysDateFrom = new Date(moment().subtract(7,'d').toISOString());
+            const lastWeekLoggedInUserList = await UserLoginData.aggregate([
+                {
+                    $match : {"createdAt": { $gte: sevenDaysDateFrom , $lte: sevenDaysDateTo} }
+                },
+                {"$group" : {_id:"$user_id", count:{$sum:1}}},
+            ]);
+
+            const riskDaysDateTo = new Date(moment().subtract(8,'d').toISOString());
+            const riskDaysDateFrom = new Date(moment().subtract(21,'d').toISOString());
+            const sevenDaysLoggedInUserArray = _.map(lastWeekLoggedInUserList, '_id');
+
+            const riskLoggedInUserList = await UserLoginData.aggregate([
+                {
+                    $match : {
+                        "createdAt": { $gte: riskDaysDateFrom , $lte: riskDaysDateTo},
+                        "user_id": { $nin: sevenDaysLoggedInUserArray }
+                    }
+                },
+                {"$group" : {_id:"$user_id", count:{$sum:1}}},
+                {
+                    $lookup:
+                        {
+                            from: 'updated_users',
+                            localField: "_id",
+                            foreignField: "_id",
+                            as: "user"
+                        }
+                },
+                { "$limit": skip + limit },
+                { "$skip": skip }
+            ]);
+
+            res.status(200).json({data:riskLoggedInUserList , message : "Success"} );
+
+        } else if (type === 'disEngagedUsers') {
+            const sevenDaysDateTo = new Date(moment().toISOString());
+            const sevenDaysDateFrom = new Date(moment().subtract(7,'d').toISOString());
+            const lastWeekLoggedInUserList = await UserLoginData.aggregate([
+                {
+                    $match : {"createdAt": { $gte: sevenDaysDateFrom , $lte: sevenDaysDateTo} }
+                },
+                {"$group" : {_id:"$user_id", count:{$sum:1}}},
+            ]);
+            const totalLastWeekLoggedInUser = _.sumBy(lastWeekLoggedInUserList, function (data) {
+                return data.count;
+            });
+
+            const riskDaysDateTo = new Date(moment().subtract(8,'d').toISOString());
+            const riskDaysDateFrom = new Date(moment().subtract(21,'d').toISOString());
+            const sevenDaysLoggedInUserArray = _.map(lastWeekLoggedInUserList, '_id');
+
+            const riskLoggedInUserList = await UserLoginData.aggregate([
+                {
+                    $match : {
+                        "createdAt": { $gte: riskDaysDateFrom , $lte: riskDaysDateTo},
+                        "user_id": { $nin: sevenDaysLoggedInUserArray }
+                    }
+                },
+                {"$group" : {_id:"$user_id", count:{$sum:1}}},
+            ]);
+            const totalRiskLoggedInUser = _.sumBy(riskLoggedInUserList, function (data) {
+                return data.count;
+            });
+
+            const riskLoggedInUserArray = _.map(riskLoggedInUserList, '_id');
+            const engagedUserNotInarray = [...sevenDaysLoggedInUserArray, ...riskLoggedInUserArray];
+            const userList = await UserMigratedData.aggregate([
+                {
+                    $match: {
+                        _id: { $nin: engagedUserNotInarray }
+                    }
+                },
+                { "$limit": skip + limit },
+                { "$skip": skip }
+            ]);
+
+            const formattedData = userList.map((userRow) => {
+                return {
+                    _id: userRow._id,
+                    count: 0,
+                    user: [userRow]
+                }
+            });
+
+            res.status(200).json({data:formattedData , message : "Success"} );
+
+        } else {
+            res.status(409).json({ message : 'Invalid request, type is not valid.'});
+        }
     } catch (error) {
         res.status(404).json({message : error.message});
     }
