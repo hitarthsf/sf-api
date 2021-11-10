@@ -455,6 +455,7 @@ export const getSkillRank = async (req, res) => {
 
       if (format == "chart")
       {
+        const companyData = await CompanyData.findOne({"_id":companyId});
         skillRanks.map((skillObj) => {
               skillObj.name = '';
               companyData.attributes.forEach((attribute) => {
