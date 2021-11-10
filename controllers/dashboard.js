@@ -349,11 +349,15 @@ export const getSkillRank = async (req, res) => {
           skillRanks.map((skillObj) => {
               skillObj.name = '';
               companyData.attributes.forEach((attribute) => {
-                  let matchingObj = _.find(attribute.positive_skills, {_id: skillObj._id});
+                  let matchingObj = _.find(attribute.positive_skills, (skill) => {
+                      return skill._id == skillObj._id;
+                  });
                   if (matchingObj) {
                       skillObj.name = matchingObj.name;
                   } else {
-                      matchingObj = _.find(attribute.negative_skills, {_id: skillObj._id});
+                      matchingObj = _.find(attribute.negative_skills, (skill) => {
+                          return skill._id == skillObj._id;
+                      });
                       if (matchingObj) {
                           skillObj.name = matchingObj.name;
                       }
