@@ -17,7 +17,7 @@ export const createUser = async(req,res) => {
     }
    switch (user.type) {
        case 'location_manager':
-            if (!user.location_area || !user.location || !user.company_id || !user.location_area) {
+            if (!user.location_area || !user.location_id || !user.company_id ) {
                 res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
             }
             break;
@@ -34,6 +34,9 @@ export const createUser = async(req,res) => {
    }
    if (req.body.location_id) {
         user.location_id = req.body.location_id.split(',');
+   }
+   if (req.body.location) {
+        user.location_id = req.body.location.split(',');
    }
    const userCheck = await UsersData.findOne({
        email: user.email

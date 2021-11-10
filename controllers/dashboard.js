@@ -23,7 +23,12 @@ export const getData = async (req, res) => {
       // get total counts of rating
       const count_total         = await RatingData.aggregate([
                 {
-                  $match : {"location_id" : { $in : location_id }, "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                   $match : {
+                    $or : [
+                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
+                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                    ]
+                  }
                 },
                 {
                   $count: "rating"
@@ -33,7 +38,12 @@ export const getData = async (req, res) => {
       const average       = await RatingData.aggregate(
               [
                 {
-                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                   $match : {
+                    $or : [
+                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
+                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                    ]
+                  }
                 },
                 {
                  $group:
@@ -163,7 +173,12 @@ export const getRatingsDistribution = async (req, res) => {
               [
                 {
 
-                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                   $match : {
+                    $or : [
+                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
+                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                    ]
+                  }
                 },
                 {
                    $group:
@@ -207,11 +222,16 @@ export const getRatingData = async (req, res) => {
  //res.send(end_date);
  // add try catch
      try {
+
       const average_count       = await RatingData.aggregate(
               [
                 {
-
-                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                  $match : {
+                    $or : [
+                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
+                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                    ]
+                  }
                 },
                 {
                    $group:
@@ -224,9 +244,9 @@ export const getRatingData = async (req, res) => {
                 },
                 { $sort : {  count : order , average : order   } }
               ]);
-
-
-      if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); }
+      
+     
+        if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); }
 
       // Convert in chart format
        if (format == "chart")
@@ -242,6 +262,11 @@ export const getRatingData = async (req, res) => {
 
 
       res.status(200).json({data:rating , message : "Success"} );
+      
+      
+
+
+      
     } catch (error) {
         res.status(404).json({message : error.message});
     }
@@ -303,7 +328,12 @@ export const getSkillRank = async (req, res) => {
       const rating       = await RatingData.aggregate(
               [
                 {
-                  $match : {"location_id" : { $in : locationId } , "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
+                   $match : {
+                    $or : [
+                      {"location_id" : { $in : locationId } , "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} },
+                      { "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
+                    ]
+                  }
                 },
                 {
                   $project: { "_id": 1 }
@@ -339,7 +369,26 @@ export const getSkillRank = async (req, res) => {
 
       if (format == "chart")
       {
-        const SkillName   = skillRanks.map(skillObj => skillObj._id.toString());
+        skillRanks.map((skillObj) => {
+              skillObj.name = '';
+              companyData.attributes.forEach((attribute) => {
+                  let matchingObj = _.find(attribute.positive_skills, (skill) => {
+                      return skill._id == skillObj._id;
+                  });
+                  if (matchingObj) {
+                      skillObj.name = matchingObj.name;
+                  } else {
+                      matchingObj = _.find(attribute.negative_skills, (skill) => {
+                          return skill._id == skillObj._id;
+                      });
+                      if (matchingObj) {
+                          skillObj.name = matchingObj.name;
+                      }
+                  }
+              });
+          })
+
+        const SkillName   = skillRanks.map(skillObj => skillObj.name.toString());
         const SkillCount  = skillRanks.map(skillObj => skillObj.count.toString());
 
         const data = [{"SkillName":SkillName , "SkillCount" :SkillCount}];
@@ -392,7 +441,12 @@ export const getEmployeeRank = async (req, res) => {
       const rating       = await RatingData.aggregate(
               [
                 {
-                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                   $match : {
+                    $or : [
+                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
+                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                    ]
+                  }
                 },
                 {
                   $project: { "_id": 1 }
