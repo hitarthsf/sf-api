@@ -399,8 +399,7 @@ export const getEmployeeRank = async (req, res) => {
      const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
 
     // Get count of skills from the ratings id
-     // res.send(rating_id);
-      // NEED TO USE rating_id INSTEAD OF THE ARRAY IN LINE 246
+     
       const employee_rank =  await RatingEmployeeData.aggregate(
         [
           {
