@@ -107,6 +107,9 @@ export const updateUser = async (req, res) => {
     const user = req.body;
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
      user.image = '';
+     if (req.body.location) {
+        user.location_id = req.body.location.split(',');
+   }
    if (req.files) {
        user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
        aws.config.update({
