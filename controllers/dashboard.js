@@ -21,29 +21,28 @@ export const getData = async (req, res) => {
     // add try catch
      try {
       // get total counts of rating
-      const count_total         = await RatingData.aggregate([
+      if (location_id[0] === "")
+      {
+        const fetchedLocations = await CompanyData.findOne({"_id":company_id}, {location: 1});
+        const userLocationId = [];
+        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                userLocationId.push( location._id.toString());
+            });
+        }
+        
+
+        var count_total         = await RatingData.aggregate([
                 {
-                   $match : {
-                    $or : [
-                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
-                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
-                    ]
-                  }
+                   $match : { "location_id" : { $in : userLocationId },"createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
                 },
                 {
                   $count: "rating"
               }]);
-
-      // get average of rating
-      const average       = await RatingData.aggregate(
+        var average       = await RatingData.aggregate(
               [
                 {
-                   $match : {
-                    $or : [
-                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
-                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
-                    ]
-                  }
+                   $match : { "location_id" : { $in : userLocationId },"createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
                 },
                 {
                  $group:
@@ -53,6 +52,32 @@ export const getData = async (req, res) => {
                    }
                }
               ]);
+
+      }else
+      {
+        var count_total         = await RatingData.aggregate([
+                {
+                   $match :  {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                  $count: "rating"
+              }]);
+
+        var average       = await RatingData.aggregate(
+              [
+                {
+                   $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                 $group:
+                   {
+                     _id: "_id",
+                      average: { $avg: "$rating" }
+                   }
+               }
+              ]);
+      }
+      
 
       // Calculate NPS
       // Get Promoters
@@ -77,7 +102,10 @@ export const getData = async (req, res) => {
                }
               ]);
 
-      if (count_total.length === 0) { res.status(200).json({message:"No data found with above filter"}); }
+      if (count_total.length === 0) { 
+        const ratings = [{"count":"0" , "average" :"0" , "nps" :"0"}];
+        res.status(200).json({data:ratings , message : "Success"} ); 
+      }
          //res.send("count"+promoters.length);
 
       if (promoters.length === 0 )   { const nps = "-1";  }
@@ -138,7 +166,7 @@ export const getLocationRank = async (req, res) => {
     );
 
 
-    if (location_rank.length === 0) { res.status(200).json({message:"No data found with above filter"}); }
+    if (location_rank.length === 0) { res.status(200).json({data:location_rank , message : "Success"}); }
     // get location name
     const companyData = await CompanyData.findOne({"_id":company_id});
     const responseData =  await Promise.all(
@@ -169,16 +197,30 @@ export const getRatingsDistribution = async (req, res) => {
  //res.send(end_date);
  // add try catch
      try {
-      const average_count       = await RatingData.aggregate(
+      if (location_id[0] === "")
+      {
+        var average_count       = await RatingData.aggregate(
               [
                 {
 
-                   $match : {
-                    $or : [
-                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
-                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
-                    ]
-                  }
+                   $match : { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                   $group:
+                     {
+                       _id: "$rating",
+                        count: { $sum:1}
+                     }
+                }
+              ]);  
+      }
+      else
+      {
+        var average_count       = await RatingData.aggregate(
+              [
+                {
+
+                   $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
                 },
                 {
                    $group:
@@ -188,6 +230,8 @@ export const getRatingsDistribution = async (req, res) => {
                      }
                 }
               ]);
+      }
+      
 
       const total_count       = await RatingData.aggregate(
               [
@@ -221,17 +265,20 @@ export const getRatingData = async (req, res) => {
     const order         = parseInt("-1");
  //res.send(end_date);
  // add try catch
+    const fetchedLocations = await CompanyData.findOne({"_id":company_id}, {location: 1});
+    const userLocationId = [];
+    if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        fetchedLocations.location.map((location) => {
+            userLocationId.push( location._id.toString());
+        });
+    }
      try {
-
-      const average_count       = await RatingData.aggregate(
+      if (location_id[0] === "")
+      {
+        var average_count       = await RatingData.aggregate(
               [
                 {
-                  $match : {
-                    $or : [
-                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
-                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
-                    ]
-                  }
+                  $match : { "location_id" : { $in : userLocationId },"createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
                 },
                 {
                    $group:
@@ -244,9 +291,31 @@ export const getRatingData = async (req, res) => {
                 },
                 { $sort : {  count : order , average : order   } }
               ]);
-      
+      }
+      else
+      {
+          var average_count       = await RatingData.aggregate(
+              [
+                {
+                  $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                   $group:
+                   {
+                      _id: { $dateToString: { format: "%d-%m-%Y", date: "$createdAt"} },
+                      count: { $sum: 1 } ,
+                      average: { $avg: "$rating" }
+                    } ,
+
+                },
+                { $sort : {  count : order , average : order   } }
+              ]);
+      }
      
-        if (average_count.length === 0) { res.status(200).json({message:"No data found with above filter"}); }
+        if (average_count.length === 0) { 
+          const rating = [{"date":[] , "average" :[] , "count" :[]}] ;
+          res.status(200).json({data:rating , message : "No Data"} );
+        }
 
       // Convert in chart format
        if (format == "chart")
@@ -322,23 +391,40 @@ export const getSkillRank = async (req, res) => {
 
     // add try catch
     try {
-        const companyData = await CompanyData.findOne({"_id": companyId});
+        const fetchedLocations = await CompanyData.findOne({"_id":companyId}, {location: 1});
+        const userLocationId = [];
+        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                userLocationId.push( location._id.toString());
+            });
+        }
 
       // Get Ratings Id From
-      const rating       = await RatingData.aggregate(
+      if (locationId[0] === "")
+      {
+        var rating       = await RatingData.aggregate(
               [
                 {
-                   $match : {
-                    $or : [
-                      {"location_id" : { $in : locationId } , "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} },
-                      { "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
-                    ]
-                  }
+                   $match : {"location_id" : { $in : userLocationId }, "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
                 },
                 {
                   $project: { "_id": 1 }
                 }
               ]);
+      }
+      else
+      {
+        var rating       = await RatingData.aggregate(
+              [
+                {
+                   $match : {"location_id" : { $in : locationId } , "createdAt": { $gte: new Date( startDate) , $lte: new Date( endDate)} }
+                },
+                {
+                  $project: { "_id": 1 }
+                }
+              ]);
+      }
+      
 
       const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
     // Create an array of ratings id needed
@@ -438,20 +524,41 @@ export const getEmployeeRank = async (req, res) => {
     try {
 
       // Get Ratings Id From
-      const rating       = await RatingData.aggregate(
+        const fetchedLocations = await CompanyData.findOne({"_id":company_id}, {location: 1});
+        const userLocationId = [];
+        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                userLocationId.push( location._id.toString());
+            });
+        }
+
+      // Get Ratings Id From
+      if (location_id[0] === "")
+      {
+        var rating       = await RatingData.aggregate(
               [
                 {
-                   $match : {
-                    $or : [
-                      {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} },
-                      { "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
-                    ]
-                  }
+                   $match : {"location_id" : { $in : userLocationId } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
                 },
                 {
                   $project: { "_id": 1 }
                 }
               ]);
+      }
+      else
+      {
+        var rating       = await RatingData.aggregate(
+              [
+                {
+                   $match : {"location_id" : { $in : location_id } , "createdAt": { $gte: new Date( start_date) , $lte: new Date( end_date)} }
+                },
+                {
+                  $project: { "_id": 1 }
+                }
+              ]);
+
+      }
+      
 
     // Create an array of ratings id needed
      const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
