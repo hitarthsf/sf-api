@@ -73,77 +73,63 @@ export const updateLocation = async (req, res) => {
     if (!req.body.name || !req.body.company_id) {
         res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
     }
+    try {
+        const location = req.body;
+        const  id  = req.body._id;
+        const  company_id  = req.body.company_id;
+        let imagePath = '';
+        if (req.files) {
+            imagePath = `location/` + Date.now() + `-${req.files.image.name}`;
+            aws.config.update({
+                accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+                secretAccessKey: "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",
+                region: "us-east-1"
+            });
+            const s3 = new aws.S3();
+            let params = {
+                ACL: 'public-read',
+                Bucket: "sf-ratings-profile-image",
+                Body: bufferToStream(req.files.image.data),
+                Key: imagePath
+            };
 
-    const location = req.body;
-    const  id  = req.body._id;
-    const  company_id  = req.body.company_id;
-    let imagePath = '';
-    //delete
-     // CompanyData.updateOne(
-     //   { _id:company_id},
-     //     { $pull: { location: { _id: id } } } ,
-     //  function (error, success) {
-     //        if (error) {
-     //            console.log(error);
-     //        } else {
-     //            console.log(success);
-     //        }
-     //    });
-
-    //  if (req.files) {
-    //     imagePath = `location/` + Date.now() + `-${req.files.image.name}`;
-    //     aws.config.update({
-    //         accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-    //         secretAccessKey: "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",
-    //         region: "us-east-1"
-    //     });
-    //     const s3 = new aws.S3();
-    //     let params = {
-    //         ACL: 'public-read',
-    //         Bucket: "sf-ratings-profile-image",
-    //         Body: bufferToStream(req.files.image.data),
-    //         Key: imagePath
-    //     };
-
-    //     s3.upload(params, (err, data) => {
-    //         if (err) {
-    //             console.log('Error occured while trying to upload to S3 bucket', err);
-    //             res.status(409).json({ message : 'Error occurred while trying to upload to S3 bucket'});
-    //         }
-    //     });
-    // }
+            s3.upload(params, (err, data) => {
+                if (err) {
+                    console.log('Error occured while trying to upload to S3 bucket', err);
+                    res.status(409).json({ message : 'Error occurred while trying to upload to S3 bucket'});
+                }
+            });
+        }
 
 
-    // add
-    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
-        country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
-        latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
-        invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
-        installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets ,
-        autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
-        multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit     };
+        // add
+        var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
+            country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
+            latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
+            invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
+            installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets ,
+            autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
+            multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit, image: imagePath     };
 
-    CompanyData.findOneAndUpdate(
-       { _id: company_id},
-       { $push: { location: objFriends  } },
-      function (error, success) {
-            if (error) {
-                console.log(error);
-                res.send(error)
-            } else {
-                console.log(success);
-                res.send(success)
-            }
-        });
+        await CompanyData.findOneAndUpdate(
+            { _id: company_id},
+            { $push: { location: objFriends  } },
+            function (error, success) {
+                if (error) {
+                    res.status(409).json({ message : 'Invalid request, company ID is missing.'});
+                } else {
+                    res.json({ message: "Location updated successfully." });
+                }
+            });
 
 
-    // below function can be used for optimization
-    // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
-    // const updatedLocation = { ...location, _id: req.body._id };
-    // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
-    res.json({ message: "Location updated successfully." });
-    res.json(updatedLocation);
-    console.log(updatedLocation)
+        // below function can be used for optimization
+        // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
+        // const updatedLocation = { ...location, _id: req.body._id };
+        // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
+    } catch (e) {
+        res.status(209).json(e);
+    }
 }
 
 export const deleteLocation = async (req, res) => {
@@ -170,7 +156,7 @@ export const deleteLocation = async (req, res) => {
 }
 
 // Add Support Log of location
-export const addDiscussLog = async (req, res) => 
+export const addDiscussLog = async (req, res) =>
 {
     const data = req.body;
     const logObj = {
@@ -184,7 +170,7 @@ export const addDiscussLog = async (req, res) =>
        res.json({ message: "Log added successfully" });
 }
 
-    
+
 
 
 function bufferToStream(buffer) {

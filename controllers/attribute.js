@@ -28,21 +28,19 @@ export const addAttribute = async (req, res) => {
     const negativeSkills = req.body.negativeSkills.split(",").map((skill) => {
         return {name: skill};
     });
-    var objFriends = { name:req.body.name,positive_skills: positiveSkills,negative_skills:negativeSkills
+    var objFriends = { name:req.body.name,positive_skills: positiveSkills,negative_skills:negativeSkills,
+        createdAt: new Date(), updatedAt: new Date(),
     };
-    CompanyData.findOneAndUpdate(
+    await CompanyData.findOneAndUpdate(
        { _id: compId},
        { $push: { attributes: objFriends  } },
       function (error, success) {
             if (error) {
-                console.log(error);
-                res.send(error)
+                res.status(409).json({message: "Error in adding attribute"});
             } else {
-                console.log(success);
-                res.send(success)
+                res.status(200).json({message: "Attribute successfully added."});
             }
         });
-
 }
 
 export const editAttribute = async (req, res) => {
