@@ -9,6 +9,7 @@ export const getActionPlan = async (req,res) => {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
       const AllCompany = await CompanyData.find({"_id":"6111149b961aa70d06fe58ed"});
+      
       console.log(AllCompany);
         res.status(200).json(AllCompany);
     } catch (error) {

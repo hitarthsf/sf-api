@@ -386,6 +386,7 @@ export const getSkillRank = async (req, res) => {
     const endDate      = new Date(req.body.end_date);
     const order         = parseInt(req.body.order);
     const format        = req.body.format;
+    const type        = req.body.type.toString();
     const ratingId     = [] ;
 
 
@@ -433,7 +434,7 @@ export const getSkillRank = async (req, res) => {
     // Get count of skills from the ratings id
       //res.send(rating_id);
       // NEED TO USE rating_id INSTEAD OF THE ARRAY
-      const skillRanks =  await RatingSkillData.aggregate(
+      var skillRanks =  await RatingSkillData.aggregate(
         [
           {
             $match : { "rating_id" : { $in :ratingIdArray
@@ -455,30 +456,46 @@ export const getSkillRank = async (req, res) => {
 
       if (format == "chart")
       {
+        var SkillNamePositive = [];
+        var SkillNameNegative = [];
+        var SkillCount = [];
         const companyData = await CompanyData.findOne({"_id":companyId});
         skillRanks.map((skillObj) => {
               skillObj.name = '';
+              skillObj.type = '';
               companyData.attributes.forEach((attribute) => {
                   let matchingObj = _.find(attribute.positive_skills, (skill) => {
                       return skill._id == skillObj._id;
                   });
                   if (matchingObj) {
                       skillObj.name = matchingObj.name;
+                      skillObj.type = "positive";
+                      SkillNamePositive.push(matchingObj.name);
+                      SkillCount.push(skillObj.count);
                   } else {
                       matchingObj = _.find(attribute.negative_skills, (skill) => {
                           return skill._id == skillObj._id;
                       });
                       if (matchingObj) {
                           skillObj.name = matchingObj.name;
+                          skillObj.type = "negative";
+                          SkillNameNegative.push(matchingObj.name);
+                          SkillCount.push(skillObj.count);
                       }
                   }
               });
           })
-
-        const SkillName   = skillRanks.map(skillObj => skillObj.name.toString());
-        const SkillCount  = skillRanks.map(skillObj => skillObj.count.toString());
-
-        const data = [{"SkillName":SkillName , "SkillCount" :SkillCount}];
+        var data = [{"SkillName":[] , "SkillCount" :[]}];
+        if (type == "positive" && SkillNamePositive.length > 0)
+        {
+          var data = [{"SkillName":SkillNamePositive , "SkillCount" :SkillCount}];
+        }
+        if  (type == "negative" && SkillNameNegative.length > 0)
+        {
+          var data = [{"SkillName":SkillNameNegative , "SkillCount" :SkillCount}];
+        }
+        
+        
 
         res.status(200).json({data:data , message : "Success"} );
       } else {
