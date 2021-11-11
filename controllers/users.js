@@ -17,7 +17,7 @@ export const createUser = async(req,res) => {
     }
    switch (user.type) {
        case 'location_manager':
-            if (!user.location_area || !user.location || !user.company_id || !user.location_area) {
+            if (!user.location_area || !user.location_id || !user.company_id ) {
                 res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
             }
             break;
@@ -34,6 +34,9 @@ export const createUser = async(req,res) => {
    }
    if (req.body.location_id) {
         user.location_id = req.body.location_id.split(',');
+   }
+   if (req.body.location) {
+        user.location_id = req.body.location.split(',');
    }
    const userCheck = await UsersData.findOne({
        email: user.email
@@ -104,6 +107,9 @@ export const updateUser = async (req, res) => {
     const user = req.body;
     // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
      user.image = '';
+     if (req.body.location) {
+        user.location_id = req.body.location.split(',');
+   }
    if (req.files) {
        user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
        aws.config.update({
@@ -127,9 +133,10 @@ export const updateUser = async (req, res) => {
        });
    }
     const updatedUser = { ...user, _id: req.body._id };
-console.log('updatedUser', updatedUser);
-    await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
 
+
+    await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
+console.log('updatedUser', updatedUser);
     res.json(updatedUser);
     console.log(updatedUser)
 }
@@ -194,3 +201,5 @@ export const getUsersByType = async (req,res) => {
         res.status(404).json({message : error.message});
     }
 }
+
+

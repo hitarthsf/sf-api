@@ -5,7 +5,7 @@ import {
 } from '../core/index.js';
 import AuthUtils from "../utils/AuthUtils.js";
 import CompanyData from '../models/CompanyData.js';
-
+import jwt from "jsonwebtoken";
 
 export const getAttribute = async (req,res) => {
     //res.send('THIS GOOD');
