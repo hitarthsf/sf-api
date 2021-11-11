@@ -133,9 +133,10 @@ export const updateUser = async (req, res) => {
        });
    }
     const updatedUser = { ...user, _id: req.body._id };
-console.log('updatedUser', updatedUser);
-    await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
 
+
+    await UsersData.findByIdAndUpdate(req.body._id, updatedUser, { new: true });
+console.log('updatedUser', updatedUser);
     res.json(updatedUser);
     console.log(updatedUser)
 }
@@ -200,3 +201,5 @@ export const getUsersByType = async (req,res) => {
         res.status(404).json({message : error.message});
     }
 }
+
+
