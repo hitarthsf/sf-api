@@ -4,7 +4,7 @@ import CompanyData from '../models/CompanyData.js';
 import LocationSupportLogData from '../models/LocationSupportLogData.js';
 import aws from "aws-sdk";
 import {Readable} from "stream";
-
+import jwt from "jsonwebtoken";
 export const createLocation = async(req,res) => {
 
     if (!req.body.name) {
