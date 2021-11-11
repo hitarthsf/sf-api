@@ -92,7 +92,7 @@ export const getUser = async (req,res) => {
 export const singleUser = async (req,res) => {
     //console.log(req.body)
     const  id  = req.query.id;
-    
+
     try {
         const User = await UsersData.find().where('_id').equals(id);
         res.status(200).json(User);
@@ -191,12 +191,26 @@ export const uploadPhoto = async (req, res) => {
 
 export const getUsersByType = async (req,res) => {
     const  type  = req.query.type;
+    const companyId = req.query.company_id;
+    const locationId = req.query.location_id
     if (!type) {
         res.status(409).json({ message : 'type is mandatory field.'});
     }
     try {
-        const AllUser = await UsersData.find().where('type').equals(type);
-        res.status(200).json(AllUser);
+        let allUser = [];
+        if (locationId) {
+            allUser = await UsersData.find({
+                "location_id": {$in: [locationId]}
+            });
+        } else if(companyId) {
+            allUser = await UsersData.find({
+                type: type,
+                company_id: companyId,
+            });
+        } else {
+            allUser = await UsersData.find().where('type').equals(type);
+        }
+        res.status(200).json(allUser);
     } catch (error) {
         res.status(404).json({message : error.message});
     }
