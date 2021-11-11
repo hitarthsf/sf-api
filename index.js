@@ -50,9 +50,12 @@ app.use('/dashboard',dashboardRoutes);
 app.use('/migration',migrationRoutes);
 
 
-//const CONNECTION_URL = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
-//const CONNECTION_URL = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings?retryWrites=true&w=majority';
-const CONNECTION_URL = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority';
+//const CONNECTION_URL  = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
+//const CONNECTION_URL  = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings?retryWrites=true&w=majority';
+//const CONNECTION_URL  = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority&ssl=true';
+//const CONNECTION_URL  = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration?ssl=true&replicaSet=atlas-t3f5se-shard-0&authSource=admin&retryWrites=true&w=majority&ssl=true';
+//const CONNECTION_URL    = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority';
+const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
 const PORT = process.env.PORT || 5000;
 
 app.get("/", async (req, res,next) => {

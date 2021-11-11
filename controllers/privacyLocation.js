@@ -4,7 +4,7 @@ import {
     MesssageProvider,
     Messages,
 } from '../core/index.js';
-
+import _ from "lodash";
 export const getPrivacyLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
@@ -16,6 +16,20 @@ export const getPrivacyLocation = async (req,res) => {
       //  const AllCompany = await CompanyData.find({"_id":id});
       // make it dynamic
       const company = await CompanyData.findOne({"_id":companyId}, {privacy_location: 1});
+      const companyData = await CompanyData.findOne({"_id":companyId});
+      const userLocationId = [];
+      const responseData =  await Promise.all(
+        company.privacy_location.map(async (locationData) => {
+            locationData.locationName = "";
+            const fetchedLocation = _.find(companyData.location, (location) => {
+                return location._id == locationData.location_id
+            });
+            if (fetchedLocation) {
+                locationData.location_id = fetchedLocation.name;
+            }
+        }),
+      )
+
         res.status(200).json(company.privacy_location ? company.privacy_location : []);
     } catch (error) {
         res.status(404).json({message : error.message});
@@ -26,7 +40,7 @@ export const createPrivacyLocation = async(req,res) => {
 
    console.log(req.body)
 
-    const companyId = req.query.company_id;
+    const companyId = req.body.company_id;
     if (!companyId) {
         res.status(500).json({message : MesssageProvider.messageByKey(Messages.KEYS.ID_NOT_FOUND)});
     }
