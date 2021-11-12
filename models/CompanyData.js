@@ -16,7 +16,7 @@ const company = mongoose.Schema({
                 country_id:String,zipcode:String,email:String,contact_no:String,latitude:String,longitude:String,description:String,open_time:String,close_time:String,
             image:String,invoice_tag_id:String,hardware_cost:String,software_cost:String,num_tablets:String,start_date:String,
             installation_cost:String,max_budget_customer_audit:String,app_color:String,autoMail:String,useLocationSkills:String,categoryWiseSkill:String,
-            showQRCode:String,multiLocation:String,showLocationManager:String,allowFrequestRatings:String,customerAudit:String
+            showQRCode:String,multiLocation:String,showLocationManager:String,allowFrequestRatings:String,customerAudit:String, old_location_id: String
             }],
     user_location: [{user_id:Number, location_id:String}],
     ratings: [{location_id:String, employee_id:String, rating:String,out_of:String,feedback:String,other_feedback:String,
@@ -57,6 +57,7 @@ const company = mongoose.Schema({
         type : Date,
         default: new Date()
     },
+    old_company_id: Number,
 });
 
 const CompanyData = mongoose.model('company', company);
