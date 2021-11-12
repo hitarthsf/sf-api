@@ -673,7 +673,7 @@ export const getEmployeeRank = async (req, res) => {
 
 export const getUserStats = async (req, res) => {
     try {
-        const totalUser = await UserMigratedData.countDocuments();
+        const totalUser = await UserData.countDocuments();
 
         const sevenDaysDateTo = new Date(moment().toISOString());
         const sevenDaysDateFrom = new Date(moment().subtract(7, 'd').toISOString());
