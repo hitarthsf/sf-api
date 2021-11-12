@@ -7,6 +7,7 @@ import UserLoginData from '../models/UserLoginData.js';
 import _ from 'lodash';
 import mysql from 'mysql';
 import mongoose from "mongoose";
+import CompanyData from "../models/CompanyData.js";
 
 export const migrateCompanies = async (req, res) => {
 
@@ -270,5 +271,43 @@ export const migrateLogins = async (req,res) => {
             }
         });
         res.status(209).json(`total ${rows.length} user login data are imported.`);
+    });
+}
+
+export const updateMigratedLocationNames = async (req, res) => {
+    const connection = mysql.createConnection({
+        host: 'localhost',
+        user: 'root',
+        password: 'root',
+        database: 'ratings_db_live'
+    });
+    connection.connect(async (err) => {
+        if (err) throw err
+        console.log('You are now connected...');
+
+        const companyList = await CompanyData.find();
+        await Promise.all(
+            companyList.map(async (companyObj) => {
+                const companyId= companyObj._id;
+                console.log('companyObj', companyObj._id, companyObj.old_company_id);
+                console.log('saaaaaa', `SELECT * FROM location WHERE location_area_id= ${companyObj.old_company_id}`);
+                await connection.query(`SELECT * FROM location WHERE location_area_id= ${companyObj.old_company_id}`, async (err, rows) => {
+                    rows.map(async (mySQLRow) => {
+                        await CompanyData.update({_id:companyId}, {$set:{
+                                "location.$[updateLocation].name": mySQLRow.name,
+                            }}, {
+                            "arrayFilters": [
+                                {"updateLocation.old_location_id" : mySQLRow.id}
+                            ]
+                        }, (error, result) => {
+                            if (error) {
+                                console.log('errorerror', companyId, mySQLRow.name);
+                            }
+                            console.log('resultresult', companyId, mySQLRow.name);
+                        });
+                    });
+                });
+            }),
+        )
     });
 }
