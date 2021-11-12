@@ -9,7 +9,7 @@ import jwt from "jsonwebtoken";
 
 export const getAttribute = async (req,res) => {
     //res.send('THIS GOOD');
-    const  id  = req.body._id;
+    const  id  = req.body.company_id;
     try {
       //  const AllCompany = await CompanyData.find({"_id":id});
       const AllCompany = await CompanyData.find({"_id":id});
@@ -31,6 +31,7 @@ export const addAttribute = async (req, res) => {
     var objFriends = { name:req.body.name,positive_skills: positiveSkills,negative_skills:negativeSkills,
         createdAt: new Date(), updatedAt: new Date(),
     };
+    
     await CompanyData.findOneAndUpdate(
        { _id: compId},
        { $push: { attributes: objFriends  } },
@@ -105,12 +106,13 @@ export const updateAttribute = async (req, res) => {
 
 export const deleteAttribute = async (req, res) => {
     const  id  = req.body._id;
+    const  compId  = req.body.company_id;
 
     // const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58f1"});
     // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
     // make it dynamic
     await CompanyData.updateOne(
-       { _id: "6111149b961aa70d06fe58ef" },
+       { _id: compId },
          { $pull: { attributes: { _id: id } } } ,
          { multi: true },
       function (error, success) {

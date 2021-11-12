@@ -351,6 +351,7 @@ export const getRatingData = async (req, res) => {
         if (format == "chart") {
             const date = [];
             const average = [];
+            const count = [];
 
             const currDate = moment(startDate).startOf('day');
             const lastDate = moment(endDate).startOf('day');
@@ -363,11 +364,14 @@ export const getRatingData = async (req, res) => {
                 });
                 if (matchFound) {
                     average.push(matchFound.average);
+                    count.push(matchFound.count);
                 } else {
                     average.push(0);
+                    count.push(0);
+
                 }
             }
-            const rating = [{"date": date, "average": average, "count": date.length}];
+            const rating = [{"date": date, "average": average, "count": count}];
 
             res.status(200).json({data: rating, message: "Success"});
         } else {
@@ -456,6 +460,7 @@ export const getSkillRank = async (req, res) => {
                     }
                 ]);
         } else {
+
             var rating = await RatingData.aggregate(
                 [
                     {
@@ -468,6 +473,7 @@ export const getSkillRank = async (req, res) => {
                         $project: {"_id": 1}
                     }
                 ]);
+
         }
 
 
@@ -476,7 +482,7 @@ export const getSkillRank = async (req, res) => {
         // rating.forEach( function(ratings) { ratings.push( myDoc._id)  } );
 
         // Get count of skills from the ratings id
-        //res.send(rating_id);
+        //res.send(ratingIdArray);
         // NEED TO USE rating_id INSTEAD OF THE ARRAY
         var skillRanks = await RatingSkillData.aggregate(
             [
