@@ -7,6 +7,7 @@ import UsersData from '../models/UsersData.js';
  * @return {boolean}
  */
 const isValidToken = (token) => {
+    
     try {
         jwt.verify(token, process.env.JWT_SECRET_OR_KEY);
         return true;

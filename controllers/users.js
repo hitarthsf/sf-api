@@ -80,9 +80,18 @@ export const createUser = async(req,res) => {
 export const getUser = async (req,res) => {
    // console.log(req.body)
     const  type  = req.body.type;
+    const  company_id  = req.body.company_id;
     //res.send('THIS GOOD');
     try {
-        const AllUser = await UsersData.find().where('type').equals(type);
+        if (company_id)
+        {
+            var AllUser = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id);    
+        }
+        else
+        {
+            var AllUser = await UsersData.find().where('type').equals(type);    
+        }
+        
         res.status(200).json(AllUser);
     } catch (error) {
         res.status(404).json({message : error.message});
