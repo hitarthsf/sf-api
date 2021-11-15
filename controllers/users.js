@@ -79,17 +79,23 @@ export const createUser = async(req,res) => {
 
 export const getUser = async (req,res) => {
    // console.log(req.body)
-    const  type  = req.body.type;
-    const  company_id  = req.body.company_id;
+    const  type         = req.body.type;
+    const  company_id   = req.body.company_id;
+    const  page         = req.body.page;
+    const  perPage      = 5 ; 
+    if (page)
+    {
+        var offSet = (perPage * page ) - perPage ; 
+    }   
     //res.send('THIS GOOD');
     try {
         if (company_id)
         {
-            var AllUser = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id);    
+            var AllUser = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
         }
         else
         {
-            var AllUser = await UsersData.find().where('type').equals(type);    
+            var AllUser = await UsersData.find().where('type').equals(type).skip(offSet).limit(perPage);    
         }
         
         res.status(200).json(AllUser);
