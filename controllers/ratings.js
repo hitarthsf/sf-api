@@ -64,8 +64,10 @@ export const createRating = async (req, res) => {
                 company_id: data.company_id,
             });
             await savedSkills.save();
+            
         });
     }
+
     res.status(201).json(rating);
 }
 

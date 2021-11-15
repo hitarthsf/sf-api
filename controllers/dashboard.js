@@ -156,6 +156,11 @@ export const getLocationRank = async (req, res) => {
     const start_date = new Date(req.body.start_date);
     const end_date = new Date(req.body.end_date);
     const order = parseInt(req.body.order);
+    const limit = parseInt(req.body.limit);
+    if (!req.body.limit)
+    {
+         limit = 10 ;
+    }
 
     // add try catch
     try {
@@ -182,7 +187,8 @@ export const getLocationRank = async (req, res) => {
                             average: {$avg: "$rating"}
                         }
                 },
-                {$sort: {count: order, average: order}}
+                {$sort: {count: order, average: order}},
+                {$limit: limit}
 
 
             ]
@@ -235,6 +241,9 @@ export const getRatingsDistribution = async (req, res) => {
                                 _id: "$rating",
                                 count: {$sum: 1}
                             }
+                    },
+                    {
+                        $sort : {"_id" : 1}
                     }
                 ]);
         } else {
@@ -253,6 +262,9 @@ export const getRatingsDistribution = async (req, res) => {
                                 _id: "$rating",
                                 count: {$sum: 1}
                             }
+                    },
+                    {
+                        $sort : {"_id" : 1}
                     }
                 ]);
         }
@@ -269,13 +281,43 @@ export const getRatingsDistribution = async (req, res) => {
                             _id: "total_count",
                             count: {$sum: 1}
                         }
-                }
-            ]);
 
+                }
+                ,
+                {
+                    $sort : {"_id" : -1}
+                }
+
+            ]);
         if (average_count.length === 0) {
             res.status(200).json({message: "No data found with above filter"});
         }
-        res.status(200).json({data: average_count, message: "Success"});
+        //res.send(average_count[0]["_id"]);
+        var distribution    = [] ; 
+        var countDistribution           = [] ; 
+        var percentage      = [] ;
+        
+        for (let i = 0; i < 5; i++) {
+            
+            if (!average_count[i] ) 
+            {
+                
+                distribution.push(i+1);
+                countDistribution.push(0);    
+            }
+            else
+            {
+              
+                distribution.push(average_count[i]["_id"]);
+                countDistribution.push(average_count[i]["count"]);      
+            }
+          
+
+        } 
+
+        
+        const ratings = [{"distribution": distribution, "countDistribution": countDistribution}];
+        res.status(200).json({data: ratings, message: "Success"});
     } catch (error) {
         res.status(404).json({message: error.message});
     }
@@ -419,6 +461,176 @@ export const latestReview = async (req, res) => {
         res.status(404).json({message: error.message});
     }
 
+}
+
+// Get Attribute Rank
+export const getAttributeRank = async (req, res) => {
+    const companyId = req.body.company_id;
+    const locationId = req.body.location_id.split(',');
+    const startDate = new Date(req.body.start_date);
+    const endDate = new Date(req.body.end_date);
+    const order = parseInt(req.body.order);
+    const format = req.body.format;
+    
+    const ratingId = [];
+
+
+    // add try catch
+    try {
+        const fetchedLocations = await CompanyData.findOne({"_id": companyId}, {location: 1});
+        const userLocationId = [];
+        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                userLocationId.push(location._id.toString());
+            });
+        }
+
+        // Get Ratings Id From
+        if (locationId[0] === "") {
+            var rating = await RatingData.aggregate(
+                [
+                    {
+                        $match: {
+                            "location_id": {$in: userLocationId},
+                            "createdAt": {$gte: new Date(startDate), $lte: new Date(endDate)}
+                        }
+                    },
+                    {
+                        $project: {"_id": 1}
+                    }
+                ]);
+        } else {
+
+            var rating = await RatingData.aggregate(
+                [
+                    {
+                        $match: {
+                            "location_id": {$in: locationId},
+                            "createdAt": {$gte: new Date(startDate), $lte: new Date(endDate)}
+                        }
+                    },
+                    {
+                        $project: {"_id": 1}
+                    }
+                ]);
+
+        }
+
+
+        const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
+        // Create an array of ratings id needed
+        // rating.forEach( function(ratings) { ratings.push( myDoc._id)  } );
+
+        // Get count of skills from the ratings id
+        //res.send(ratingIdArray);
+        // NEED TO USE rating_id INSTEAD OF THE ARRAY
+        var skillRanks = await RatingSkillData.aggregate(
+            [
+                {
+                    $match: {
+                        "rating_id": {
+                            $in: ratingIdArray
+                        }
+                    }
+                },
+                {
+                    $group:
+                        {
+                            _id: "$skill_id",
+                            count: {$sum: 1}
+                        }
+                },
+                {$sort: {count: order}}
+
+
+            ]
+        );
+
+        if (format == "chart") {
+            var SkillNamePositive = [];
+            var SkillNameNegative = [];
+            var SkillCount = [];
+            var AttributeName = [];
+            var AttributeCount = [];
+
+            var companyData = await CompanyData.findOne({"_id": companyId});
+
+            skillRanks.map((skillObj) => {
+                skillObj.name = '';
+                
+                
+                companyData.attributes.forEach((attribute) => {
+                    var count = 0 ; 
+                    let matchingObj = _.find(attribute.positive_skills, (skill) => {
+                        return skill._id == skillObj._id;
+                    });
+                        
+                    if (matchingObj) {
+                        count = count +skillObj.count;
+                    } else {
+                        matchingObj = _.find(attribute.negative_skills, (skill) => {
+                            return skill._id == skillObj._id;
+                        });
+
+                        if (matchingObj) {
+
+                            count = count + skillObj.count;
+                        }
+                    }
+                    if ( count > 0 )
+                    {   
+                        if (AttributeName.includes(attribute.name) )
+                        {
+                         
+                            var index = AttributeName.findIndex(AttributeName => AttributeName === attribute.name);
+                            AttributeCount[index] =  AttributeCount[index] + count ;
+                        }
+                        else
+                        {
+                            AttributeCount.push(count);
+                            AttributeName.push(attribute.name);         
+                        }
+                        
+                    }
+                   
+                });
+
+            })
+            
+            var data = [{"AttributeName": [], "AttributeCount": []}];
+            
+            var data = [{"AttributeName": AttributeName, "AttributeCount": AttributeCount}];
+            
+            
+
+
+            res.status(200).json({data: data, message: "Success"});
+        } else {
+            skillRanks.map((skillObj) => {
+                skillObj.name = '';
+                companyData.attributes.forEach((attribute) => {
+                    let matchingObj = _.find(attribute.positive_skills, (skill) => {
+                        return skill._id == skillObj._id;
+                    });
+                    if (matchingObj) {
+                        skillObj.name = matchingObj.name;
+                    } else {
+                        matchingObj = _.find(attribute.negative_skills, (skill) => {
+                            return skill._id == skillObj._id;
+                        });
+                        if (matchingObj) {
+                            skillObj.name = matchingObj.name;
+                        }
+                    }
+                });
+            })
+        }
+
+        res.status(200).json({data: skillRanks, message: "Success"});
+
+    } catch (error) {
+        res.status(404).json({message: error.message});
+    }
 }
 
 
@@ -631,7 +843,7 @@ export const getEmployeeRank = async (req, res) => {
 
         // Create an array of ratings id needed
         const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
-
+        //res.send(ratingIdArray);
         // Get count of skills from the ratings id
 
         const employee_rank = await RatingEmployeeData.aggregate(
