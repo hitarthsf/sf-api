@@ -16,6 +16,7 @@ import stateRoutes from './routes/state.js';
 import ratingRoutes from './routes/ratings.js';
 import dashboardRoutes from './routes/dashboard.js';
 import migrationRoutes from './routes/migration.js';
+import frontRatingAppRoutes from './routes/frontRatingApp.js';
 
 //dot env configuration
 import dotenv from 'dotenv';
@@ -48,6 +49,7 @@ app.use('/abusiveWords',abusiveWordsRoutes);
 app.use('/rating',ratingRoutes);
 app.use('/dashboard',dashboardRoutes);
 app.use('/migration',migrationRoutes);
+app.use('/front',frontRatingAppRoutes);
 
 
 //const CONNECTION_URL  = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
