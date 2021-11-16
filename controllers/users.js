@@ -82,7 +82,8 @@ export const getUser = async (req,res) => {
     const  type         = req.body.type;
     const  company_id   = req.body.company_id;
     const  page         = req.body.page;
-    const  perPage      = 5 ; 
+    const  perPage      = parseInt(req.body.perPage) ; 
+    const  showTotalCount = req.body.showTotalCount ;  
     if (page)
     {
         var offSet = (perPage * page ) - perPage ; 
@@ -92,13 +93,22 @@ export const getUser = async (req,res) => {
         if (company_id)
         {
             var AllUser = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id).countDocuments();    
         }
         else
         {
             var AllUser = await UsersData.find().where('type').equals(type).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find().where('type').equals(type).countDocuments();    
+        }
+        if (showTotalCount == "true") 
+        {
+            res.status(200).json({"Alluser" :AllUser , "totalCount" : AllUserCount});    
+        }
+        else
+        {
+            res.status(200).json(AllUser);    
         }
         
-        res.status(200).json(AllUser);
     } catch (error) {
         res.status(404).json({message : error.message});
     }
