@@ -1,7 +1,9 @@
 import UsersData from '../models/UsersData.js';
+import CompanyData from '../models/CompanyData.js';
 import aws from 'aws-sdk';
 import fs from 'fs';
 import {Readable} from 'stream';
+import _ from "lodash";
 
 export const createUser = async(req,res) => {
 
@@ -84,16 +86,27 @@ export const getUser = async (req,res) => {
     const  page         = req.body.page;
     const  perPage      = parseInt(req.body.perPage) ; 
     const  showTotalCount = req.body.showTotalCount ;  
+    const filterGeneralSearch = req.body.filterGeneralSearch ;  
+
+
     if (page)
     {
         var offSet = (perPage * page ) - perPage ; 
     }   
-    //res.send('THIS GOOD');
+    
     try {
-        if (company_id)
+        if ( company_id &&  filterGeneralSearch )
         {
-            var AllUser = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
-            var AllUserCount = await UsersData.find().where('type').equals(type).where('company_id').equals(company_id).countDocuments();    
+
+            var AllUser = await UsersData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).countDocuments();       
+            
+        }
+        else if ( company_id)
+        {
+            var AllUser = await UsersData.find({"company_id" : company_id}).where('type').equals(type).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find({"company_id" : company_id}).where('type').equals(type).countDocuments();    
+            
         }
         else
         {
@@ -240,5 +253,48 @@ export const getUsersByType = async (req,res) => {
         res.status(404).json({message : error.message});
     }
 }
+
+export const getLocationIdByUser = async (req,res) => {
+    const id  = req.query.id;
+    
+    if (!id) {
+        res.status(409).json({ message : 'id is mandatory field.'});
+    }
+
+    var user = await UsersData.findOne({_id : id });
+
+    switch (user.type) {
+       case 'super_admin':
+            var company = await CompanyData.findOne({_id : '617fb45ad1bf0ec9a8cd3863' });
+            var location_id = [];
+            var fetchedLocation = _.find(company.location, (location) => {
+
+                        location_id.push(location._id);
+                        
+                    });
+
+            res.status(200).json({"loaction_id": location_id.join(",") , "company_id": "617fb45ad1bf0ec9a8cd3863"});    
+            break;
+
+       case 'area_manager':
+            var company = await CompanyData.findOne({_id : user.company_id });
+            var location_id = [];
+            var fetchedLocation =await _.find(company.location, (location) => {
+                
+                        location_id.push(location._id);
+                        
+                    });
+
+            res.status(200).json({"loaction_id": location_id.join(",") , "company_id": user.company_id });
+            break;
+
+       default:
+           res.status(200).json({"loaction_id": user.location_id.join(",") , "company_id": user.company_id}); 
+           break;
+   }
+   
+
+}
+
 
 
