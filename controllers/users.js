@@ -98,8 +98,20 @@ export const getUser = async (req,res) => {
         if ( company_id &&  filterGeneralSearch )
         {
 
-            var AllUser = await UsersData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
-            var AllUserCount = await UsersData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).countDocuments();       
+            var AllUser = await UsersData.find({
+                                                "$or": [
+                                                {"name": {$regex: ".*" + filterGeneralSearch + ".*"}}, 
+                                                {"email": {$regex: ".*" + filterGeneralSearch + ".*"}},
+                                                {"phone": {$regex: ".*" + filterGeneralSearch + ".*"}}
+                                                ]
+                                            }).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find({
+                                                "$or": [
+                                                {"name": {$regex: ".*" + filterGeneralSearch + ".*"}}, 
+                                                {"email": {$regex: ".*" + filterGeneralSearch + ".*"}},
+                                                {"phone": {$regex: ".*" + filterGeneralSearch + ".*"}}
+                                                ]
+                                            }).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).countDocuments();       
             
         }
         else if ( company_id)
@@ -290,6 +302,65 @@ export const getLocationIdByUser = async (req,res) => {
 
        default:
            res.status(200).json({"loaction_id": user.location_id.join(",") , "company_id": user.company_id}); 
+           break;
+   }
+   
+
+}
+// Get Location Name and Id By User ID
+export const getLocationByUser = async (req,res) => {
+    const id  = req.query.id;
+    
+    if (!id) {
+        res.status(409).json({ message : 'id is mandatory field.'});
+    }
+
+    var user = await UsersData.findOne({_id : id });
+    var userLocation = [];
+    switch (user.type) {
+       case 'super_admin':
+            var company = await CompanyData.findOne({_id : '617fb45ad1bf0ec9a8cd3863' });
+
+            var fetchedLocation = _.find(company.location, (location) => {
+                        var objLocation = {"_id":location._id,"name" : location.name} ;
+                        userLocation.push(objLocation);
+                        
+                    });
+
+            res.status(200).json(userLocation );    
+            break;
+
+       case 'area_manager':
+            var company = await CompanyData.findOne({_id : user.company_id });
+            
+            var fetchedLocation = await _.find(company.location, (location) => {
+                
+                        var objLocation = {"_id":location._id,"name" : location.name} ;
+                        userLocation.push(objLocation);
+                        
+                    });
+
+            res.status(200).json( userLocation );
+            break;
+
+       default:
+            var company = await CompanyData.findOne({_id : user.company_id });
+
+           const responseData = await Promise.all(
+                user.location_id.map(async (locationData) => {
+                    const fetchedLocation = _.find(company.location, (location) => {
+
+                        if (location._id == locationData)
+                        {  
+                            var objLocation = {"_id":location._id,"name" : location.name} ;
+                            userLocation.push(objLocation);
+                        }
+                         
+                    });
+                   
+                }),
+            )
+           res.status(200).json(userLocation ); 
            break;
    }
    

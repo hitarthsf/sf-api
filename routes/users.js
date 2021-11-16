@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createUser,getUser, updateUser, deleteUser, uploadPhoto, getUsersByType , singleUser , getLocationIdByUser} from '../controllers/users.js';
+import {createUser,getUser, updateUser, deleteUser, uploadPhoto, getUsersByType , singleUser , getLocationIdByUser , getLocationByUser} from '../controllers/users.js';
 
 const router = express.Router();
 
@@ -12,4 +12,5 @@ router.post('/uploadphoto',  uploadPhoto);
 router.get('/getUsersByType',  getUsersByType);
 router.get('/singleUser',  singleUser);
 router.get('/getLocationIdByUser',  getLocationIdByUser);
+router.get('/getLocationByUser',  getLocationByUser);
 export default router;
