@@ -26,7 +26,7 @@ export const createRating = async (req, res) => {
     };
 
     const rating = new RatingData(ratingObj);
-    await rating.save();
+    //await rating.save();
 
     // if positive rating and no employee is selected then assign rating to all the employee and location manager of that location
     // if (employees.length == 0 && data.rating > 3  )
@@ -72,7 +72,7 @@ export const createRating = async (req, res) => {
 }
 
 export const fetchRating = async (req, res) => {
-    const companyId = req.query.company_id;
+    const companyId = req.body.company_id;
     if (!companyId) {
         res.status(409).json({ message : 'Invalid request, Company Id is missing'});
     }
@@ -85,20 +85,25 @@ export const fetchRating = async (req, res) => {
     //     }
     // })
 
-    const page = req.query.page ? req.query.page : 1;
-    const limit = req.query.limit ? req.query.limit : 10;
+    const page = req.body.page ? req.body.page : 1;
+    const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
     const skip = (page - 1) * limit;
     const companyData = await CompanyData.findOne({"_id":companyId});
     const ratings = await RatingData.aggregate([
         {
             $match: {company_id: companyId}
         },
+        { "$sort": { createdAt : -1} },
+        { "$limit": skip + limit },
+        { "$skip": skip },
+        { "$addFields": { "ratingId": { "$toString": "$_id" }}},
         {
             $lookup: {
                 from: 'rating_skills',
-                localField: 'rating_id',
-                foreignField: 'id',
-                "as": "rating_skills"
+                localField: 'ratingId',
+                foreignField: 'rating_id',
+                "as": "rating_skills",
+
             }
         },
         // {
@@ -107,22 +112,21 @@ export const fetchRating = async (req, res) => {
         //         preserveNullAndEmptyArrays: false
         //     }
         // },
-        {
-            $lookup: {
-                from: 'rating_employees',
-                localField: 'rating_id',
-                foreignField: 'id',
-                "as": "rating_employees"
-            }
-        },
+        // {
+        //     $lookup: {
+        //         from: 'rating_employees',
+        //         localField: 'rating_id',
+        //         foreignField: 'id',
+        //         "as": "rating_employees"
+        //     }
+        // },
         // {
         //     $unwind: {
         //         path: "$rating_employees",
         //         preserveNullAndEmptyArrays: false
         //     }
         // },
-        { "$limit": skip + limit },
-        { "$skip": skip }
+        
     ]);
     const responseData =  await Promise.all(
         ratings.map(async (rating) => {
@@ -135,33 +139,34 @@ export const fetchRating = async (req, res) => {
             if (fetchedLocation) {
                 rating.locationName = fetchedLocation.name;
             }
-
+            rating.skillName = [];
             rating.rating_skills.map(async (ratingSkill) => {
-                ratingSkill.skillName = '';
+                
                 companyData.attributes.map((attribute) => {
                     const matchingObj = _.find(attribute.positive_skills, (skill) => {
                         return skill._id == ratingSkill.skill_id
                     });
                     if (matchingObj) {
-                        ratingSkill.skillName = matchingObj.name;
+                        rating.skillName.push(matchingObj.name) ;
                     }
                     if (ratingSkill.skillName === '') {
                         const matchingObj = _.find(attribute.negative_skills, {_id: ratingSkill.skill_id});
                         if (matchingObj) {
-                            ratingSkill.skillName = matchingObj.name;
+                            rating.skillName.push(matchingObj.name) ;
                         }
                     }
                 });
+                rating.skillName = rating.skillName.join(",");
                 return ratingSkill;
             });
-            await Promise.all(
-                rating.rating_employees.map(async (ratingEmployee) => {
-                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
-                    return ratingEmployee;
-                }),
-            );
+            // await Promise.all(
+            //     rating.rating_employees.map(async (ratingEmployee) => {
+            //         ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+            //         return ratingEmployee;
+            //     }),
+            // );
             return rating;
         }),
     )
-    res.status(201).json(responseData);
+    res.status(200).json(ratings);
 }
