@@ -16,7 +16,7 @@ const companyRoutes = Router();
 import {createCompany, getCompany, updateCompany, deleteCompany,updateLocation,getLocation , migration , getLocationList, getSkillList, fetchLocationByLoggedInUser} from '../controllers/company.js';
 
 companyRoutes.post('/createCompany', createCompany);
-companyRoutes.get('/fetchCompany',getCompany);
+companyRoutes.post('/fetchCompany',getCompany);
 companyRoutes.post('/fetchLocation',getLocation);
 companyRoutes.post('/updateCompany', updateCompany);
 companyRoutes.post('/updateLocation', updateLocation);

@@ -86,9 +86,13 @@ export const getUser = async (req,res) => {
     const  page         = req.body.page;
     const  perPage      = parseInt(req.body.perPage) ; 
     const  showTotalCount = req.body.showTotalCount ;  
-    const filterGeneralSearch = req.body.filterGeneralSearch ;  
-
-
+    const  filterGeneralSearch = req.body.filterGeneralSearch ;  
+    var  filterStatus = req.body.filterStatus ;  
+    if (filterStatus == "")
+    {
+        filterStatus = 1 ;    
+    }
+    
     if (page)
     {
         var offSet = (perPage * page ) - perPage ; 
@@ -104,26 +108,26 @@ export const getUser = async (req,res) => {
                                                 {"email": {$regex: ".*" + filterGeneralSearch + ".*"}},
                                                 {"phone": {$regex: ".*" + filterGeneralSearch + ".*"}}
                                                 ]
-                                            }).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
+                                            }).where("company_id").equals(company_id).where("is_active").equals(filterStatus).where('type').equals(type).where('company_id').equals(company_id).skip(offSet).limit(perPage);    
             var AllUserCount = await UsersData.find({
                                                 "$or": [
                                                 {"name": {$regex: ".*" + filterGeneralSearch + ".*"}}, 
                                                 {"email": {$regex: ".*" + filterGeneralSearch + ".*"}},
                                                 {"phone": {$regex: ".*" + filterGeneralSearch + ".*"}}
                                                 ]
-                                            }).where("company_id").equals(company_id).where('type').equals(type).where('company_id').equals(company_id).countDocuments();       
+                                            }).where("company_id").equals(company_id).where("is_active").equals(filterStatus).where('type').equals(type).where('company_id').equals(company_id).countDocuments();       
             
         }
         else if ( company_id)
         {
-            var AllUser = await UsersData.find({"company_id" : company_id}).where('type').equals(type).skip(offSet).limit(perPage);    
-            var AllUserCount = await UsersData.find({"company_id" : company_id}).where('type').equals(type).countDocuments();    
+            var AllUser = await UsersData.find({"company_id" : company_id}).where("is_active").equals(filterStatus).where('type').equals(type).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find({"company_id" : company_id}).where("is_active").equals(filterStatus).where('type').equals(type).countDocuments();    
             
         }
         else
         {
-            var AllUser = await UsersData.find().where('type').equals(type).skip(offSet).limit(perPage);    
-            var AllUserCount = await UsersData.find().where('type').equals(type).countDocuments();    
+            var AllUser = await UsersData.find().where('type').where("is_active").equals(filterStatus).equals(type).skip(offSet).limit(perPage);    
+            var AllUserCount = await UsersData.find().where('type').where("is_active").equals(filterStatus).equals(type).countDocuments();    
         }
         if (showTotalCount == "true") 
         {
