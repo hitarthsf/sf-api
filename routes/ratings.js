@@ -5,6 +5,6 @@ import {createRating, fetchRating} from '../controllers/ratings.js';
 const router = express.Router();
 
 router.post('/create', createRating);
-router.get('/fetch', fetchRating);
+router.post('/fetch', fetchRating);
 
 export default router;
