@@ -27,7 +27,7 @@ export const createRating = async (req, res) => {
     };
 
     const rating = new RatingData(ratingObj);
-    //await rating.save();
+    await rating.save();
 
     // if positive rating and no employee is selected then assign rating to all the employee and location manager of that location
     // if (employees.length == 0 && data.rating > 3  )
@@ -174,9 +174,9 @@ export const fetchRating = async (req, res) => {
 }
 
 export const singleRating = async (req, res) => {
-    const companyId = req.query.company_id;
+    const companyId = req.body.company_id;
     const ObjectId = mongoose.Types.ObjectId;
-    const id = req.query.rating_id;
+    const id = req.body.rating_id;
     if (!id) {
         res.status(409).json({ message : 'Invalid request, Id is missing'});
     }
@@ -248,6 +248,47 @@ export const singleRating = async (req, res) => {
             return rating;
         }),
     )
-    res.status(200).json(ratings);
+    res.status(200).json({data: ratings, message: "Success"});
+
+}
+
+export const complaintManagement = async (req, res) => {
+    const companyId = req.body.company_id;
+    const negativeRating = ["1","2","3"];
+
+    if (!companyId) {
+        res.status(409).json({ message : 'Invalid request, companyId is missing'});
+    }
+    const page = req.body.page ? req.body.page : 1;
+    const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+    const skip = (page - 1) * limit;
+
+    const ratingsCount = await RatingData.find({"company_id" : companyId , "rating" : { $lte: 3}}).countDocuments();
+    const ratings = await RatingData.aggregate([
+        {
+            $match: {company_id: companyId , rating : {  $lte : 3 } , customer_email: { $ne: "" } } 
+        },
+        { "$sort": { createdAt : -1} },
+        { "$limit": skip + limit },
+        { "$skip": skip },
+    ]);
+    const companyData = await CompanyData.findOne({"_id":companyId});
+    const responseData =  await Promise.all(
+        ratings.map(async (rating) => {
+            rating.companyName = companyData.name;
+
+            rating.locationName = '';
+            const fetchedLocation = _.find(companyData.location, (location) => {
+                return location._id == rating.location_id
+            });
+            if (fetchedLocation) {
+                rating.locationName = fetchedLocation.name;
+            }
+            
+            return rating;
+        }),
+    )
+    res.status(200).json({"ratings":ratings , "ratingCount" : ratingsCount});
+
 }
 
