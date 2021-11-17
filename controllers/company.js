@@ -48,8 +48,39 @@ export const createCompany = async(req,res) => {
 
 export const getCompany = async (req,res) => {
     //res.send('THIS GOOD');
+    const  page                 = req.body.page;
+    const  perPage              = parseInt(req.body.perPage) ; 
+    const  showTotalCount       = req.body.showTotalCount ;  
+    const  filterGeneralSearch  = req.body.filterGeneralSearch ;  
+    
+    if (page)
+    {
+        var offSet = (perPage * page ) - perPage ; 
+    }
     try {
-        const AllCompany = await CompanyData.find();
+        if (filterGeneralSearch != "")
+        {
+
+            var AllCompany    = await CompanyData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).skip(offSet).limit(perPage);
+            var AllCompanyCount = await CompanyData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).countDocuments(); 
+        }
+        else
+        {
+         
+            var AllCompany    = await CompanyData.find().skip(offSet).limit(perPage);
+            var AllCompanyCount = await CompanyData.find().countDocuments();     
+        }
+          
+
+
+        if (showTotalCount == "true") 
+        {
+            res.status(200).json({"AllCompany" :AllCompany , "totalCount" : AllCompanyCount});    
+        }
+        else
+        {
+            res.status(200).json(AllCompany);    
+        }
         res.status(200).json(AllCompany);
     } catch (error) {
         res.status(404).json({message : error.message});
@@ -60,7 +91,17 @@ export const getLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
     try {
-        const AllCompany = await CompanyData.find({"_id":id});
+        const AllCompany = await CompanyData.findOne({"_id":id}, {location: 1});
+        // const companyList = [];
+        // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        //     fetchedLocations.location.map((location) => {
+        //         companyList.push({
+        //             _id: location._id,
+        //             name: location.name,
+        //         });
+        //     });
+        // }
+        res.status(200).json(companyList);
         res.status(200).json(AllCompany);
     } catch (error) {
         res.status(404).json({message : error.message});
