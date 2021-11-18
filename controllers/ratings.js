@@ -76,7 +76,15 @@ export const fetchRating = async (req, res) => {
     const companyId     = req.body.company_id;
     const start_date    = new Date(req.body.start_date);
     const end_date      = new Date(req.body.end_date);
-    const rating        = parseInt(req.body.rating);
+    if (req.body.rating == "")
+    {
+        var rating        =  [1,2,3,4,5];    
+    } 
+    else
+    {
+        var rating        = [parseInt(req.body.rating)];    
+    }
+    
 
     if (!companyId) {
         res.status(409).json({ message : 'Invalid request, Company Id is missing'});
@@ -94,10 +102,10 @@ export const fetchRating = async (req, res) => {
     const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
     const skip = (page - 1) * limit;
     const companyData = await CompanyData.findOne({"_id":companyId  });
-    const ratingsCount = await RatingData.find({"company_id" : companyId   , "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}).countDocuments();
+    const ratingsCount = await RatingData.find({"company_id" : companyId , "rating": { $in :rating }   , "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}).countDocuments();
     const ratings = await RatingData.aggregate([
         {
-            $match: {company_id: companyId  ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
+            $match: {company_id: companyId  ,rating : { $in :rating } ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
         },
         { "$sort": { createdAt : -1} },
         { "$limit": skip + limit },
@@ -147,7 +155,7 @@ export const fetchRating = async (req, res) => {
             }
             rating.skillName = [];
             rating.rating_skills.map(async (ratingSkill) => {
-                
+                rating.skillName = '';
                 companyData.attributes.map((attribute) => {
                     const matchingObj = _.find(attribute.positive_skills, (skill) => {
                         return skill._id == ratingSkill.skill_id

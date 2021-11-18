@@ -13,10 +13,11 @@ import {default as passport} from '../utils/passport.js';
 
 const companyRoutes = Router();
 
-import {createCompany, getCompany, updateCompany, deleteCompany,updateLocation,getLocation , migration , getLocationList, getSkillList, fetchLocationByLoggedInUser} from '../controllers/company.js';
+import {createCompany, getCompany , getCompanyGet, updateCompany, deleteCompany,updateLocation,getLocation , migration , getLocationList, getSkillList, fetchLocationByLoggedInUser} from '../controllers/company.js';
 
 companyRoutes.post('/createCompany', createCompany);
 companyRoutes.post('/fetchCompany',getCompany);
+companyRoutes.get('/fetchCompanyGet',getCompanyGet);
 companyRoutes.post('/fetchLocation',getLocation);
 companyRoutes.post('/updateCompany', updateCompany);
 companyRoutes.post('/updateLocation', updateLocation);
