@@ -87,6 +87,26 @@ export const getCompany = async (req,res) => {
     }
 }
 
+/// get Compaany list 
+export const getCompanyGet = async (req,res) => {
+    //res.send('THIS GOOD');
+    const  page                 = req.body.page;
+    const  perPage              = parseInt(req.body.perPage) ; 
+    const  showTotalCount       = req.body.showTotalCount ;  
+    const  filterGeneralSearch  = req.body.filterGeneralSearch ;  
+    
+    if (page)
+    {
+        var offSet = (perPage * page ) - perPage ; 
+    }
+    try {
+        var AllCompany    = await CompanyData.find();
+        res.status(200).json(AllCompany);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
 export const getLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
