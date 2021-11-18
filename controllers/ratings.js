@@ -73,7 +73,11 @@ export const createRating = async (req, res) => {
 }
 
 export const fetchRating = async (req, res) => {
-    const companyId = req.body.company_id;
+    const companyId     = req.body.company_id;
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+    const rating        = parseInt(req.body.rating);
+
     if (!companyId) {
         res.status(409).json({ message : 'Invalid request, Company Id is missing'});
     }
@@ -89,11 +93,11 @@ export const fetchRating = async (req, res) => {
     const page = req.body.page ? req.body.page : 1;
     const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
     const skip = (page - 1) * limit;
-    const companyData = await CompanyData.findOne({"_id":companyId});
-    const ratingsCount = await RatingData.find({"company_id" : companyId}).countDocuments();
+    const companyData = await CompanyData.findOne({"_id":companyId  });
+    const ratingsCount = await RatingData.find({"company_id" : companyId   , "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}).countDocuments();
     const ratings = await RatingData.aggregate([
         {
-            $match: {company_id: companyId}
+            $match: {company_id: companyId  ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
         },
         { "$sort": { createdAt : -1} },
         { "$limit": skip + limit },
@@ -255,7 +259,8 @@ export const singleRating = async (req, res) => {
 export const complaintManagement = async (req, res) => {
     const companyId = req.body.company_id;
     const negativeRating = ["1","2","3"];
-
+    const start_date = new Date(req.body.start_date);
+    const end_date = new Date(req.body.end_date);
     if (!companyId) {
         res.status(409).json({ message : 'Invalid request, companyId is missing'});
     }
@@ -263,10 +268,10 @@ export const complaintManagement = async (req, res) => {
     const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
     const skip = (page - 1) * limit;
 
-    const ratingsCount = await RatingData.find({"company_id" : companyId , "rating" : { $lte: 3}}).countDocuments();
+    const ratingsCount = await RatingData.find({"company_id" : companyId , "rating" : { $lte: 3} , customer_email: { $ne: "" }  , "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}).countDocuments();
     const ratings = await RatingData.aggregate([
         {
-            $match: {company_id: companyId , rating : {  $lte : 3 } , customer_email: { $ne: "" } } 
+            $match: {company_id: companyId , rating : {  $lte : 3 } , customer_email: { $ne: "" }  , "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)} } 
         },
         { "$sort": { createdAt : -1} },
         { "$limit": skip + limit },
