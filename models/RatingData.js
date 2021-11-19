@@ -11,6 +11,7 @@ const rating = mongoose.Schema({
     customer_phone: String,
     customer_email: String,
     other_feedback: String,
+    is_assign: Number,
     createdAt: {
         type : Date,
         default: new Date()

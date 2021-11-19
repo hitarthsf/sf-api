@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const ratingEmployeeData = mongoose.Schema({
-    rating_id: mongoose.Schema.ObjectId,
+    rating_id: String,
     employee_id: String,
     rating: Number,
     location_id: String,
