@@ -12,10 +12,11 @@ export const createRating = async (req, res) => {
     const data = req.body;
     const skills = data.skills ? data.skills.split(',') : [];
     const employees = data.employees ? data.employees.split(',') : [];
-
+    var is_assign = data.employees ? '1' : '0';
+    
     const ratingObj = {
-        location_id: data.location_id,
-        company_id: data.company_id,
+        location_id: data.locationId,
+        company_id: data.companyId,
         rating: data.rating,
         dropout_page: data.dropout_page ? data.dropout_page : '',
         feedback: data.feedback ? data.feedback : '',
@@ -24,6 +25,7 @@ export const createRating = async (req, res) => {
         customer_phone: data.customer_phone ? data.customer_phone : '',
         customer_email: data.customer_email ? data.customer_email : '',
         other_feedback: data.other_feedback ? data.other_feedback : '',
+        is_assign : is_assign
     };
 
     const rating = new RatingData(ratingObj);
@@ -126,14 +128,14 @@ export const fetchRating = async (req, res) => {
         //         preserveNullAndEmptyArrays: false
         //     }
         // },
-        // {
-        //     $lookup: {
-        //         from: 'rating_employees',
-        //         localField: 'rating_id',
-        //         foreignField: 'id',
-        //         "as": "rating_employees"
-        //     }
-        // },
+        {
+            $lookup: {
+                from: 'rating_employees',
+                localField: 'ratingId',
+                foreignField: 'rating_id',
+                "as": "rating_employees"
+            }
+        },
         // {
         //     $unwind: {
         //         path: "$rating_employees",
@@ -142,11 +144,17 @@ export const fetchRating = async (req, res) => {
         // },
         
     ]);
+
     const responseData =  await Promise.all(
         ratings.map(async (rating) => {
             rating.companyName = companyData.name;
 
             rating.locationName = '';
+            
+            if (!rating.is_assign)
+            {
+             rating.is_assign = 0;   
+            }
             const fetchedLocation = _.find(companyData.location, (location) => {
                 return location._id == rating.location_id
             });
@@ -173,12 +181,12 @@ export const fetchRating = async (req, res) => {
                 rating.skillName = rating.skillName.join(",");
                 return ratingSkill;
             });
-            // await Promise.all(
-            //     rating.rating_employees.map(async (ratingEmployee) => {
-            //         ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
-            //         return ratingEmployee;
-            //     }),
-            // );
+            await Promise.all(
+                rating.rating_employees.map(async (ratingEmployee) => {
+                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+                    return ratingEmployee;
+                }),
+            );
             return rating;
         }),
     )
@@ -208,22 +216,24 @@ export const singleRating = async (req, res) => {
             }
         },
         
-        // {
-        //     $lookup: {
-        //         from: 'rating_employees',
-        //         localField: 'rating_id',
-        //         foreignField: 'id',
-        //         "as": "rating_employees"
-        //     }
-        // },
-        // 
+        {
+            $lookup: {
+                from: 'rating_employees',
+                localField: 'ratingId',
+                foreignField: 'rating_id',
+                "as": "rating_employees"
+            }
+        },
         
     ]);
     const companyData = await CompanyData.findOne({"_id":companyId});
     const responseData =  await Promise.all(
         ratings.map(async (rating) => {
             rating.companyName = companyData.name;
-
+            if (!rating.is_assign)
+            {
+             rating.is_assign = 0;   
+            }
             rating.locationName = '';
             const fetchedLocation = _.find(companyData.location, (location) => {
                 return location._id == rating.location_id
@@ -251,12 +261,13 @@ export const singleRating = async (req, res) => {
                 rating.skillName = rating.skillName.join(",");
                 return ratingSkill;
             });
-            // await Promise.all(
-            //     rating.rating_employees.map(async (ratingEmployee) => {
-            //         ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
-            //         return ratingEmployee;
-            //     }),
-            // );
+            await Promise.all(
+                rating.rating_employees.map(async (ratingEmployee) => {
+                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+                    rating.EmployeeName = ratingEmployee.employeeDetails.name;
+                    return ratingEmployee;
+                }),
+            );
             return rating;
         }),
     )
