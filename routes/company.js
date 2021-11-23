@@ -13,7 +13,7 @@ import {default as passport} from '../utils/passport.js';
 
 const companyRoutes = Router();
 
-import {createCompany, getCompany , getCompanyGet, updateCompany, deleteCompany,updateLocation,getLocation , migration , getLocationList, getSkillList, fetchLocationByLoggedInUser} from '../controllers/company.js';
+import {createCompany, getCompany , getCompanyGet,getLocationListPost ,  updateCompany, deleteCompany,updateLocation,getLocation , migration , getLocationList, getSkillList, fetchLocationByLoggedInUser} from '../controllers/company.js';
 
 companyRoutes.post('/createCompany', createCompany);
 companyRoutes.post('/fetchCompany',getCompany);
@@ -24,6 +24,7 @@ companyRoutes.post('/updateLocation', updateLocation);
 companyRoutes.post('/deleteCompany',  deleteCompany);
 companyRoutes.get('/fetchLocationList',getLocationList);
 companyRoutes.get('/fetchSkillList',getSkillList);
+companyRoutes.post('/fetchLocationListPost',getLocationListPost);
 
 companyRoutes.get('/test', function (req, res) {
   res.send('test home page');

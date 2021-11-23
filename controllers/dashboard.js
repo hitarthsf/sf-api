@@ -289,13 +289,15 @@ export const getRatingsDistribution = async (req, res) => {
                 }
 
             ]);
-        if (average_count.length === 0) {
-            res.status(200).json({message: "No data found with above filter"});
-        }
-        //res.send(average_count[0]["_id"]);
-        var distribution    = [] ; 
+         var distribution    = [] ; 
         var countDistribution           = [] ; 
         var percentage      = [] ;
+        if (average_count.length === 0) {
+            const ratings = [{"distribution": distribution, "countDistribution":countDistribution}];
+            res.status(200).json({data: rating ,message: "No data found with above filter"});
+        }
+        //res.send(average_count[0]["_id"]);
+       
         
         for (let i = 0; i < 5; i++) {
             
@@ -427,39 +429,109 @@ export const getRatingData = async (req, res) => {
 
 // Get Latest Reviews
 export const latestReview = async (req, res) => {
-    const company_id = req.body.company_id;
-    const location_id = req.body.location_id.split(',');
-    const start_date = new Date(req.body.start_date);
-    const end_date = new Date(req.body.end_date);
-    //res.send(end_date);
-    // add try catch
-    try {
-        const reviews = await RatingData.aggregate(
-            [
-                {
-                    $match: {
-                        "location_id": {$in: location_id},
-                        "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
-                    }
-                },
-                {
-                    $sort: {createdAt: -1}
-                },
-                {
-                    $limit: 3
-                },
-                {
-                    $project: {"location_id": 1, "feedback": 1, "createdAt": 1, "rating": 1}
-                }
-            ]);
+    const companyId     = req.body.company_id;
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
+  
 
-        if (reviews.length === 0) {
-            res.status(200).json({message: "No data found with above filter"});
-        }
-        res.status(200).json({data: reviews, message: "Success"});
-    } catch (error) {
-        res.status(404).json({message: error.message});
+    if (!companyId) {
+        res.status(409).json({ message : 'Invalid request, Company Id is missing'});
     }
+    // const ratings = await RatingData.find({companyId: companyId}, {
+    //     $lookup: {
+    //         from: 'rating_skills',
+    //         localField: 'rating_id',
+    //         foreignField: '_id',
+    //         "as": "L"
+    //     }
+    // })
+
+    const companyData = await CompanyData.findOne({"_id":companyId  });
+    
+    const ratings = await RatingData.aggregate([
+        {
+            $match: {company_id: companyId   ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
+        },
+        { "$sort": { createdAt : -1} },
+        { "$limit": 3 },
+        { "$addFields": { "ratingId": { "$toString": "$_id" }}},
+        {
+            $lookup: {
+                from: 'rating_skills',
+                localField: 'ratingId',
+                foreignField: 'rating_id',
+                "as": "rating_skills",
+
+            }
+        },
+        // {
+        //     $unwind: {
+        //         path: "$rating_skills",
+        //         preserveNullAndEmptyArrays: false
+        //     }
+        // },
+        {
+            $lookup: {
+                from: 'rating_employees',
+                localField: 'ratingId',
+                foreignField: 'rating_id',
+                "as": "rating_employees"
+            }
+        },
+        // {
+        //     $unwind: {
+        //         path: "$rating_employees",
+        //         preserveNullAndEmptyArrays: false
+        //     }
+        // },
+        
+    ]);
+
+    const responseData =  await Promise.all(
+        ratings.map(async (rating) => {
+            rating.companyName = companyData.name;
+            if (!rating.is_assign)
+            {
+             rating.is_assign = 0;   
+            }
+            rating.locationName = '';
+            const fetchedLocation = _.find(companyData.location, (location) => {
+                return location._id == rating.location_id
+            });
+            if (fetchedLocation) {
+                rating.locationName = fetchedLocation.name;
+            }
+            rating.skillName = [];
+            rating.rating_skills.map(async (ratingSkill) => {
+                
+                companyData.attributes.map((attribute) => {
+                    const matchingObj = _.find(attribute.positive_skills, (skill) => {
+                        return skill._id == ratingSkill.skill_id
+                    });
+                    if (matchingObj) {
+                        rating.skillName.push(matchingObj.name) ;
+                    }
+                    if (ratingSkill.skillName === '') {
+                        const matchingObj = _.find(attribute.negative_skills, {_id: ratingSkill.skill_id});
+                        if (matchingObj) {
+                            rating.skillName.push(matchingObj.name) ;
+                        }
+                    }
+                });
+                rating.skillName = rating.skillName.join(",");
+                return ratingSkill;
+            });
+            await Promise.all(
+                rating.rating_employees.map(async (ratingEmployee) => {
+                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+                    rating.EmployeeName = ratingEmployee.employeeDetails.name;
+                    return ratingEmployee;
+                }),
+            );
+            return rating;
+        }),
+    )
+    res.status(200).json({"ratings":ratings });
 
 }
 

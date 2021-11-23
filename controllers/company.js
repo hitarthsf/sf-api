@@ -107,6 +107,28 @@ export const getCompanyGet = async (req,res) => {
     }
 }
 
+
+export const getLocationListPost = async (req,res) => {
+    //res.send('THIS GOOD');
+    const  id  = req.body._id;
+    try {
+        const AllCompany = await CompanyData.findOne({"_id":id});
+        // const companyList = [];
+        // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        //     fetchedLocations.location.map((location) => {
+        //         companyList.push({
+        //             _id: location._id,
+        //             name: location.name,
+        //         });
+        //     });
+        // }
+
+        res.status(200).json(AllCompany);
+    } catch (error) {
+        res.status(404).json({message : error.message});
+    }
+}
+
 export const getLocation = async (req,res) => {
     //res.send('THIS GOOD');
     const  id  = req.body._id;
