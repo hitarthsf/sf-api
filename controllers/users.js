@@ -367,9 +367,21 @@ export const getLocationByUser = async (req,res) => {
            res.status(200).json(userLocation ); 
            break;
    }
-   
 
 }
+
+   
+// Get User Name by location id 
+export const getUserByLocationId = async (req,res) => {
+    const id  = req.query.id.split(",");
+    
+    if (!id) {
+        res.status(409).json({ message : 'id is mandatory field.'});
+    }
+    var user = await UsersData.find({"location_id": {$in: id}});
+    res.status(200).json(user ); 
+}
+
 
 
 
