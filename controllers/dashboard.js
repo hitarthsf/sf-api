@@ -25,11 +25,15 @@ export const getData = async (req, res) => {
         if (location_id[0] === "") {
             const fetchedLocations = await CompanyData.findOne({"_id": company_id}, {location: 1});
             const userLocationId = [];
-            if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            if (fetchedLocations)
+            {
+                if (fetchedLocations.location !== undefined && fetchedLocations.location) {
                 fetchedLocations.location.map((location) => {
                     userLocationId.push(location._id.toString());
                 });
+                }    
             }
+            
 
 
             var count_total = await RatingData.aggregate([
@@ -196,10 +200,14 @@ export const getLocationRank = async (req, res) => {
 
 
         if (location_rank.length === 0) {
-            res.status(200).json({data: location_rank, message: "Success"});
+            res.status(200).json({data: location_rank, message: "No data on this filter"});
         }
         // get location name
         const companyData = await CompanyData.findOne({"_id": company_id});
+        if (!companyData)
+        {
+            res.status(200).json({data: location_rank, message: "Invalid Company Id "});
+        } 
         const responseData = await Promise.all(
             location_rank.map(async (locationData) => {
 
@@ -486,7 +494,10 @@ export const latestReview = async (req, res) => {
         // },
         
     ]);
-
+    if (!companyData)
+        {
+            res.status(200).json({data: location_rank, message: "Invalid Company Id "});
+        } 
     const responseData =  await Promise.all(
         ratings.map(async (rating) => {
             rating.companyName = companyData.name;
@@ -551,11 +562,15 @@ export const getAttributeRank = async (req, res) => {
     try {
         const fetchedLocations = await CompanyData.findOne({"_id": companyId}, {location: 1});
         const userLocationId = [];
-        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        if (fetchedLocations)
+        {
+            if (fetchedLocations.location !== undefined && fetchedLocations.location) {
             fetchedLocations.location.map((location) => {
                 userLocationId.push(location._id.toString());
             });
+            }    
         }
+        
 
         // Get Ratings Id From
         if (locationId[0] === "") {
@@ -618,6 +633,7 @@ export const getAttributeRank = async (req, res) => {
             ]
         );
 
+
         if (format == "chart") {
             var SkillNamePositive = [];
             var SkillNameNegative = [];
@@ -626,7 +642,11 @@ export const getAttributeRank = async (req, res) => {
             var AttributeCount = [];
 
             var companyData = await CompanyData.findOne({"_id": companyId});
-
+            if (!companyData)
+            {
+                res.status(200).json({data: skillRanks, message: "Invalid Company Id "});
+            } 
+            
             skillRanks.map((skillObj) => {
                 skillObj.name = '';
                 
@@ -722,11 +742,15 @@ export const getSkillRank = async (req, res) => {
     // add try catch
     try {
         const fetchedLocations = await CompanyData.findOne({"_id": companyId}, {location: 1});
+
         const userLocationId = [];
-        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        if (fetchedLocations)
+        {
+            if (fetchedLocations.location !== undefined && fetchedLocations.location) {
             fetchedLocations.location.map((location) => {
                 userLocationId.push(location._id.toString());
             });
+            }    
         }
 
         // Get Ratings Id From
@@ -794,7 +818,12 @@ export const getSkillRank = async (req, res) => {
             var SkillNamePositive = [];
             var SkillNameNegative = [];
             var SkillCount = [];
+            var data = [{"SkillName": [], "SkillCount": []}];
             const companyData = await CompanyData.findOne({"_id": companyId});
+            if (!companyData)
+            {
+                res.status(200).json({data: data, message: "Invalid Company Id "});
+            } 
             skillRanks.map((skillObj) => {
                 skillObj.name = '';
                 skillObj.type = '';
@@ -820,7 +849,7 @@ export const getSkillRank = async (req, res) => {
                     }
                 });
             })
-            var data = [{"SkillName": [], "SkillCount": []}];
+            
             if (type == "positive" && SkillNamePositive.length > 0) {
                 var data = [{"SkillName": SkillNamePositive, "SkillCount": SkillCount}];
             }
@@ -876,10 +905,13 @@ export const getEmployeeRank = async (req, res) => {
         // Get Ratings Id From
         const fetchedLocations = await CompanyData.findOne({"_id": company_id}, {location: 1});
         const userLocationId = [];
-        if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        if (fetchedLocations)
+        {
+            if (fetchedLocations.location !== undefined && fetchedLocations.location) {
             fetchedLocations.location.map((location) => {
                 userLocationId.push(location._id.toString());
             });
+            }    
         }
 
         // Get Ratings Id From
