@@ -12,10 +12,10 @@ import CompanyData from "../models/CompanyData.js";
 export const migrateCompanies = async (req, res) => {
 
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'ratings_db_live'
+        host: '192.168.64.2',
+        user: 'hitarth29',
+        password: 'Pfbvq3Ed4l/HMycS',
+        database: 'ratings_db'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -35,7 +35,7 @@ export const migrateCompanies = async (req, res) => {
                             WHERE location_area_id = ${company.id}`, async (err, rows) => {
                             companyObject['location'] = rows;
                         });
-
+                        
                         // Fetch company attributes & skills
                         await connection.query(`SELECT 
                             attribute.id as attributeId, 
@@ -87,6 +87,7 @@ export const migrateCompanies = async (req, res) => {
                                 }
                             });
                             companyObject['attributes'] = attributes;
+
                             const newCompany = new CompanyMigratedData({...companyObject, createdAt: new Date().toISOString()});
                             await newCompany.save();
                             console.log(`import successful for companyName: ${newCompany.name}, companyId: ${newCompany._id}`);
@@ -104,35 +105,49 @@ export const migrateCompanies = async (req, res) => {
 
 export const migrateUsers = async (req, res) => {
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'ratings_db_live'
+         host: '192.168.64.2',
+        user: 'hitarth29',
+        password: 'Pfbvq3Ed4l/HMycS',
+        database: 'ratings_db'
     });
     connection.connect(async (err) => {
         if (err) throw err
         console.log('You are now connected...');
         const mongoCompanyList = await CompanyMigratedData.find();
+
         await Promise.all(
             mongoCompanyList.map(async (mongoCompany) => {
                 const currentCompanyId = mongoCompany.old_company_id;
-                await connection.query(`SELECT * FROM users
+                await connection.query(`SELECT *  , GROUP_CONCAT(DISTINCT user_location.location_id) as location_ids , user_location.user_id as user_id FROM users
                                         LEFT JOIN user_location on users.id = user_location.user_id
-                                        WHERE user_location.location_area_id = ${currentCompanyId}`, async (err, rows) => {
-                    rows.map(async (rowUser) => {
+                                        WHERE user_location.location_area_id = ${currentCompanyId} GROUP BY user_location.user_id`, async (err, rows) => {
+                    // adding if condition to check that are there any users                                            
+                    if (rows.length > 0 )
+                    {
+                        rows.map(async (rowUser) => {
+                        console.log("user");
+                        console.log(rowUser);
+
                         const userData = rowUser;
                         userData['company_id'] = mongoCompany._id;
-                        if (rowUser.location_id) {
-                            // console.log('mongoCompany.location', mongoCompany.location, rowUser.location_id);
+                        if (rowUser.location_ids ) {
+                            var userLocationIDs = [] ;
+                         //console.log('mongoCompany.location', mongoCompany.location, rowUser.location_id);
                             const fetchedLocation = _.find(mongoCompany.location, (location) => {
-                                return location.old_location_id == rowUser.location_id
+                                if (rowUser.location_ids.split(',').includes(location.old_location_id) )
+                                {
+                                    userLocationIDs.push(location._id);
+                                }
+                                
                             });
-                            userData['location_id'] = fetchedLocation ? fetchedLocation._id : '';
-                            userData['old_user_id'] = rowUser.id;
+                            userData['location_id'] = userLocationIDs.length > 0  ? userLocationIDs : '';
+                            userData['old_user_id'] = rowUser.user_id;
                             const mongoUserData = new UserMigratedData({...userData, createdAt: new Date().toISOString()});
                             await mongoUserData.save();
                         }
                     });
+                 }
+                    
                 });
                 console.log(`import successful for companyName: ${mongoCompany.name}, companyId: ${mongoCompany._id}`);
             }),
@@ -149,10 +164,10 @@ export const migrateRatings = async (req,res) => {
     }
     console.log('oldCompanyId', oldCompanyId);
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'ratings_db_live'
+        host: '192.168.64.2',
+        user: 'hitarth29',
+        password: 'Pfbvq3Ed4l/HMycS',
+        database: 'ratings_db'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -174,6 +189,8 @@ export const migrateRatings = async (req,res) => {
 
                     ratingObj['location_id'] = location._id;
                     ratingObj['company_id'] = mongoCompanyObj._id;
+                    ratingObj['old_location_id'] = ratingRow.location_id;
+                    ratingObj['old_rating_id'] = ratingRow.id;
 
                     const ratingMongoObj = new RatingMigratedData({...ratingObj, createdAt: ratingObj['created_at']});
                     await ratingMongoObj.save();
@@ -242,14 +259,15 @@ export const migrateRatings = async (req,res) => {
             });
         });
     });
+res.status(209).json(`total ${ratingRows.length} ratings  are imported.`);
 }
 
 export const migrateLogins = async (req,res) => {
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'ratings_db_live'
+        host: '192.168.64.2',
+        user: 'hitarth29',
+        password: 'Pfbvq3Ed4l/HMycS',
+        database: 'ratings_db'
     });
     connection.connect(async (err) => {
         if (err) throw err
@@ -276,10 +294,10 @@ export const migrateLogins = async (req,res) => {
 
 export const updateMigratedLocationNames = async (req, res) => {
     const connection = mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'root',
-        database: 'ratings_db_live'
+         host: '192.168.64.2',
+        user: 'hitarth29',
+        password: 'Pfbvq3Ed4l/HMycS',
+        database: 'ratings_db'
     });
     connection.connect(async (err) => {
         if (err) throw err
