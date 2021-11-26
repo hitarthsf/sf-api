@@ -2,12 +2,19 @@ import CategoryData from '../models/CategoryData.js';
 
 export const createCategory = async(req,res) => {
 
-   const category = req.body;
+   
+   const name       = req.body.name ;
+   const company_id = req.body.company_id ;
+   const newCategory = {
+        company_id:     company_id,
+        name:           name
+    };
 
-   const newCategory = new CategoryData({ ...category, createdAt: new Date().toISOString() });
+   const category = new CategoryData(newCategory);
+        
    try {
-       await newCategory.save()
-       res.status(201).json(newCategory);
+       await category.save()
+       res.status(201).json(category);
    } catch (error) {
        res.status(409).json({ message : error.message})
    }
@@ -16,7 +23,7 @@ export const createCategory = async(req,res) => {
 export const getCategory = async (req,res) => {
     //res.send('THIS GOOD');
     try {
-        const AllCategory = await CategoryData.find();
+        const AllCategory = await CategoryData.find({"company_id":req.body.company_id});
         res.status(200).json(AllCategory);
     } catch (error) {
         res.status(404).json({message : error.message});
@@ -24,25 +31,23 @@ export const getCategory = async (req,res) => {
 }
 
 export const updateCategory = async (req, res) => {
-    console.log(req.body)
-    //const { id } = req.body._id;
-    const category = req.body;
     
-    // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
-
-    const updatedCategory = { ...category, _id: req.body._id };
+    const name       = req.body.name ;
+    const company_id = req.body.company_id ;
+    const updatedCategory = {
+        company_id:     company_id,
+        name:           name
+    };
+    
 
     await CategoryData.findByIdAndUpdate(req.body._id, updatedCategory, { new: true });
-
-    res.json(updatedCategory);
-    console.log(updatedCategory)
+    res.status(201).json(updatedCategory);
+    
 }
 
 export const deleteCategory = async (req, res) => {
-    console.log(req.body)
+    
     const  id  = req.body._id;
-
-    //if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
 
     await CategoryData.findByIdAndRemove(id);
 
