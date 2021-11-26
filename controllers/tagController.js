@@ -86,13 +86,26 @@ export const editTag = async(req,res) => {
 
 // get Tag data with post method
 export const fetchTag = async(req,res) => {
-
+        const page = req.body.page ? req.body.page : 1;
+        const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+        const skip = (page - 1) * limit;
+        const filterGeneralSearch = req.body.filterGeneralSearch ;
         var company_id   = req.body.company_id;  
-        var location_id  = req.body.location_id.split(',');
+        
         const companyData = await CompanyData.findOne({"_id":company_id  });
 
-        const tag = await TagData.find({"company_id" : company_id , "location_id" : location_id   });
-        const tagCount = await TagData.find({"company_id" : company_id , "location_id" : location_id  }).countDocuments();
+        
+        if (filterGeneralSearch != "")
+        {
+
+            var tag    = await TagData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"},"company_id" : company_id  }).skip(skip).limit(limit);
+            var tagCount = await TagData.find({"name": {$regex: ".*" + filterGeneralSearch + ".*"},"company_id" : company_id  }).countDocuments(); 
+        }
+        else
+        {
+            var tag = await TagData.find({"company_id" : company_id    }).skip(skip).limit(limit);
+            var tagCount = await TagData.find({"company_id" : company_id  }).countDocuments();    
+        }
 
    try {
         
