@@ -92,11 +92,11 @@ export const fetchTag = async(req,res) => {
         const companyData = await CompanyData.findOne({"_id":company_id  });
 
         const tag = await TagData.find({"company_id" : company_id , "location_id" : location_id   });
-
+        const tagCount = await TagData.find({"company_id" : company_id , "location_id" : location_id  }).countDocuments();
 
    try {
         
-        res.status(201).json({data: tag, message: "Tag Listed Successfully !!"});
+        res.status(201).json({data: tag , totalCount : tagCount, message: "Tag Listed Successfully !!"});
    } catch (error) {
        res.status(409).json({ message : error.message})
    }
