@@ -78,6 +78,7 @@ export const fetchRating = async (req, res) => {
     const companyId     = req.body.company_id;
     const start_date    = new Date(req.body.start_date);
     const end_date      = new Date(req.body.end_date);
+    const ObjectId = mongoose.Types.ObjectId;
     if (req.body.rating == "")
     {
         var rating        =  [1,2,3,4,5];    
@@ -163,7 +164,7 @@ export const fetchRating = async (req, res) => {
             }
             rating.skillName = [];
             rating.rating_skills.map(async (ratingSkill) => {
-                rating.skillName = '';
+                rating.skillName = [];
                 companyData.attributes.map((attribute) => {
                     const matchingObj = _.find(attribute.positive_skills, (skill) => {
                         return skill._id == ratingSkill.skill_id
@@ -178,15 +179,26 @@ export const fetchRating = async (req, res) => {
                         }
                     }
                 });
-                rating.skillName = rating.skillName.join(",");
+                if (rating.skillName > 0 )
+                {rating.skillName = rating.skillName.join(",");}
+
                 return ratingSkill;
             });
-            await Promise.all(
+            if (rating.rating_employees.length > 0 )
+            {
+                await Promise.all(
                 rating.rating_employees.map(async (ratingEmployee) => {
-                    ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
-                    return ratingEmployee;
+                    
+                    if ( ratingEmployee.employee_id != "null" && ratingEmployee.employee_id != null  )
+                    {
+                        ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
+                        return ratingEmployee;    
+                    } 
+                    
                 }),
             );
+            }
+            
             return rating;
         }),
     )
