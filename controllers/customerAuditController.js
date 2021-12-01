@@ -13,10 +13,10 @@ export const addCustomerAuditQuestion = async(req,res) => {
 	var name 				= req.body.name;
 	var total_question 		= parseInt(req.body.total_question);
 	var question = [];
-	var option = [];
+	
 	var max_score = 0 ; 
 	for (var i = 1; i <= total_question; i++) {
-		
+		var option = [];
 		for (var opt = 0; opt <= 10; opt++) {
 			
 			var optionName 	= "req.body.option_"+i+"_"+opt+"_name";
@@ -28,7 +28,7 @@ export const addCustomerAuditQuestion = async(req,res) => {
 				"name" : eval(optionName),
 				"score" : eval(optionValue),
 				}	
-				var max_score = max_score + parseInt(optionValue ); 
+				var max_score = parseInt(max_score) + parseInt(eval(optionValue)); 
 				option.push(optionArray)
 			} 
 		}
@@ -58,12 +58,12 @@ export const addCustomerAuditQuestion = async(req,res) => {
         max_score :     max_score 
     };
 
-   
-
+   	
+console.log(question)
     try {
-		var questionSave = new CustomerAuditQuestionData(questionObj);
-		await questionSave.save();
-		res.status(201).json({data: questionSave, message: "Profile Question Created Successfully !!"});
+		// var questionSave = new CustomerAuditQuestionData(questionObj);
+		// await questionSave.save();
+		res.status(201).json({data: question, message: "Profile Question Created Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
@@ -93,7 +93,7 @@ export const editCustomerAuditQuestion = async(req,res) => {
 				"name" : eval(optionName),
 				"score" : eval(optionValue),
 				}	
-				var max_score = max_score + parseInt(optionValue ); 
+				var max_score = parseInt(max_score) + parseInt(eval(optionValue) ); 
 				option.push(optionArray)
 			} 
 		}
@@ -119,50 +119,9 @@ export const editCustomerAuditQuestion = async(req,res) => {
 
         company_id:     company_id,
         name:           name,
-        question:       question
+        question:       question,
+        max_score :     max_score	
     };
-
-    // Email sending code 
-    const filePath = path.join(process.cwd(), 'email');
-    const logopath = path.join(process.cwd(), 'email/images/logo.png');
-    
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'hitarth.rc@@gmail.com',
-    pass: 'mrdldgjyzjfofnek'
-    }
-  });
-  
-  const handlebarOptions = {
-    viewEngine: {
-        partialsDir: filePath,
-        defaultLayout: false,
-    },
-    viewPath: filePath,
-	};
-
-	transporter.use('compile', hbs(handlebarOptions))
-  const mailOptions = {
-    	from: 'youremail@gmail.com',
-	  to: 'hivasavada@gmail.com',
-	  subject: 'Customer Audit',
-   template	: 'audit' ,
-   context: {
-       name: 'Name'
-   }
-    
-  };
-  
-  transporter.sendMail(mailOptions, function(error, info){
-	  if (error) {
-	    console.log(error);
-	  } else {
-	    console.log('Email sent: ' + info.response);
-	  }
-	}); 
-
-	// Email sending code end
 
     try {
     	await CustomerAuditQuestionData.findByIdAndUpdate(id, questionObj, { new: true });
