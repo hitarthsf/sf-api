@@ -14,6 +14,7 @@ export const addCustomerAuditQuestion = async(req,res) => {
 	var total_question 		= parseInt(req.body.total_question);
 	var question = [];
 	var option = [];
+	var max_score = 0 ; 
 	for (var i = 1; i <= total_question; i++) {
 		
 		for (var opt = 0; opt <= 10; opt++) {
@@ -27,12 +28,10 @@ export const addCustomerAuditQuestion = async(req,res) => {
 				"name" : eval(optionName),
 				"score" : eval(optionValue),
 				}	
+				var max_score = max_score + parseInt(optionValue ); 
 				option.push(optionArray)
 			} 
-			
-
 		}
-
 
 		var questionArrayObj = 
 			{
@@ -55,50 +54,11 @@ export const addCustomerAuditQuestion = async(req,res) => {
 
         company_id:     company_id,
         name:           name,
-        question:       question
+        question:       question,
+        max_score :     max_score 
     };
 
-    // Email sending code 
-    const filePath = path.join(process.cwd(), 'email');
-    const logopath = path.join(process.cwd(), 'email/images/logo.png');
-    
-  const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: 'hitarth.rc@@gmail.com',
-    pass: 'mrdldgjyzjfofnek'
-    }
-  });
-  
-  const handlebarOptions = {
-    viewEngine: {
-        partialsDir: filePath,
-        defaultLayout: false,
-    },
-    viewPath: filePath,
-	};
-
-	transporter.use('compile', hbs(handlebarOptions))
-  const mailOptions = {
-    	from: 'youremail@gmail.com',
-	  to: 'hivasavada@gmail.com',
-	  subject: 'Customer Audit',
-   template	: 'audit' ,
-   context: {
-       name: 'Name'
-   }
-    
-  };
-  
-  transporter.sendMail(mailOptions, function(error, info){
-	  if (error) {
-	    console.log(error);
-	  } else {
-	    console.log('Email sent: ' + info.response);
-	  }
-	}); 
-
-	// Email sending code end
+   
 
     try {
 		var questionSave = new CustomerAuditQuestionData(questionObj);
@@ -118,20 +78,37 @@ export const editCustomerAuditQuestion = async(req,res) => {
 	var name 				= req.body.name;
 	var total_question 		= parseInt(req.body.total_question);
 	var question = [];
+	var option = [];
+	var max_score = 0 ; 
 	for (var i = 1; i <= total_question; i++) {
 		
+		for (var opt = 0; opt <= 10; opt++) {
+			
+			var optionName 	= "req.body.option_"+i+"_"+opt+"_name";
+			var optionValue = "req.body.option_"+i+"_"+opt+"_value";
+			if (eval(optionName) )
+			{
+				var optionArray = {
+
+				"name" : eval(optionName),
+				"score" : eval(optionValue),
+				}	
+				var max_score = max_score + parseInt(optionValue ); 
+				option.push(optionArray)
+			} 
+		}
 		
 		var questionArrayObj = 
 			{
 				"question" 		: eval("req.body.question_"+i)   , 
 				"category" 		: eval("req.body.category_"+i) ? eval("req.body.category_"+i) : "" ,  
-				"type" 			: eval("req.body.type_"+i) ? eval("req.body.type_"+i) : "" ,
-				"is_nps" 		: eval("req.body.is_nps_"+i) ? parseInt(eval("req.body.is_nps_"+i)) : 0 ,
-				"is_feedback" 	: eval("req.body.is_feedback_"+i) ? parseInt(eval("req.body.is_feedback_"+i)) : 0,
+				"type" 				: eval("req.body.type_"+i) ? eval("req.body.type_"+i) : "" ,
+				"is_nps" 			: eval("req.body.is_nps_"+i) ? parseInt(eval("req.body.is_nps_"+i)) : 0 ,
+				"is_feedback" : eval("req.body.is_feedback_"+i) ? parseInt(eval("req.body.is_feedback_"+i)) : 0,
 				"requried"		: eval("req.body.requried_"+i) ? parseInt(eval("req.body.requried_"+i)) : 0,
 				"minimum_characters"		: eval("req.body.minimum_characters_"+i) ? parseInt(eval("req.body.minimum_characters_"+i)) : 0,
 				"order"			: parseInt(eval("req.body.order_"+i)) ? parseInt(eval("req.body.order_"+i)) : 0 ,
-				"option"		: eval("req.body.option_"+i) ? eval("req.body.option_"+i) : [],
+				"option"		: option.length > 0  ? option : [],
 				
 			}
 		question.push(questionArrayObj);
@@ -269,6 +246,47 @@ export const addCustomerAudit = async(req,res) => {
         is_dinner:     			parseInt(data.is_dinner),
         creator_id:     		data.creator_id ?  data.creator_id : null,
     };
+     // Email sending code 
+    const filePath = path.join(process.cwd(), 'email');
+    const logopath = path.join(process.cwd(), 'email/images/logo.png');
+    
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'hitarth.rc@@gmail.com',
+    pass: 'mrdldgjyzjfofnek'
+    }
+  });
+  
+  const handlebarOptions = {
+    viewEngine: {
+        partialsDir: filePath,
+        defaultLayout: false,
+    },
+    viewPath: filePath,
+	};
+
+	transporter.use('compile', hbs(handlebarOptions))
+  const mailOptions = {
+    	from: 'youremail@gmail.com',
+	  to: 'hivasavada@gmail.com',
+	  subject: 'Customer Audit',
+   template	: 'audit' ,
+   context: {
+       name: 'Name'
+   }
+    
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+	  if (error) {
+	    console.log(error);
+	  } else {
+	    console.log('Email sent: ' + info.response);
+	  }
+	}); 
+
+	// Email sending code end
 
     try {
     	var auditSave = new CustomerAuditData(auditObj);
