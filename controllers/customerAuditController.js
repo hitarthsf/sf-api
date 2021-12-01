@@ -59,11 +59,11 @@ export const addCustomerAuditQuestion = async(req,res) => {
     };
 
    	
-console.log(question)
+
     try {
-		// var questionSave = new CustomerAuditQuestionData(questionObj);
-		// await questionSave.save();
-		res.status(201).json({data: question, message: "Profile Question Created Successfully !!"});
+		var questionSave = new CustomerAuditQuestionData(questionObj);
+		await questionSave.save();
+		res.status(201).json({data: questionSave, message: "Profile Question Created Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
