@@ -73,15 +73,15 @@ export const addCustomerAuditQuestion = async(req,res) => {
 // Edit Customr Audit Question Set
 export const editCustomerAuditQuestion = async(req,res) => {
 
-	var id 					= req.body._id;
+	var _id 							= req.body._id;
 	var company_id 			= req.body.company_id;
-	var name 				= req.body.name;
-	var total_question 		= parseInt(req.body.total_question);
+	var name 						= req.body.name;
+	var total_question 	= parseInt(req.body.total_question);
 	var question = [];
 	var option = [];
 	var max_score = 0 ; 
 	for (var i = 1; i <= total_question; i++) {
-		
+		var option = [];
 		for (var opt = 0; opt <= 10; opt++) {
 			
 			var optionName 	= "req.body.option_"+i+"_"+opt+"_name";
@@ -93,38 +93,39 @@ export const editCustomerAuditQuestion = async(req,res) => {
 				"name" : eval(optionName),
 				"score" : eval(optionValue),
 				}	
-				var max_score = parseInt(max_score) + parseInt(eval(optionValue) ); 
+				var max_score = parseInt(max_score) + parseInt(eval(optionValue)); 
 				option.push(optionArray)
 			} 
 		}
-		
+
 		var questionArrayObj = 
 			{
-				"question" 		: eval("req.body.question_"+i)   , 
-				"category" 		: eval("req.body.category_"+i) ? eval("req.body.category_"+i) : "" ,  
-				"type" 				: eval("req.body.type_"+i) ? eval("req.body.type_"+i) : "" ,
-				"is_nps" 			: eval("req.body.is_nps_"+i) ? parseInt(eval("req.body.is_nps_"+i)) : 0 ,
-				"is_feedback" : eval("req.body.is_feedback_"+i) ? parseInt(eval("req.body.is_feedback_"+i)) : 0,
-				"requried"		: eval("req.body.requried_"+i) ? parseInt(eval("req.body.requried_"+i)) : 0,
+				"question" 			: eval("req.body.question_"+i)   , 
+				"category" 			: eval("req.body.category_"+i) ? eval("req.body.category_"+i) : "" ,  
+				"type" 					: eval("req.body.type_"+i) ? eval("req.body.type_"+i) : "" ,
+				"is_nps" 				: eval("req.body.is_nps_"+i) ? parseInt(eval("req.body.is_nps_"+i)) : 0 ,
+				"is_feedback" 	: eval("req.body.is_feedback_"+i) ? parseInt(eval("req.body.is_feedback_"+i)) : 0,
+				"requried"			: eval("req.body.requried_"+i) ? parseInt(eval("req.body.requried_"+i)) : 0,
 				"minimum_characters"		: eval("req.body.minimum_characters_"+i) ? parseInt(eval("req.body.minimum_characters_"+i)) : 0,
-				"order"			: parseInt(eval("req.body.order_"+i)) ? parseInt(eval("req.body.order_"+i)) : 0 ,
-				"option"		: option.length > 0  ? option : [],
+				"order"					: parseInt(eval("req.body.order_"+i)) ? parseInt(eval("req.body.order_"+i)) : 0 ,
+				"option"				: option.length > 0  ? option : [],
 				
 			}
 		question.push(questionArrayObj);
 
 	}
-	
-	var questionObj = {
 
-        company_id:     company_id,
+	var questionObj = {
+				company_id:     company_id,
         name:           name,
         question:       question,
-        max_score :     max_score	
+        max_score :     max_score 
     };
 
+   	
+
     try {
-    	await CustomerAuditQuestionData.findByIdAndUpdate(id, questionObj, { new: true });
+    	await CustomerAuditQuestionData.findByIdAndUpdate(_id, questionObj, { new: true });
 		
 		res.status(201).json({data: questionObj, message: "Profile Question Updated Successfully !!"});
 	} catch (error) {
@@ -135,13 +136,23 @@ export const editCustomerAuditQuestion = async(req,res) => {
 // Fetch Customr Audit Question Set
 export const fetchCustomerAuditQuestion = async(req,res) => {
 
-	var company_id 			= req.body.company_id;
-	const page = req.body.page ? req.body.page : 1;
-    const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
-    const skip = (page - 1) * limit;
-
-    var question 			= await CustomerAuditQuestionData.find({"company_id" : company_id}).skip(skip).limit(limit); 
-    var questionCount 		= await CustomerAuditQuestionData.find({"company_id" : company_id}).countDocuments();  
+		var company_id 			= req.body.company_id;
+		const page 					= req.body.page ? req.body.page : 1;
+    const limit 				= req.body.perPage ? parseInt(req.body.perPage) : 1;
+    const skip 					= (page - 1) * limit;
+    const  filterGeneralSearch  = req.body.filterGeneralSearch ;  
+    if (filterGeneralSearch != "")
+    {
+    	var question 					= await CustomerAuditQuestionData.find({"company_id" : company_id , "name": {$regex: ".*" + filterGeneralSearch + ".*"}}).skip(skip).limit(limit); 
+    	var questionCount 		= await CustomerAuditQuestionData.find({"company_id" : company_id ,"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).countDocuments();  	
+    	
+    }
+    else
+    {
+    	var question 					= await CustomerAuditQuestionData.find({"company_id" : company_id}).skip(skip).limit(limit); 
+    	var questionCount 		= await CustomerAuditQuestionData.find({"company_id" : company_id}).countDocuments();  	
+    }
+    
     
     try {
     	
@@ -155,9 +166,8 @@ export const fetchCustomerAuditQuestion = async(req,res) => {
 // Delete Customr Audit Question Set
 export const deleteCustomerAuditQuestion = async(req,res) => {
 
-	var id   = req.body._id;  
-        
-	var question 			= await CustomerAuditQuestionData.findByIdAndRemove(id); 
+	var id   					= req.body._id;  
+  var question 			= await CustomerAuditQuestionData.findByIdAndRemove(id); 
 
     try {
     	
@@ -171,9 +181,8 @@ export const deleteCustomerAuditQuestion = async(req,res) => {
 // Get Only Single Customer Audit Question Set
 export const fetchSingleCustomerAuditQuestion = async(req,res) => {
 
-	var id   = req.body._id;  
-        
-	var question 			= await CustomerAuditQuestionData.findOne({"_id":id}); 
+	var id   					= req.body._id;  
+  var question 			= await CustomerAuditQuestionData.findOne({"_id":id}); 
 
     try {
     	
@@ -193,14 +202,14 @@ export const addCustomerAudit = async(req,res) => {
 
         company_id:     		data.company_id,
         location_id:     		data.location_id ? data.location_id : null,
-        tag_id:     			data.tag_id ? data.tag_id : null,
+        tag_id:     				data.tag_id ? data.tag_id : null,
         audit_set_question_id:  data.audit_set_question_id,
         start_date:     		data.start_date ? Date(data.start_date) : "" ,
         end_date:     			data.end_date ? Date(data.end_date) : "" ,
-        email:     				data.email,
-        budget:     			parseInt(data.budget),
-        additional_notes:     	data.additional_notes,
-        is_breakfast:     		parseInt(data.is_breakfast),
+        email:     					data.email,
+        budget:     				parseInt(data.budget),
+        additional_notes:   data.additional_notes,
+        is_breakfast:     	parseInt(data.is_breakfast),
         is_lunch:     			parseInt(data.is_lunch),
         is_dinner:     			parseInt(data.is_dinner),
         creator_id:     		data.creator_id ?  data.creator_id : null,
@@ -249,9 +258,9 @@ export const addCustomerAudit = async(req,res) => {
 
     try {
     	var auditSave = new CustomerAuditData(auditObj);
-		await auditSave.save();
+			await auditSave.save();
     	
-		res.status(201).json({data: auditSave, message: "Customer Audit Created Successfully !!"});
+			res.status(201).json({data: auditSave, message: "Customer Audit Created Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
