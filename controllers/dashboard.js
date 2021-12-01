@@ -969,13 +969,18 @@ export const getEmployeeRank = async (req, res) => {
 
             ]
         );
+        //res.status(200).json({data: employee_rank, message: "Success"});
         const responseData = await Promise.all(
             employee_rank.map(async (employee) => {
                 employee.employeeName = '';
-                const fetchedEmployee = await UserData.findOne({"_id": employee._id});
-                if (fetchedEmployee) {
-                    employee.employeeName = fetchedEmployee.name;
+                if (employee._id != "1" && employee._id != 1 && employee._id != "null" )
+                {
+                    const fetchedEmployee = await UserData.findOne({"_id": employee._id});
+                    if (fetchedEmployee) {
+                        employee.employeeName = fetchedEmployee.name;
+                    }    
                 }
+                
                 return employee;
             }),
         )
