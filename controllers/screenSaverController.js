@@ -151,15 +151,20 @@ export const editScreenSaver = async(req,res) => {
 export const fetchScreenSaver = async(req,res) => {
 
         var company_id   = req.body.company_id;  
-        var location_id  = req.body.location_id.split(',');
+        
+        const page                  = req.body.page ? req.body.page : 1;
+        const limit                 = req.body.perPage ? parseInt(req.body.perPage) : 1;
+        const skip                  = (page - 1) * limit;
+        const  filterGeneralSearch  = req.body.filterGeneralSearch ;  
         const companyData = await CompanyData.findOne({"_id":company_id  });
         var locationNames = [] ;
-        const screenSaver = await ScreenSaverData.find({"company_id" : company_id , "location_id" : location_id   });
+        const screenSaver = await ScreenSaverData.find({"company_id" : company_id }).skip(skip).limit(limit);
+        const screenSaverCount = await ScreenSaverData.find({"company_id" : company_id }).countDocuments();
 
 
    try {
         
-        res.status(201).json({data: screenSaver, message: "Screen Saver Listed Successfully !!"});
+        res.status(201).json({data: screenSaver , totalCount : screenSaverCount , message: "Screen Saver Listed Successfully !!"});
    } catch (error) {
        res.status(409).json({ message : error.message})
    }
