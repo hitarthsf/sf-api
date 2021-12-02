@@ -1,6 +1,7 @@
 import CustomerAuditQuestionData from '../models/CustomerAuditQuestionData.js';
 import CustomerAuditData from '../models/CustomerAuditData.js';
 import UserData from '../models/UsersData.js';
+import CompanyData from '../models/CompanyData.js';
 import * as nodemailer from 'nodemailer';
 import fs from 'fs';
 import * as path from 'path';
@@ -145,7 +146,6 @@ export const fetchCustomerAuditQuestion = async(req,res) => {
     {
     	var question 					= await CustomerAuditQuestionData.find({"company_id" : company_id , "name": {$regex: ".*" + filterGeneralSearch + ".*"}}).skip(skip).limit(limit); 
     	var questionCount 		= await CustomerAuditQuestionData.find({"company_id" : company_id ,"name": {$regex: ".*" + filterGeneralSearch + ".*"}}).countDocuments();  	
-    	
     }
     else
     {
@@ -154,11 +154,10 @@ export const fetchCustomerAuditQuestion = async(req,res) => {
     }
     
     
-    try {
-    	
-		res.status(200).json({data: question , totalCount: questionCount, message: "Profile Question Fetched Successfully !!"});
-	} catch (error) {
-       res.status(409).json({ message : error.message})
+   try {
+    	res.status(200).json({data: question , totalCount: questionCount, message: "Profile Question Fetched Successfully !!"});
+		} catch (error) {
+      res.status(409).json({ message : error.message})
    	}
 }
 
@@ -318,29 +317,52 @@ export const deleteCustomerAudit = async(req,res) => {
 //Fetch Customer Audit 
 export const fetchCustomerAudit = async(req,res) => {
  	
-	const company_id = req.body.company_id;
-	const page = req.body.page ? req.body.page : 1;
-    const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
-    const skip = (page - 1) * limit; 
+	const company_id 	= req.body.company_id;
+	const page 				= req.body.page ? req.body.page : 1;
+  const limit 			= req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip 				= (page - 1) * limit; 
+  const filterGeneralSearch  = req.body.filterGeneralSearch ;  
         
-	var audit 			= await CustomerAuditData.find({"company_id" : company_id}).skip(skip).limit(limit); ; 
-	var auditCount 		= await CustomerAuditData.find({"company_id" : company_id}).countDocuments();		
+	if (filterGeneralSearch != "")
+	{
+		var auditCount 		= await CustomerAuditData.find({"company_id" : company_id,  "email": {$regex: ".*" + filterGeneralSearch + ".*"}}).countDocuments();		
+		var audit 				= await CustomerAuditData.aggregate([
+			 {
+	        $match: {company_id: company_id ,  email: {$regex: ".*" + filterGeneralSearch + ".*"} }
+	     },	
+			 { "$limit":limit },
+	     { "$skip": skip }
+	    ]);  
+	}
+	else
+	{
+		var auditCount 		= await CustomerAuditData.find({"company_id" : company_id}).countDocuments();		
+		var audit 				= await CustomerAuditData.aggregate([
+			 {
+	        $match: {company_id: company_id }
+	     },	
+			 { "$limit":limit },
+	     { "$skip": skip }
+	    ]);  	
+	}
+	
 
 	const responseData =  await Promise.all(
 			audit.map(async (auditData) => { 
 				
-				auditData.creatorName = '';
-
+				auditData.creatorName = "";
+				auditData.companyName = "";
+				var company = await	 CompanyData.findOne({"_id":auditData.company_id});
+				auditData.companyName = company.name;
 				if (auditData.creator_id != null )
 				{
 					
 					var creator = await	 UserData.findOne({"_id":auditData.creator_id});
 					auditData.creatorName = creator.name ;	
-				}
-				
-				return auditData;	
 
-			})
+				}
+				return auditData;
+			}),
 		);
     try {
     	
