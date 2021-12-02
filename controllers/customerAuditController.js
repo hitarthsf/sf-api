@@ -307,7 +307,7 @@ export const deleteCustomerAudit = async(req,res) => {
     try {
     	
     	
-		res.status(200).json({data: auditObj, message: "Customer Audit Deleted Successfully !!"});
+		res.status(200).json({data: [], message: "Customer Audit Deleted Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
