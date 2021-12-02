@@ -157,6 +157,7 @@ export const getData = async (req, res) => {
 // get top location
 export const getLocationRank = async (req, res) => {
     const company_id = req.body.company_id;
+    const location_id = req.body.location_id.split(",");
     const start_date = new Date(req.body.start_date);
     const end_date = new Date(req.body.end_date);
     const order = parseInt(req.body.order);
@@ -180,6 +181,7 @@ export const getLocationRank = async (req, res) => {
 
                     $match: {
                         "company_id": company_id,
+                        "location_id" : {$in : location_id },   
                         "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
                     }
                 },
@@ -302,7 +304,7 @@ export const getRatingsDistribution = async (req, res) => {
         var percentage      = [] ;
         if (average_count.length === 0) {
             const ratings = [{"distribution": distribution, "countDistribution":countDistribution}];
-            res.status(200).json({data: rating ,message: "No data found with above filter"});
+            res.status(200).json({data: ratings ,message: "No data found with above filter"});
         }
         //res.send(average_count[0]["_id"]);
        
