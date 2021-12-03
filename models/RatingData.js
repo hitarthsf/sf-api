@@ -17,7 +17,7 @@ const rating = mongoose.Schema({
     resloved_time : String,
     comment : String,
     source : String,
-    assign_all : Number,
+    is_assign : Number,
     fraud : Number,
     device_id : String,
     customer_phone: String,
