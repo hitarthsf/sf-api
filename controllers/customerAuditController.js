@@ -412,7 +412,8 @@ export const fetchCustomerAudit = async(req,res) => {
 		var audit 				= await CustomerAuditData.aggregate([
 			 {
 	        $match: {company_id: company_id ,  email: {$regex: ".*" + filterGeneralSearch + ".*"} }
-	     },	
+	     },
+	     { "$sort": { createdAt : -1} },	
 	     { "$skip": skip },
 			 { "$limit":limit }
 	     
@@ -425,6 +426,7 @@ export const fetchCustomerAudit = async(req,res) => {
 			 {
 	        $match: {company_id: company_id }
 	     },	
+	     { "$sort": { createdAt : -1} },
 	     { "$skip": skip },
 			 { "$limit":limit }
 	     
