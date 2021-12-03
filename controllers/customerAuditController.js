@@ -405,7 +405,7 @@ export const fetchCustomerAudit = async(req,res) => {
   const limit 			= req.body.perPage ? parseInt(req.body.perPage) : 1;
   const skip 				= (page - 1) * limit; 
   const filterGeneralSearch  = req.body.filterGeneralSearch ;  
-        
+
 	if (filterGeneralSearch != "")
 	{
 		var auditCount 		= await CustomerAuditData.find({"company_id" : company_id,  "email": {$regex: ".*" + filterGeneralSearch + ".*"}}).countDocuments();		
@@ -413,8 +413,9 @@ export const fetchCustomerAudit = async(req,res) => {
 			 {
 	        $match: {company_id: company_id ,  email: {$regex: ".*" + filterGeneralSearch + ".*"} }
 	     },	
-			 { "$limit":limit },
-	     { "$skip": skip }
+	     { "$skip": skip },
+			 { "$limit":limit }
+	     
 	    ]);  
 	}
 	else
@@ -424,8 +425,9 @@ export const fetchCustomerAudit = async(req,res) => {
 			 {
 	        $match: {company_id: company_id }
 	     },	
-			 { "$limit":limit },
-	     { "$skip": skip }
+	     { "$skip": skip },
+			 { "$limit":limit }
+	     
 	    ]);  	
 	}
 	
