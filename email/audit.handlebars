@@ -291,8 +291,20 @@
                                                             <div class="mb-md" style="margin-bottom: 16px;">
                                                                 <img src="cid:logo1" alt="" height="160" class="img-illustration" style="color: red ;line-height: 100%; border: 0 none; outline: none; text-decoration: none; vertical-align: baseline; font-size: 0; max-width: 240px; max-height: 160px; width: auto; height: auto;" />
                                                             </div>
-                                                            <p style="margin: 0 0 1em; text-align: left; color: black;">You've been selected to complete a mystery visit </p>
                                                             
+                                                            <p style="margin: 0 0 1em; text-align: left; color: black;">Hi there, </p>
+                                                            
+                                                            <p style="margin: 0 0 1em; text-align: left; color: black;">You've been selected to complete a mystery visit </p>
+                                                               {{#if locationName }}
+                                                               <p style="margin: 0 0 1em; text-align: left; color: black;">We'd like you to visit  <strong>{{locationName}} </strong> </p> 
+                                                               {{/if}}
+                                                            {{#if budget}}   
+                                                               <p style="margin: 0 0 1em; text-align: left; color: black;">You have a budget of <strong>£{{budget}} </strong>which will be reimbursed after the succesful completion of your visit.</p>
+                                                            {{/if}}   
+
+                                                            {{#if additional_notes}}
+                                                            <p style="margin: 0 0 1em; text-align: left; color: black;">Additional notes : {{additional_notes}} </p>
+                                                            {{/if}}
                                                             <p style="margin: 0 0 1em; text-align: left; color: black;">Please take photos of your purchase, receipt and the site as this is part of the succesful completion criteria.  </p>
                                                             
                                                             <p style="margin: 0 0 1em; text-align: left; color: black;">Click below to start your visit</p>

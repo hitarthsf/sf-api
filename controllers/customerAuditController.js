@@ -7,6 +7,7 @@ import fs from 'fs';
 import * as path from 'path';
 import Email from 'email-templates';
 import hbs from 'nodemailer-express-handlebars';
+import _ from "lodash";
 // Add Customr Audit Question Set
 export const addCustomerAuditQuestion = async(req,res) => {
 
@@ -213,6 +214,22 @@ export const addCustomerAudit = async(req,res) => {
         is_dinner:     			parseInt(data.is_dinner),
         creator_id:     		data.creator_id ?  data.creator_id : null,
     };
+
+    // Getting Data for Email 
+    var locationName = null;
+    if (data.location_id)
+    {
+    	var companyData = await CompanyData.findOne({"_id" : data.company_id});
+	    
+	    const fetchedLocation = _.find(companyData.location, (location) => {	
+	    						if (location._id == data.location_id)
+	    						{
+	    							locationName = location.name ; 
+	    						}
+	                
+	            });	
+    }
+    
      // Email sending code 
     const filePath = path.join(process.cwd(), 'email');
     const logopath = path.join(process.cwd(), 'email/images/logo.png');
@@ -236,11 +253,16 @@ export const addCustomerAudit = async(req,res) => {
 	transporter.use('compile', hbs(handlebarOptions))
   const mailOptions = {
     	from: 'youremail@gmail.com',
-	  to: 'hivasavada@gmail.com',
+	  to: data.email,
 	  subject: 'Customer Audit',
    template	: 'audit' ,
    context: {
-       name: 'Name'
+       additional_notes	: data.additional_notes,
+       start_date				: data.start_date,
+       end_date					: data.end_date,
+       locationName			: locationName,
+       budget						: data.budget
+
    }
     
   };
@@ -287,6 +309,67 @@ export const editCustomerAudit = async(req,res) => {
         is_dinner:     			parseInt(data.is_dinner),
         creator_id:     		data.creator_id ?  data.creator_id : null,
     };
+
+     // Getting Data for Email 
+    var locationName = null;
+    if (data.location_id)
+    {
+    	var companyData = await CompanyData.findOne({"_id" : data.company_id});
+	    
+	    const fetchedLocation = _.find(companyData.location, (location) => {	
+	    						if (location._id == data.location_id)
+	    						{
+	    							locationName = location.name ; 
+	    						}
+	                
+	            });	
+    }
+    // Email sending code 
+    const filePath = path.join(process.cwd(), 'email');
+    const logopath = path.join(process.cwd(), 'email/images/logo.png');
+    
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'hitarth.rc@@gmail.com',
+    pass: 'mrdldgjyzjfofnek'
+    }
+  });
+  
+  const handlebarOptions = {
+    viewEngine: {
+        partialsDir: filePath,
+        defaultLayout: false,
+    },
+    viewPath: filePath,
+	};
+
+	transporter.use('compile', hbs(handlebarOptions))
+  const mailOptions = {
+    	from: 'youremail@gmail.com',
+	  to: data.email,
+	  subject: 'Customer Audit',
+   template	: 'audit' ,
+   context: {
+       additional_notes	: data.additional_notes,
+       start_date				: data.start_date,
+       end_date					: data.end_date,
+       locationName			: locationName,
+       budget						: data.budget
+
+   }
+    
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+	  if (error) {
+	    console.log(error);
+	  } else {
+	    console.log('Email sent: ' + info.response);
+	  }
+	}); 
+
+	// Email sending code end
 
     try {
     	await CustomerAuditData.findByIdAndUpdate(data._id, auditObj, { new: true });
