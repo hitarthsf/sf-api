@@ -2,6 +2,7 @@ import CustomerAuditQuestionData from '../models/CustomerAuditQuestionData.js';
 import CustomerAuditData from '../models/CustomerAuditData.js';
 import UserData from '../models/UsersData.js';
 import CompanyData from '../models/CompanyData.js';
+import CustomerAuditAnswersData from '../models/CustomerAuditAnswersData.js';
 import * as nodemailer from 'nodemailer';
 import fs from 'fs';
 import * as path from 'path';
@@ -455,6 +456,65 @@ export const fetchCustomerAudit = async(req,res) => {
     	
     	
 		res.status(200).json({data: audit, totalCount : auditCount ,  message: "Customer Audit Fetched Successfully !!"});
+	} catch (error) {
+       res.status(409).json({ message : error.message})
+   	}
+}
+
+
+// get single customer aduit for front 
+export const fetchFrontCustomerAudit = async(req,res) => {
+
+	const _id 				= req.body._id;
+	const page 				= req.body.page ? req.body.page : 1;
+  const limit 			= req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip 				= (page - 1) * limit; 
+
+	var audit 				= await CustomerAuditData.findOne({"_id" : _id});		
+
+  var question  		= await CustomerAuditQuestionData.findOne({"_id" : audit.audit_set_question_id});
+  var count  				= 0 ; 
+  var questionArray = [] ;
+  const responseData =  await Promise.all(
+			question.question.map(async (questionData) => { 
+				count = count + 1 ;			
+				if (count > skip && count <= skip + limit  )
+				{
+					questionArray.push(questionData);
+				}
+
+				return questionData;
+			}),
+		);
+  try{
+  res.status(200).json({data: questionArray, totalCount : count, message: "Customer Audit Fetched Front Successfully !!"});
+  } catch (error) {
+       res.status(409).json({ message : error.message})
+   	}
+}
+
+// store question and answer 
+
+export const answerCustomerAudit = async(req,res) => { 
+
+	const customer_aduit_id 				= req.body.customer_aduit_id;
+	const total_question 						= req.body.totalCount;
+	var max_score = 0 ; 
+	try { 
+	for (var i = 1; i <= total_question; i++) {
+
+		var answerObj = {
+				customer_audit_id : req.body.customer_aduit_id,
+        question 					: eval("req.body.question_"+i),  
+        answer 						: eval("req.body.answer_"+i),
+        score 						: eval("req.body.score_"+i) ? eval("req.body.score_"+i) : 0  ,
+        note 							: eval("req.body.note_"+i) ? eval("req.body.note_"+i) : "" ,
+    };
+    var answerSave = new CustomerAuditAnswersData(answerObj);
+		await answerSave.save();
+	}
+	res.status(200).json({data: [], message: "Customer Audit Fetched Front Successfully !!"});
+
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}

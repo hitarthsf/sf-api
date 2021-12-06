@@ -1,7 +1,7 @@
 import express from 'express';
 
 import { addCustomerAuditQuestion , editCustomerAuditQuestion , fetchCustomerAuditQuestion , deleteCustomerAuditQuestion , fetchSingleCustomerAuditQuestion , addCustomerAudit ,
-editCustomerAudit , deleteCustomerAudit , fetchCustomerAudit } from '../controllers/customerAuditController.js';
+editCustomerAudit , deleteCustomerAudit , fetchCustomerAudit , fetchFrontCustomerAudit , answerCustomerAudit } from '../controllers/customerAuditController.js';
 
 const router = express.Router();
 
@@ -14,5 +14,8 @@ router.post('/addCustomerAudit', addCustomerAudit);
 router.post('/editCustomerAudit', editCustomerAudit);
 router.post('/deleteCustomerAudit', deleteCustomerAudit);
 router.post('/fetchCustomerAudit', fetchCustomerAudit);
+router.post('/fetchFrontCustomerAudit', fetchFrontCustomerAudit);
+router.post('/answerCustomerAudit', answerCustomerAudit);
+
 
 export default router;
