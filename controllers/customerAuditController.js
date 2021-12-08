@@ -551,40 +551,7 @@ export const fetchCustomerAuditQuestionAnswer = async(req,res) => {
 				return questionData;
 			}),
 		);
-
-
-
-// Qr code generation 
-
-// const qrString = 'QR_STRING';
-// const base64String = await QRCode.toDataURL(qrString,qrOption);
-// var imgData = base64String;
-// var base64Data = imgData.replace(/^data:image\/png;base64,/, "");
-// var qr_image = `qrCode/` + Date.now() + `_test.png`  ;
-// var bf = Buffer.from( base64String.replace(/^data:image\/\w+;base64,/, ""),'base64');
-//        aws.config.update({
-//            accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-//            secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
-//            region: "us-east-1"
-//        });
-//        const s3 = new aws.S3();
-//        var params = {
-//            ACL: 'public-read',
-//            Bucket: "sf-ratings-profile-image",
-//            Body: bf,
-//            Key: qr_image
-//        };
-
-//        s3.upload(params, (err, data) => {
-//            if (err) {
-//                console.log('Error occured while trying to upload to S3 bucket', err);
-//                res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
-//            }
-//        });
-// Qr code generation        
-
-
-
+	
 	
 	try{
 

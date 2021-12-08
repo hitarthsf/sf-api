@@ -5,6 +5,7 @@ import LocationSupportLogData from '../models/LocationSupportLogData.js';
 import aws from "aws-sdk";
 import {Readable} from "stream";
 import jwt from "jsonwebtoken";
+import QRCode from 'qrcode';
 export const createLocation = async(req,res) => {
 
     if (!req.body.name) {
@@ -34,6 +35,38 @@ export const createLocation = async(req,res) => {
             }
         });
     }
+     // Qr code generation 
+        const qrOption = { 
+          margin : 7,
+          width : 175
+        };
+        const qrString = process.env.BASE_URL_LOCAL+"/front/login?="+req.body.location_id;
+        const base64String = await QRCode.toDataURL(qrString,qrOption);
+        var imgData = base64String;
+        var base64Data = imgData.replace(/^data:image\/png;base64,/, "");
+        var qr_image = `qrCode/` + id+`.png`  ;
+        var bf = Buffer.from( base64String.replace(/^data:image\/\w+;base64,/, ""),'base64');
+               aws.config.update({
+                   accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+                   secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+                   region: "us-east-1"
+               });
+               const s3 = new aws.S3();
+               var params = {
+                   ACL: 'public-read',
+                   Bucket: "sf-ratings-profile-image",
+                   Body: bf,
+                   Key: qr_image
+               };
+
+               s3.upload(params, (err, data) => {
+                   if (err) {
+                       console.log('Error occured while trying to upload to S3 bucket', err);
+                       res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+                   }
+               });
+               
+        // Qr code generation    
 
     var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
         country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
@@ -73,7 +106,7 @@ export const updateLocation = async (req, res) => {
     // if (!req.body.name || !req.body.company_id) {
     //     res.status(409).json({ message : 'Invalid request, one or multiple fields are missing.'});
     // }
-    try {
+    // try {
         const location = req.body;
         const  id  = req.body._id;
         const  company_id  = req.body.company_id;
@@ -101,16 +134,51 @@ export const updateLocation = async (req, res) => {
                 }
             });
         }
+         // Qr code generation 
+        const qrOption = { 
+          margin : 7,
+          width : 175
+        };
 
+        const qrString = "http://3.109.87.88/front/login?id="+req.body.location_id;  
+        const base64String = await QRCode.toDataURL(qrString,qrOption);
+        var imgData = base64String;
+        var base64Data = imgData.replace(/^data:image\/png;base64,/, "");
+        var qr_image = `qrCode/` + id+`.png`  ;
+        var bf = Buffer.from( base64String.replace(/^data:image\/\w+;base64,/, ""),'base64');
+               aws.config.update({
+                   accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+                   secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+                   region: "us-east-1"
+               });
+               const s3 = new aws.S3();
+               var params = {
+                   ACL: 'public-read',
+                   Bucket: "sf-ratings-profile-image",
+                   Body: bf,
+                   Key: qr_image
+               };
+
+               s3.upload(params, (err, data) => {
+                   if (err) {
+                       console.log('Error occured while trying to upload to S3 bucket', err);
+                       res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+                   }
+               });
+               
+        // Qr code generation    
+
+        
         // autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit,
         // add
         var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
             country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
             latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
             invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
-            installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets , image: imagePath     };
+            installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets , image: imagePath ,
+            autoMail:req.body.autoMail    };
 
-
+            console.log(req.body);
         // await CompanyData.findOneAndUpdate(
         //  { _id: company_id },
         //  { $pull: { location: { _id: req.body._id } } } ,
@@ -130,7 +198,11 @@ export const updateLocation = async (req, res) => {
                 "location.$.num_tablets" :req.body.num_tablets ,
                 "location.$.image" :req.body.imagePath ,
                 "location.$.app_color" :req.body.app_color ,
-                "location.$.max_budget_customer_audit" :req.body.max_budget_customer_audit 
+                "location.$.max_budget_customer_audit" :req.body.max_budget_customer_audit,
+                "location.$.autoMail" :req.body.autoMail,
+                "location.$.showQRCode" :req.body.showQRCode,
+                "location.$.showLocationManager" :req.body.showLocationManager,
+                
 
                 } }
             );
@@ -139,9 +211,9 @@ export const updateLocation = async (req, res) => {
         // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
         // const updatedLocation = { ...location, _id: req.body._id };
         // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
-    } catch (e) {
-        res.status(209).json(e);
-    }
+    // } catch (e) {
+    //     res.status(209).json(e);
+    // }
 }
 
 export const deleteLocation = async (req, res) => {
