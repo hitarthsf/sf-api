@@ -23,6 +23,7 @@ const rating = mongoose.Schema({
     customer_phone: String,
     customer_email: String,
     other_feedback: String,
+    rating_comments: Array,
     createdAt: {
         type : Date,
         default: new Date()

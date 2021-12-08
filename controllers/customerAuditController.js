@@ -7,8 +7,11 @@ import * as nodemailer from 'nodemailer';
 import fs from 'fs';
 import * as path from 'path';
 import Email from 'email-templates';
+import QRCode from 'qrcode';
 import hbs from 'nodemailer-express-handlebars';
 import _ from "lodash";
+import aws from 'aws-sdk';
+import {Readable} from 'stream';
 // Add Customr Audit Question Set
 export const addCustomerAuditQuestion = async(req,res) => {
 
@@ -513,12 +516,103 @@ export const answerCustomerAudit = async(req,res) => {
     var answerSave = new CustomerAuditAnswersData(answerObj);
 		await answerSave.save();
 	}
-	res.status(200).json({data: [], message: "Customer Audit Fetched Front Successfully !!"});
+	res.status(201).json({data: [], message: "Customer Audit Answers Stored Successfully !!"});
 
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
 }
 
+// View Question and answer in customer aduit 
+
+export const fetchCustomerAuditQuestionAnswer = async(req,res) => { 
+
+	const customer_aduit_id 				= req.body.customer_aduit_id;
+	
+	// Get Customer Audit 	
+	var customer_audit 	= 	await CustomerAuditData.findOne({"_id" : customer_aduit_id});
+
+	// Get All Questions 
+	var all_question 		= 	await CustomerAuditQuestionData.findOne({"_id":customer_audit.audit_set_question_id});
+
+	// Get question and Answer 
+	var question_answer =  	await CustomerAuditAnswersData.find({"customer_audit_id":customer_aduit_id}); 
+
+	//Declaring Variable for array 
+	var question_answer_array = [] ;
+	var score = 0;
+	var max 	= 0;
+
+	const responseData =  await Promise.all(
+			question_answer.map(async (questionData) => { 
+				score = score + questionData.score ; 
+				question_answer_array.push(questionData)
+
+				return questionData;
+			}),
+		);
 
 
+
+// Qr code generation 
+
+// const qrString = 'QR_STRING';
+// const base64String = await QRCode.toDataURL(qrString,qrOption);
+// var imgData = base64String;
+// var base64Data = imgData.replace(/^data:image\/png;base64,/, "");
+// var qr_image = `qrCode/` + Date.now() + `_test.png`  ;
+// var bf = Buffer.from( base64String.replace(/^data:image\/\w+;base64,/, ""),'base64');
+//        aws.config.update({
+//            accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+//            secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+//            region: "us-east-1"
+//        });
+//        const s3 = new aws.S3();
+//        var params = {
+//            ACL: 'public-read',
+//            Bucket: "sf-ratings-profile-image",
+//            Body: bf,
+//            Key: qr_image
+//        };
+
+//        s3.upload(params, (err, data) => {
+//            if (err) {
+//                console.log('Error occured while trying to upload to S3 bucket', err);
+//                res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+//            }
+//        });
+// Qr code generation        
+
+
+
+	
+	try{
+
+	res.status(201).json({data:question_answer_array , score: score , max_score : parseInt(all_question.max_score) , message: "Customer Audit Answers Stored Successfully !!"});
+
+	} catch (error) {
+       res.status(409).json({ message : error.message})
+   	}
+}
+
+function decodeBase64Image(dataString) {
+  var matches = dataString.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/),
+    response = {};
+
+  if (matches.length !== 3) {
+    return new Error('Invalid input string');
+  }
+
+  response.type = matches[1];
+  response.data = new Buffer(matches[2], 'base64');
+
+  return response;
+}
+
+function bufferToStream(buffer) {
+    var stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+
+    return stream;
+}

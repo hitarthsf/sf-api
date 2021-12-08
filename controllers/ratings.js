@@ -328,3 +328,41 @@ export const complaintManagement = async (req, res) => {
 
 }
 
+// rating detail chat 
+export const ratingChat = async (req, res) => {
+    const rating_id = req.body.rating_id;
+
+    var comment =  {
+        user_id:        req.body.user_id,
+        comments:        req.body.comments
+    };
+    var rating = await RatingData.findOneAndUpdate(
+       { "_id" : rating_id },
+       { $push: { rating_comments: comment  } },
+       { upsert: true, new: true },);
+
+   var ratings  =  await RatingData.find({"_id" : rating_id});
+   
+   var commets_data = [] ; 
+   const responseData =  await Promise.all(
+        ratings.map(async (rating) => {
+            
+            await Promise.all(
+             rating.rating_comments.map(async (comment_data_array) => {
+                comment_data_array.user_name = ""
+                comment_data_array.image = "https://app.servefirst.co.uk/front/images/user.png";
+                var user_data = await UserData.findOne({"_id":comment_data_array.user_id});
+                comment_data_array.user_name = user_data.name ;
+                commets_data.push(comment_data_array);
+                
+             })  , ) 
+            return rating;
+        }),
+
+    )
+
+    res.status(200).json({"comments":commets_data });
+
+}
+
+

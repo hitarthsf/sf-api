@@ -1,6 +1,6 @@
 import express from 'express';
 
-import {createLocation, getLocation,updateLocation,deleteLocation,addDiscussLog} from '../controllers/location.js';
+import {createLocation, getLocation,updateLocation,deleteLocation,addDiscussLog ,getSingleLocation} from '../controllers/location.js';
 
 const router = express.Router();
 
@@ -9,4 +9,5 @@ router.get('/fetchLocation'		,	getLocation);
 router.post('/updateLocation'	, 	updateLocation);
 router.post('/deleteLocation'	, 	deleteLocation);
 router.post('/addDiscussLog'	, 	addDiscussLog);
+router.post('/getSingleLocation', 	getSingleLocation);
 export default router;
