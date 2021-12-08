@@ -192,3 +192,30 @@ function bufferToStream(buffer) {
 
     return stream;
 }
+
+// Get Single Location 
+export const getSingleLocation = async (req, res) =>
+{
+    var id          = req.body.location_id;
+    var company_id  = req.body.company_id;
+
+    var company = await CompanyData.findOne({"_id" : company_id });
+
+    var locationData = [];
+    const responseData =  await Promise.all(
+        company.location.map(async (location) => {
+            location.qr_code = "";
+             if (id == location._id)   
+             {  
+                location.qr_code = "qrcode/"+location._id+".png";
+                locationData.push(location); 
+             }
+            
+        }),
+
+    );
+    
+res.status(201).json({data:locationData , message: "Location Details Successfully !!"});
+
+}
+
