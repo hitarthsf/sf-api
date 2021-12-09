@@ -234,7 +234,26 @@ export const addCustomerAudit = async(req,res) => {
 	            });	
     }
     
-     // Email sending code 
+    
+
+    try {
+    	var auditSave = new CustomerAuditData(auditObj);
+			await auditSave.save();
+			// Getting Data for Email 
+    var locationName = null;
+    if (data.location_id)
+    {
+    	var companyData = await CompanyData.findOne({"_id" : data.company_id});
+	    
+	    const fetchedLocation = _.find(companyData.location, (location) => {	
+	    						if (location._id == data.location_id)
+	    						{
+	    							locationName = location.name ; 
+	    						}
+	                
+	            });	
+    }
+			 // Email sending code 
     const filePath = path.join(process.cwd(), 'email');
     const logopath = path.join(process.cwd(), 'email/images/logo.png');
     
@@ -265,7 +284,8 @@ export const addCustomerAudit = async(req,res) => {
        start_date				: data.start_date,
        end_date					: data.end_date,
        locationName			: locationName,
-       budget						: data.budget
+       budget						: data.budget,
+       id 							: auditSave._id
 
    }
     
@@ -280,10 +300,6 @@ export const addCustomerAudit = async(req,res) => {
 	}); 
 
 	// Email sending code end
-
-    try {
-    	var auditSave = new CustomerAuditData(auditObj);
-			await auditSave.save();
     	
 			res.status(201).json({data: auditSave, message: "Customer Audit Created Successfully !!"});
 	} catch (error) {
@@ -314,7 +330,12 @@ export const editCustomerAudit = async(req,res) => {
         creator_id:     		data.creator_id ?  data.creator_id : null,
     };
 
-     // Getting Data for Email 
+    
+
+    try {
+    	await CustomerAuditData.findByIdAndUpdate(data._id, auditObj, { new: true });
+    	
+    		// Getting Data for Email 
     var locationName = null;
     if (data.location_id)
     {
@@ -328,7 +349,7 @@ export const editCustomerAudit = async(req,res) => {
 	                
 	            });	
     }
-    // Email sending code 
+			 // Email sending code 
     const filePath = path.join(process.cwd(), 'email');
     const logopath = path.join(process.cwd(), 'email/images/logo.png');
     
@@ -359,7 +380,8 @@ export const editCustomerAudit = async(req,res) => {
        start_date				: data.start_date,
        end_date					: data.end_date,
        locationName			: locationName,
-       budget						: data.budget
+       budget						: data.budget,
+       id 							: data._id
 
    }
     
@@ -374,10 +396,6 @@ export const editCustomerAudit = async(req,res) => {
 	}); 
 
 	// Email sending code end
-
-    try {
-    	await CustomerAuditData.findByIdAndUpdate(data._id, auditObj, { new: true });
-    	
 		res.status(201).json({data: auditObj, message: "Customer Audit Updated Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
@@ -392,9 +410,7 @@ export const deleteCustomerAudit = async(req,res) => {
 	var question 			= await CustomerAuditData.findByIdAndRemove(id); 
 
     try {
-    	
-    	
-		res.status(200).json({data: [], message: "Customer Audit Deleted Successfully !!"});
+    res.status(200).json({data: [], message: "Customer Audit Deleted Successfully !!"});
 	} catch (error) {
        res.status(409).json({ message : error.message})
    	}
