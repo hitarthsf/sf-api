@@ -444,6 +444,15 @@ export const fetchCustomerAudit = async(req,res) => {
 				auditData.creatorName = "";
 				auditData.companyName = "";
 				var company = await	 CompanyData.findOne({"_id":auditData.company_id});
+				var answers = await  CustomerAuditAnswersData.find({"customer_audit_id":auditData._id});
+				if (answers.length > 0)
+				{
+					auditData.showView = "1";
+				}
+				else
+				{
+					auditData.showView = "0";
+				}
 				auditData.companyName = company.name;
 				if (auditData.creator_id != null )
 				{
@@ -473,8 +482,20 @@ export const fetchFrontCustomerAudit = async(req,res) => {
   const limit 			= req.body.perPage ? parseInt(req.body.perPage) : 1;
   const skip 				= (page - 1) * limit; 
 
-	var audit 				= await CustomerAuditData.findOne({"_id" : _id});		
+	var audit 					= await CustomerAuditData.findOne({"_id" : _id});		
+	var company 				= await CompanyData.findOne({"_id":audit.company_id});
+	var locationName 		= company.name ;
+	const locationData 	= await Promise.all(
+			company.location.map(async (location) => { 
+					
+				if ( location._id == audit.location_id)
+				{
+					locationName = location.name;
+				}
 
+				return location;
+			}),
+		); 	
   var question  		= await CustomerAuditQuestionData.findOne({"_id" : audit.audit_set_question_id});
   var count  				= 0 ; 
   var questionArray = [] ;
@@ -490,7 +511,7 @@ export const fetchFrontCustomerAudit = async(req,res) => {
 			}),
 		);
   try{
-  res.status(200).json({data: questionArray, totalCount : count, message: "Customer Audit Fetched Front Successfully !!"});
+  res.status(200).json({data: questionArray, totalCount : count ,  locationName : locationName, message: "Customer Audit Fetched Front Successfully !!"});
   } catch (error) {
        res.status(409).json({ message : error.message})
    	}
@@ -551,7 +572,7 @@ export const fetchCustomerAuditQuestionAnswer = async(req,res) => {
 				return questionData;
 			}),
 		);
-	
+
 	
 	try{
 
