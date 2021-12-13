@@ -498,6 +498,12 @@ export const fetchFrontCustomerAudit = async(req,res) => {
   const limit 			= req.body.perPage ? parseInt(req.body.perPage) : 1;
   const skip 				= (page - 1) * limit; 
 
+  var   expire      = false ;
+  var 	check_expire = await CustomerAuditAnswersData.find({"customer_audit_id" : _id});
+  if (check_expire.length > 0 )
+  {
+  	expire = true ; 
+  }
 	var audit 					= await CustomerAuditData.findOne({"_id" : _id});		
 	var company 				= await CompanyData.findOne({"_id":audit.company_id});
 	var locationName 		= company.name ;
@@ -527,7 +533,7 @@ export const fetchFrontCustomerAudit = async(req,res) => {
 			}),
 		);
   try{
-  res.status(200).json({data: questionArray, totalCount : count ,  locationName : locationName, message: "Customer Audit Fetched Front Successfully !!"});
+  res.status(200).json({data: questionArray, expire : expire, totalCount : count ,  locationName : locationName, message: "Customer Audit Fetched Front Successfully !!"});
   } catch (error) {
        res.status(409).json({ message : error.message})
    	}
@@ -620,3 +626,53 @@ function bufferToStream(buffer) {
 
     return stream;
 }
+
+
+// Get Basic Stats 
+export const stats = async(req,res) => { 
+
+	const company_id 					= req.body.company_id;
+	const start_date 					= req.body.start_date;
+	const end_date 						= req.body.end_date;
+
+	const customerAudit = await CustomerAuditData.aggregate([
+		{
+			$match: {
+	              "company_id": company_id
+	            }
+
+    },
+	    				{
+                    $count: "count"
+             	}                
+		]);
+
+
+	res.status(200).json({data: customerAudit , message : "Stats For Audit" })
+
+}
+
+// Get Question Table
+export const getOptimumQuestion = async(req,res) => { 
+
+	const company_id 					= req.body.company_id;
+	const start_date 					= req.body.start_date;
+	const end_date 						= req.body.end_date;
+
+	const customerAudit = await CustomerAuditData.aggregate([
+		{
+			$match: {
+	              "company_id": company_id
+	            }
+
+    },
+	    				{
+                    $count: "count"
+             	}                
+		]);
+
+
+	res.status(200).json({data: customerAudit , message : "Stats For Audit" })
+
+}
+
