@@ -1,7 +1,8 @@
 import express from 'express';
 
 import { addCustomerAuditQuestion , editCustomerAuditQuestion , fetchCustomerAuditQuestion , deleteCustomerAuditQuestion , fetchSingleCustomerAuditQuestion , addCustomerAudit ,
-editCustomerAudit , deleteCustomerAudit , fetchCustomerAudit , fetchFrontCustomerAudit , answerCustomerAudit , fetchCustomerAuditQuestionAnswer } from '../controllers/customerAuditController.js';
+editCustomerAudit , deleteCustomerAudit , fetchCustomerAudit , fetchFrontCustomerAudit , answerCustomerAudit , fetchCustomerAuditQuestionAnswer ,
+stats } from '../controllers/customerAuditController.js';
 
 const router = express.Router();
 
@@ -17,6 +18,6 @@ router.post('/fetchCustomerAudit', fetchCustomerAudit);
 router.post('/fetchFrontCustomerAudit', fetchFrontCustomerAudit);
 router.post('/answerCustomerAudit', answerCustomerAudit);
 router.post('/fetchCustomerAuditQuestionAnswer', fetchCustomerAuditQuestionAnswer);
-
+router.post('/stats', stats);
 
 export default router;
