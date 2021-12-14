@@ -101,6 +101,40 @@ export const getLocation = async (req,res) => {
         res.status(404).json({message : error.message});
     }
 }
+export const updateSingleLocation = async (req, res) => {
+
+        const location = req.body;
+        const  id  = req.body._id;
+        const  company_id  = req.body.company_id;
+        if (req.body.email)
+        {
+            await CompanyData.updateOne(
+               { _id: company_id, "location._id": req.body._id },
+               { $set: { 
+              
+                "location.$.email" :req.body.email 
+
+                } }
+            );
+        }
+        else if ( req.body.contact_no)
+        {
+            await CompanyData.updateOne(
+               { _id: company_id, "location._id": req.body._id },
+               { $set: { 
+              
+                "location.$.contact_no" :req.body.contact_no 
+
+                } }
+            );
+        }
+
+
+        
+        res.json({ message: "Location updated successfully." });
+}
+
+
 export const updateLocation = async (req, res) => {
 
     // if (!req.body.name || !req.body.company_id) {
