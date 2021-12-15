@@ -173,15 +173,15 @@ export const fetchScreenSaver = async(req,res) => {
 // delete screen saver data with post method
 export const deleteScreenSaver = async(req,res) => {
 
-        var id   = req.body._id;  
-        await ScreenSaverData.findByIdAndRemove(id);
+    var id   = req.body._id;  
+    await ScreenSaverData.findByIdAndRemove(id);
 
 
-   try {
+try {
         
-        res.status(201).json({data: [], message: "Screen Saver Removed Successfully !!"});
-   } catch (error) {
-       res.status(409).json({ message : error.message})
+            res.status(201).json({data: [], message: "Screen Saver Removed Successfully !!"});
+    }       catch (error) {
+            res.status(409).json({ message : error.message})
    }
 }
 

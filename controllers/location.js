@@ -320,6 +320,10 @@ export const getSingleLocation = async (req, res) =>
         }),
 
     );
+    const make = 'Ford';
+const model = 'Mustang';
+const car = { make, model };
+console.log(car)
     
 res.status(201).json({data:locationData , message: "Location Details Successfully !!"});
 
