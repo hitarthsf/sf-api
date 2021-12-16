@@ -30,9 +30,7 @@ export const migrateCompanies = async (req, res) => {
                         const companyObject = company;
                         companyObject['old_company_id'] = company.id;
                         // Fetch company locations
-                        await connection.query(`SELECT *, location.id as old_location_id FROM location 
-                            LEFT JOIN location_area la on la.id = location.location_area_id 
-                            WHERE location_area_id = ${company.id}`, async (err, rows) => {
+                        await connection.query(`SELECT *, location.id as old_location_id FROM location WHERE location_area_id = ${company.id}`, async (err, rows) => {
                             companyObject['location'] = rows;
                         });
                         
@@ -158,7 +156,10 @@ export const migrateUsers = async (req, res) => {
 }
 
 export const migrateRatings = async (req,res) => {
-    const oldCompanyId= req.query['company_id'];
+    const oldCompanyId  = req.query['company_id'];
+    var page          = req.query['page'];
+    var skip          = (page - 1) * 1000 ;  
+    
     if (!oldCompanyId) {
         res.status(209).json(`company Id is missing from request.`);
     }
@@ -172,30 +173,52 @@ export const migrateRatings = async (req,res) => {
     connection.connect(async (err) => {
         if (err) throw err
         console.log('You are now connected...');
-        const mongoCompanyObj = await CompanyMigratedData.findOne({old_company_id: oldCompanyId});
+        const mongoCompanyObj = await CompanyMigratedData.findOne({old_company_id: parseInt(oldCompanyId)});
+        // location array 
+         var locationArray  = [] ;
+        var locationMap = new Map();
+         mongoCompanyObj.location.map(async (location) => {
+                    locationMap.set(location.old_location_id, location._id);
+                }) ;
+        // user array 
+        var userArray  = [] ;
+        var userMap = new Map();
+        const allUser = await UserMigratedData.find();
+         allUser.map(async (user) => {
+                    userMap.set(user.old_user_id, user._id);
+                }) ;
+          
+            
+            
+        // mongoCompanyObj.location.map(async (location) => {
+         
 
-        mongoCompanyObj.location.map(async (location) => {
-            console.log('location', location);
-
-            await connection.query(`SELECT ratings.*,rating_customer.name as customer_name, rating_customer.email as customer_email, rating_customer.phone as customer_phone
-                from ratings 
-                left join location on ratings.location_id = location.id 
-                left join rating_customer on ratings.id = rating_customer.ratings_id 
-                WHERE ratings.location_id= ${location.old_location_id}`, async (err, ratingRows) => {
+            await connection.query(`SELECT 
+ratings.*,
+rating_customer.name as customer_name, 
+rating_customer.email as customer_email, 
+rating_customer.phone as customer_phone
+from ratings 
+left join location on ratings.location_id = location.id 
+left join location_area on location.location_area_id =  location_area.id
+left join rating_customer on ratings.id = rating_customer.ratings_id
+where location_area.id = ${oldCompanyId} LIMIT 5000 OFFSET ${skip} `, async (err, ratingRows) => {
 
                 ratingRows.map(async (ratingRow) => {
 
                     const ratingObj = ratingRow;
-
-                    ratingObj['location_id'] = location._id;
-                    ratingObj['company_id'] = mongoCompanyObj._id;
                     ratingObj['old_location_id'] = ratingRow.location_id;
+                    ratingObj['location_id'] = locationMap.get(ratingRow.location_id.toString());
+                    ratingObj['company_id'] = mongoCompanyObj._id;
+                    
                     ratingObj['old_rating_id'] = ratingRow.id;
 
                     const ratingMongoObj = new RatingMigratedData({...ratingObj, createdAt: ratingObj['created_at']});
                     await ratingMongoObj.save();
+                    console.log(ratingMongoObj);
 
-                    await connection.query(`SELECT ratings_skill.*, skills.name, skills.type 
+                    // skill code
+                     await connection.query(`SELECT ratings_skill.*, skills.name, skills.type 
                         from ratings_skill 
                         left join skills on skills.id = ratings_skill.skills_id 
                         WHERE ratings_id = ${ratingObj.id}`, async (err, ratingSkills) => {
@@ -254,12 +277,13 @@ export const migrateRatings = async (req,res) => {
                             }
                         });
                     });
-
+                    
+                  
                 });
             });
-        });
+        // });
     });
-res.status(209).json(`total ${ratingRows.length} ratings  are imported.`);
+res.status(209).json(`total numbers of ratings  are imported.`);
 }
 
 export const migrateLogins = async (req,res) => {
