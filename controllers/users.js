@@ -1,5 +1,7 @@
 import UsersData from '../models/UsersData.js';
 import CompanyData from '../models/CompanyData.js';
+import RatingData from '../models/RatingData.js';
+import RatingSkillData from '../models/RatingSkillData.js';
 import aws from 'aws-sdk';
 import fs from 'fs';
 import {Readable} from 'stream';
@@ -379,6 +381,105 @@ export const getUserByLocationId = async (req,res) => {
         res.status(409).json({ message : 'id is mandatory field.'});
     }
     var user = await UsersData.find({"location_id": {$in: id}});
+    res.status(200).json(user ); 
+}
+
+
+// get user profile 
+export const viewProfile = async (req,res) => {
+
+    var user        = await  UsersData.findOne({ _id : req.body._id } );
+
+    
+
+    var userLocationId = user.location_id ; 
+    // get positive graph data
+    
+    var rating = await RatingData.aggregate(
+        [
+            {
+                $match: {
+                   // "location_id": {$in: userLocationId}
+                    
+                }
+            }
+        ]);
+
+        const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
+        
+        // NEED TO USE rating_id INSTEAD OF THE ARRAY
+        var skillRanks = await RatingSkillData.aggregate(
+            [
+                {
+                    $match: {
+                        "rating_id": {
+                            $in: ratingIdArray
+                        }
+                    }
+                },
+                {
+                    $group:
+                        {
+                            _id: "$skill_id",
+                            count: {$sum: 1}
+                        }
+                },
+                {$sort: {count: -1}}
+
+
+            ]
+        );
+
+        
+            var SkillNamePositive = [];
+            var SkillNameNegative = [];
+            var SkillCountNegative = [];
+            var SkillCountPositive = [];
+            var data = [{"SkillName": [], "SkillCount": []}];
+             // get company data 
+            var companyData = await CompanyData.findOne( { _id : user.company_id } );
+            
+            if (!companyData)
+            {
+                res.status(200).json({data: data, message: "Invalid Company Id "});
+            } 
+            
+            skillRanks.map((skillObj) => {
+                skillObj.name = '';
+                skillObj.type = '';
+                companyData.attributes.forEach((attribute) => {
+                    let matchingObj = _.find(attribute.positive_skills, (skill) => {
+                        return skill._id == skillObj._id;
+                    });
+                    if (matchingObj) {
+                        skillObj.name = matchingObj.name;
+                        skillObj.type = "positive";
+                        SkillNamePositive.push(matchingObj.name);
+                        SkillCountPositive.push(skillObj.count);
+                    } else {
+                        matchingObj = _.find(attribute.negative_skills, (skill) => {
+                            return skill._id == skillObj._id;
+                        });
+                        if (matchingObj) {
+                            skillObj.name = matchingObj.name;
+                            skillObj.type = "negative";
+                            SkillNameNegative.push(matchingObj.name);
+                            SkillCountNegative.push(skillObj.count);
+                        }
+                    }
+                });
+            })
+            
+            
+                var positiveData = [{"SkillName": SkillNamePositive, "SkillCountPositive": SkillCountPositive}];
+            
+            
+                var negativeData = [{"SkillName": SkillNameNegative, "SkillCountNegative": SkillCountNegative}];
+            
+
+
+    res.status(200).json({user : user , negativeData : negativeData , positiveData: positiveData , message: "Success"});
+       
     res.status(200).json(user ); 
 }
 
