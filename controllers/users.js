@@ -2,6 +2,7 @@ import UsersData from '../models/UsersData.js';
 import CompanyData from '../models/CompanyData.js';
 import RatingData from '../models/RatingData.js';
 import RatingSkillData from '../models/RatingSkillData.js';
+import RatingEmployeeData from '../models/RatingEmployeeData.js';
 import aws from 'aws-sdk';
 import fs from 'fs';
 import {Readable} from 'stream';
@@ -399,14 +400,55 @@ export const viewProfile = async (req,res) => {
         [
             {
                 $match: {
-                   // "location_id": {$in: userLocationId}
+                    "location_id": {$in: userLocationId}
                     
                 }
             }
         ]);
-
-        const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString());
+        var ratingIdArray       = [] ; 
+        var teamPositiverating = 0 ; 
+        const responseData = await Promise.all(
+                rating.map(async (ratingData) => {
+                    ratingIdArray.push(ratingData._id.toString());
+                     if(ratingData.rating > 3 )
+                     {
+                        teamPositiverating = teamPositiverating + 1 ;   
+                     }
+                }),
+            )    
+        //const ratingIdArray = rating.map(ratingObj => ratingObj._id.toString()  );
         
+
+        //  Employee Data
+        var employeeRating  = await RatingEmployeeData.aggregate(
+            [
+                {
+                    $match: {
+                        "rating_id": {
+                            $in: ratingIdArray
+                        },
+                        "employee_id" :req.body._id  
+                        
+                    }
+                },
+            ]);
+
+        var userPositiveRating       = 0;
+        var teamNegativeRating       = 0;
+        var employeeRatingId    = [] ; 
+        const responseDataLoop = await Promise.all(
+                employeeRating.map(async (employeeRatingData) => {
+                    employeeRatingId.push(employeeRatingData.rating_id);
+                     if(employeeRatingData.rating < 4)
+                     {
+                        teamNegativeRating = teamNegativeRating + 1 ;
+                     }
+                     else
+                     {
+                        userPositiveRating = userPositiveRating + 1 ;
+                     }
+                }),
+            )    
         // NEED TO USE rating_id INSTEAD OF THE ARRAY
         var skillRanks = await RatingSkillData.aggregate(
             [
@@ -478,9 +520,10 @@ export const viewProfile = async (req,res) => {
             
 
 
-    res.status(200).json({user : user , negativeData : negativeData , positiveData: positiveData , message: "Success"});
+    res.status(200).json({user : user , improvementOpportunites : negativeData , strengths: positiveData , userPositiveRating : userPositiveRating , teamNegativeRating : teamNegativeRating 
+        , teamPositiverating : teamPositiverating , message: "Success"});
        
-    res.status(200).json(user ); 
+    
 }
 
 
