@@ -474,12 +474,6 @@ export const latestReview = async (req, res) => {
 
             }
         },
-        // {
-        //     $unwind: {
-        //         path: "$rating_skills",
-        //         preserveNullAndEmptyArrays: false
-        //     }
-        // },
         {
             $lookup: {
                 from: 'rating_employees',
@@ -488,12 +482,6 @@ export const latestReview = async (req, res) => {
                 "as": "rating_employees"
             }
         },
-        // {
-        //     $unwind: {
-        //         path: "$rating_employees",
-        //         preserveNullAndEmptyArrays: false
-        //     }
-        // },
         
     ]);
     if (!companyData)
@@ -819,7 +807,8 @@ export const getSkillRank = async (req, res) => {
         if (format == "chart") {
             var SkillNamePositive = [];
             var SkillNameNegative = [];
-            var SkillCount = [];
+            var SkillCountNegative = [];
+            var SkillCountPositive = [];
             var data = [{"SkillName": [], "SkillCount": []}];
             const companyData = await CompanyData.findOne({"_id": companyId});
             if (!companyData)
@@ -837,7 +826,7 @@ export const getSkillRank = async (req, res) => {
                         skillObj.name = matchingObj.name;
                         skillObj.type = "positive";
                         SkillNamePositive.push(matchingObj.name);
-                        SkillCount.push(skillObj.count);
+                        SkillCountPositive.push(skillObj.count);
                     } else {
                         matchingObj = _.find(attribute.negative_skills, (skill) => {
                             return skill._id == skillObj._id;
@@ -846,17 +835,17 @@ export const getSkillRank = async (req, res) => {
                             skillObj.name = matchingObj.name;
                             skillObj.type = "negative";
                             SkillNameNegative.push(matchingObj.name);
-                            SkillCount.push(skillObj.count);
+                            SkillCountNegative.push(skillObj.count);
                         }
                     }
                 });
             })
             
             if (type == "positive" && SkillNamePositive.length > 0) {
-                var data = [{"SkillName": SkillNamePositive, "SkillCount": SkillCount}];
+                var data = [{"SkillName": SkillNamePositive, "SkillCount": SkillCountPositive}];
             }
             if (type == "negative" && SkillNameNegative.length > 0) {
-                var data = [{"SkillName": SkillNameNegative, "SkillCount": SkillCount}];
+                var data = [{"SkillName": SkillNameNegative, "SkillCount": SkillCountNegative}];
             }
 
 
@@ -972,6 +961,7 @@ export const getEmployeeRank = async (req, res) => {
             ]
         );
         //res.status(200).json({data: employee_rank, message: "Success"});
+        var count = 0 ; 
         const responseData = await Promise.all(
             employee_rank.map(async (employee) => {
                 employee.employeeName = '';
@@ -981,6 +971,7 @@ export const getEmployeeRank = async (req, res) => {
                     if (fetchedEmployee) {
                         employee.employeeName = fetchedEmployee.name;
                     }    
+                    count = count + 1 ;
                 }
                 
                 return employee;

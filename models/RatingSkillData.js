@@ -6,7 +6,16 @@ const ratingSkillData = mongoose.Schema({
     rating: Number,
     location_id: String,
     company_id: String,
+    createdAt: {
+        type : Date,
+        default: new Date()
+    },
+    updatedAt: {
+        type : Date,
+        default: new Date()
+    },
 });
+
 
 const RatingSkillData = mongoose.model('rating_skills', ratingSkillData);
 

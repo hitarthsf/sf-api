@@ -285,7 +285,9 @@ export const addCustomerAudit = async(req,res) => {
        end_date					: data.end_date,
        locationName			: locationName,
        budget						: data.budget,
-       id 							: auditSave._id
+       id 							: auditSave._id,
+       start_date				: data.start_date,
+       end_date					: data.end_date,
 
    }
     
@@ -381,7 +383,9 @@ export const editCustomerAudit = async(req,res) => {
        end_date					: data.end_date,
        locationName			: locationName,
        budget						: data.budget,
-       id 							: data._id
+       id 							: data._id,
+       start_date				: data.start_date,
+       end_date					: data.end_date,
 
    }
     
