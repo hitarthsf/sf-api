@@ -12,6 +12,7 @@ const company = mongoose.Schema({
     image: String,
     color: String,
     hubspot_transaction_mails: String,
+    old_company_id: Number,
     //skills: [{id:Number, name:String, type:String}],
     skills: Array,
     location: [{location_area_id:String,location_id:String,customer_location_id:String,skill_id:String,name:String, address_1:String,address_2:String,city:String,state_id:String,

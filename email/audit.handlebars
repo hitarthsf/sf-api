@@ -296,7 +296,11 @@
                                                             
                                                             <p style="margin: 0 0 1em; text-align: left; color: black;">You've been selected to complete a mystery visit </p>
                                                                {{#if locationName }}
-                                                               <p style="margin: 0 0 1em; text-align: left; color: black;">We'd like you to visit  <strong>{{locationName}} </strong> </p> 
+                                                               <p style="margin: 0 0 1em; text-align: left; color: black;">We'd like you to visit  <strong>{{locationName}} </strong> {{#if start_date }}
+                                                               between {{start_date}} and {{end_date}}
+                                                               {{/if}}  
+                                                           </p> 
+
                                                                {{/if}}
                                                             {{#if budget}}   
                                                                <p style="margin: 0 0 1em; text-align: left; color: black;">You have a budget of <strong>£{{budget}} </strong>which will be reimbursed after the succesful completion of your visit.</p>

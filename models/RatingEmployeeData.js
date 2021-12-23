@@ -6,6 +6,14 @@ const ratingEmployeeData = mongoose.Schema({
     rating: Number,
     location_id: String,
     company_id: String,
+    createdAt: {
+        type : Date,
+        default: new Date()
+    },
+    updatedAt: {
+        type : Date,
+        default: new Date()
+    },
 });
 
 const RatingEmployeeData = mongoose.model('rating_employee', ratingEmployeeData);
