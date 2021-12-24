@@ -463,7 +463,7 @@ export const latestReview = async (req, res) => {
             $match: {company_id: companyId   ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
         },
         { "$sort": { createdAt : -1} },
-        { "$limit": 3 },
+        { "$limit": 5 },
         { "$addFields": { "ratingId": { "$toString": "$_id" }}},
         {
             $lookup: {
