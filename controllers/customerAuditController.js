@@ -558,7 +558,7 @@ export const answerCustomerAudit = async(req,res) => {
         question 					: eval("req.body.question_"+i),  
         answer 						: eval("req.body.answer_"+i),
         score 						: eval("req.body.score_"+i) ? eval("req.body.score_"+i) : 0  ,
-        note 							: eval("req.body.note_"+i) ? eval("req.body.note_"+i) : "" ,
+        notes 							: eval("req.body.note_"+i) ? eval("req.body.note_"+i) : "" ,
     };
     var answerSave = new CustomerAuditAnswersData(answerObj);
 		await answerSave.save();
