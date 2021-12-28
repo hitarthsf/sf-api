@@ -13,14 +13,18 @@ import UserLoginData from "../models/UserLoginData.js";
 import _ from "lodash";
 import moment from "moment";
 
+
 export const getData = async (req, res) => {
     const company_id = req.body.company_id;
     const location_id = req.body.location_id.split(',');
     const start_date = new Date(req.body.start_date);
     const end_date = new Date(req.body.end_date);
     const nps = "";
+    const employee_id = req.body.employee_id;
     // add try catch
     try {
+        // check if employee filter 
+
         // get total counts of rating
         if (location_id[0] === "") {
             const fetchedLocations = await CompanyData.findOne({"_id": company_id}, {location: 1});
@@ -33,9 +37,6 @@ export const getData = async (req, res) => {
                 });
                 }    
             }
-            
-
-
             var count_total = await RatingData.aggregate([
                 {
                     $match: {
@@ -64,12 +65,32 @@ export const getData = async (req, res) => {
                 ]);
 
         } else {
+            // declaring match variable to match all the filters with proper conditions 
+            const match = {};
+            // Location Filter
+            if (location_id) 
+            {
+                match.location_id = {$in: location_id};
+            }
+            // Start date and End date filter
+            if (start_date && end_date) 
+            {
+                match.createdAt = {$gte: new Date(start_date), $lte: new Date(end_date)};
+            }
+            // Employee id filter
+            if ( employee_id )
+            {   
+                var employee       = await RatingEmployeeData.find({employee_id : employee_id});
+                var employee_rating_id = [] ; 
+                employee_rating_id = await employee.map(employeeData => employeeData.rating_id.toString());
+                match.ratingId =  { $in : employee_rating_id }  ; 
+                console.log("hi");
+            }
+            
             var count_total = await RatingData.aggregate([
+                { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                 {
-                    $match: {
-                        "location_id": {$in: location_id},
-                        "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
-                    }
+                    $match: match 
                 },
                 {
                     $count: "rating"
@@ -77,11 +98,9 @@ export const getData = async (req, res) => {
 
             var average = await RatingData.aggregate(
                 [
+                    { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                     {
-                        $match: {
-                            "location_id": {$in: location_id},
-                            "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
-                        }
+                        $match: match
                     },
                     {
                         $group:
@@ -157,6 +176,7 @@ export const getData = async (req, res) => {
 // get top location
 export const getLocationRank = async (req, res) => {
     const company_id = req.body.company_id;
+    const employee_id = req.body.employee_id;
     const location_id = req.body.location_id.split(",");
     const start_date = new Date(req.body.start_date);
     const end_date = new Date(req.body.end_date);
@@ -169,6 +189,32 @@ export const getLocationRank = async (req, res) => {
 
     // add try catch
     try {
+            // declaring match variable to match all the filters with proper conditions 
+            const match = {};
+            // Company Filter
+            if (company_id) 
+            {
+                match.company_id = company_id;
+            }
+            // Location Filter
+            if (location_id) 
+            {
+                match.location_id = {$in: location_id};
+            }
+            // Start date and End date filter
+            if (start_date && end_date) 
+            {
+                match.createdAt = {$gte: new Date(start_date), $lte: new Date(end_date)};
+            }
+            // Employee id filter
+            if ( employee_id )
+            {   
+                var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+                var employee_rating_id  = [] ; 
+                employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+                match.ratingId          = { $in : employee_rating_id }  ; 
+            }
+            
         const location_rank = await RatingData.aggregate(
             [
                 // {
@@ -179,11 +225,7 @@ export const getLocationRank = async (req, res) => {
                 // },
                 {
 
-                    $match: {
-                        "company_id": company_id,
-                        "location_id" : {$in : location_id },   
-                        "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
-                    }
+                    $match: match
                 },
                 {
                     $group:
@@ -231,13 +273,35 @@ export const getLocationRank = async (req, res) => {
 
 // get ratings diStrubtion+s
 export const getRatingsDistribution = async (req, res) => {
-    const company_id = req.body.company_id;
-    const location_id = req.body.location_id.split(',');
-    const start_date = new Date(req.body.start_date);
-    const end_date = new Date(req.body.end_date);
+    const company_id    = req.body.company_id;
+    const employee_id   = req.body.employee_id;
+    const location_id   = req.body.location_id.split(',');
+    const start_date    = new Date(req.body.start_date);
+    const end_date      = new Date(req.body.end_date);
     //res.send(end_date);
     // add try catch
     try {
+            // declaring match variable to match all the filters with proper conditions 
+            const match = {};
+            // Location Filter
+            if (location_id) 
+            {
+                match.location_id = {$in: location_id};
+            }
+            // Start date and End date filter
+            if (start_date && end_date) 
+            {
+                match.createdAt = {$gte: new Date(start_date), $lte: new Date(end_date)};
+            }
+            // Employee id filter
+            if ( employee_id )
+            {   
+                var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+                var employee_rating_id  = [] ; 
+                employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+                match.ratingId          = { $in : employee_rating_id }  ; 
+            }
+
         if (location_id[0] === "") {
             var average_count = await RatingData.aggregate(
                 [
@@ -259,12 +323,10 @@ export const getRatingsDistribution = async (req, res) => {
         } else {
             var average_count = await RatingData.aggregate(
                 [
+                    { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                     {
 
-                        $match: {
-                            "location_id": {$in: location_id},
-                            "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}
-                        }
+                        $match: match
                     },
                     {
                         $group:
@@ -282,6 +344,7 @@ export const getRatingsDistribution = async (req, res) => {
 
         const total_count = await RatingData.aggregate(
             [
+                { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                 {
                     $match: {"location_id": {$in: location_id}}
                 },
@@ -338,12 +401,13 @@ export const getRatingsDistribution = async (req, res) => {
 
 // get daily rating ( get ratings date wise)
 export const getRatingData = async (req, res) => {
-    const company_id = req.body.company_id;
-    const location_id = req.body.location_id.split(',');
-    const startDate = new Date(req.body.start_date);
-    const endDate = new Date(req.body.end_date);
-    const format = req.body.format;
-    const order = parseInt("-1");
+    const company_id    = req.body.company_id;
+    const employee_id   = req.body.employee_id;
+    const location_id   = req.body.location_id.split(',');
+    const startDate     = new Date(req.body.start_date);
+    const endDate       = new Date(req.body.end_date);
+    const format        = req.body.format;
+    const order         = parseInt("-1");
     //res.send(end_date);
     // add try catch
     const fetchedLocations = await CompanyData.findOne({"_id": company_id}, {location: 1});
@@ -353,6 +417,28 @@ export const getRatingData = async (req, res) => {
             userLocationId.push(location._id.toString());
         });
     }
+
+    // declaring match variable to match all the filters with proper conditions 
+    const match = {};
+    // Location Filter
+    if (location_id) 
+    {
+        match.location_id = {$in: location_id};
+    }
+    // Start date and End date filter
+    if (startDate && endDate) 
+    {
+        match.createdAt = {$gte: new Date(startDate), $lte: new Date(endDate)};
+    }
+    // Employee id filter
+    if ( employee_id )
+    {   
+        var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+        var employee_rating_id  = [] ; 
+        employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+        match.ratingId          = { $in : employee_rating_id }  ; 
+    }
+
     try {
         if (location_id[0] === "") {
             var averageCount = await RatingData.aggregate(
@@ -376,12 +462,10 @@ export const getRatingData = async (req, res) => {
                 ]);
         } else {
             var averageCount = await RatingData.aggregate(
-                [
+                [   
+                    { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                     {
-                        $match: {
-                            "location_id": {$in: location_id},
-                            "createdAt": {$gte: new Date(startDate), $lte: new Date(endDate)}
-                        }
+                        $match: match
                     },
                     {
                         $group:
@@ -439,32 +523,67 @@ export const getRatingData = async (req, res) => {
 
 // Get Latest Reviews
 export const latestReview = async (req, res) => {
-    const companyId     = req.body.company_id;
-    const start_date    = new Date(req.body.start_date);
-    const end_date      = new Date(req.body.end_date);
+    const companyId         = req.body.company_id;
+    const employee_id       = req.body.employee_id;
+    const locationId        = req.body.location_id.split(',');
+    const start_date        = new Date(req.body.start_date);
+    const end_date          = new Date(req.body.end_date);
+    const fetchedLocations  = await CompanyData.findOne({"_id": companyId}, {location: 1});
+    const userLocationId = [];
+    if (fetchedLocations)
+        {
+            if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+            fetchedLocations.location.map((location) => {
+                userLocationId.push(location._id.toString());
+            });
+            }    
+        }
   
 
     if (!companyId) {
         res.status(409).json({ message : 'Invalid request, Company Id is missing'});
     }
-    // const ratings = await RatingData.find({companyId: companyId}, {
-    //     $lookup: {
-    //         from: 'rating_skills',
-    //         localField: 'rating_id',
-    //         foreignField: '_id',
-    //         "as": "L"
-    //     }
-    // })
+    
 
+    // Declaring match variable to match all the filters with proper conditions 
+    const match = {};
+    // Location Filter
+    if (locationId) 
+    {
+        match.location_id = {$in: locationId};
+    }
+    // Company Filter
+    if (companyId) 
+    {
+        match.company_id = companyId;
+    }
+    // No Location filter
+    if (userLocationId.length > 0 ) 
+    { 
+        match.location_id = {$in: userLocationId};
+    }
+    // Start date and End date filter
+    if (start_date && end_date) 
+    {
+        match.createdAt = {$gte: new Date(start_date), $lte: new Date(end_date)};
+    }
+    // Employee id filter
+    if ( employee_id )
+    {   
+        var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+        var employee_rating_id  = [] ; 
+        employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+        match.ratingId          = { $in : employee_rating_id }  ; 
+    }
     const companyData = await CompanyData.findOne({"_id":companyId  });
     
     const ratings = await RatingData.aggregate([
+        { "$addFields": { "ratingId": { "$toString": "$_id" }}},
         {
-            $match: {company_id: companyId   ,  "createdAt": {$gte: new Date(start_date), $lte: new Date(end_date)}}
+            $match: match 
         },
         { "$sort": { createdAt : -1} },
         { "$limit": 5 },
-        { "$addFields": { "ratingId": { "$toString": "$_id" }}},
         {
             $lookup: {
                 from: 'rating_skills',
@@ -538,12 +657,13 @@ export const latestReview = async (req, res) => {
 
 // Get Attribute Rank
 export const getAttributeRank = async (req, res) => {
-    const companyId = req.body.company_id;
-    const locationId = req.body.location_id.split(',');
-    const startDate = new Date(req.body.start_date);
-    const endDate = new Date(req.body.end_date);
-    const order = parseInt(req.body.order);
-    const format = req.body.format;
+    const companyId     = req.body.company_id;
+    const employee_id   = req.body.employee_id;
+    const locationId    = req.body.location_id.split(',');
+    const startDate     = new Date(req.body.start_date);
+    const endDate       = new Date(req.body.end_date);
+    const order         = parseInt(req.body.order);
+    const format        = req.body.format;
     
     const ratingId = [];
 
@@ -565,7 +685,7 @@ export const getAttributeRank = async (req, res) => {
         // Get Ratings Id From
         if (locationId[0] === "") {
             var rating = await RatingData.aggregate(
-                [
+                [   
                     {
                         $match: {
                             "location_id": {$in: userLocationId},
@@ -577,14 +697,31 @@ export const getAttributeRank = async (req, res) => {
                     }
                 ]);
         } else {
-
+            // Declaring match variable to match all the filters with proper conditions 
+            const match = {};
+            // Location Filter
+            if (locationId) 
+            {
+                match.location_id = {$in: locationId};
+            }
+            // Start date and End date filter
+            if (startDate && endDate) 
+            {
+                match.createdAt = {$gte: new Date(startDate), $lte: new Date(endDate)};
+            }
+            // Employee id filter
+            if ( employee_id )
+            {   
+                var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+                var employee_rating_id  = [] ; 
+                employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+                match.ratingId          = { $in : employee_rating_id }  ; 
+            }
             var rating = await RatingData.aggregate(
                 [
+                    { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                     {
-                        $match: {
-                            "location_id": {$in: locationId},
-                            "createdAt": {$gte: new Date(startDate), $lte: new Date(endDate)}
-                        }
+                        $match: match
                     },
                     {
                         $project: {"_id": 1}
@@ -719,14 +856,15 @@ export const getAttributeRank = async (req, res) => {
 // Get Skill Rank
 
 export const getSkillRank = async (req, res) => {
-    const companyId = req.body.company_id;
-    const locationId = req.body.location_id.split(',');
-    const startDate = new Date(req.body.start_date);
-    const endDate = new Date(req.body.end_date);
-    const order = parseInt(req.body.order);
-    const format = req.body.format;
-    const type = req.body.type.toString();
-    const ratingId = [];
+    const companyId     = req.body.company_id;
+    const employee_id   = req.body.employee_id;
+    const locationId    = req.body.location_id.split(',');
+    const startDate     = new Date(req.body.start_date);
+    const endDate       = new Date(req.body.end_date);
+    const order         = parseInt(req.body.order);
+    const format        = req.body.format;
+    const type          = req.body.type.toString();
+    const ratingId      = [];
 
 
     // add try catch
@@ -759,13 +897,31 @@ export const getSkillRank = async (req, res) => {
                 ]);
         } else {
 
+            // Declaring match variable to match all the filters with proper conditions 
+            const match = {};
+            // Location Filter
+            if (locationId) 
+            {
+                match.location_id = {$in: locationId};
+            }
+            // Start date and End date filter
+            if (startDate && endDate) 
+            {
+                match.createdAt = {$gte: new Date(startDate), $lte: new Date(endDate)};
+            }
+            // Employee id filter
+            if ( employee_id )
+            {   
+                var employee            = await RatingEmployeeData.find({employee_id : employee_id});
+                var employee_rating_id  = [] ; 
+                employee_rating_id      = await employee.map(employeeData => employeeData.rating_id.toString());
+                match.ratingId          = { $in : employee_rating_id }  ; 
+            }
             var rating = await RatingData.aggregate(
-                [
+                [   
+                    { "$addFields": { "ratingId": { "$toString": "$_id" }}},
                     {
-                        $match: {
-                            "location_id": {$in: locationId},
-                            "createdAt": {$gte: new Date(startDate), $lte: new Date(endDate)}
-                        }
+                        $match: match
                     },
                     {
                         $project: {"_id": 1}

@@ -34,8 +34,45 @@ export const createLocation = async(req,res) => {
                 res.status(409).json({ message : 'Error occurred while trying to upload to S3 bucket'});
             }
         });
-    }
-     // Qr code generation 
+    }   
+        var question_id = [];
+      if (req.body.question_id.length > 0 )
+      {
+        question_id = req.body.question_id.split(",");
+      }
+
+        var location_skills = [];
+      if (req.body.location_skills.length > 0 )
+      {
+        location_skills = req.body.location_skills.split(",");
+      }
+
+
+    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
+        country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
+        latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
+        invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
+        installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets ,
+        autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
+        multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit , image: imagePath,
+        appPassword:req.body.app_password,language:req.body.language, question_id : question_id , location_skills : location_skills
+    };
+    
+    CompanyData.findOneAndUpdate(
+       { _id: req.body._id },
+       { $push: { location: objFriends  } },
+      function (error, success) {
+            if (error) {
+                console.log(error);
+                res.send(error)
+            } else {
+                console.log(success);
+                res.send(success)
+            }
+        });
+
+
+        // Qr code generation 
         const qrOption = { 
           margin : 7,
           width : 175
@@ -44,7 +81,7 @@ export const createLocation = async(req,res) => {
         const base64String = await QRCode.toDataURL(qrString,qrOption);
         var imgData = base64String;
         var base64Data = imgData.replace(/^data:image\/png;base64,/, "");
-        var qr_image = `qrCode/` + id+`.png`  ;
+        var qr_image = `qrCode/` +`test.png`  ;
         var bf = Buffer.from( base64String.replace(/^data:image\/\w+;base64,/, ""),'base64');
                aws.config.update({
                    accessKeyId: "AKIATVUCPHF35FWG7ZNI",
@@ -66,29 +103,7 @@ export const createLocation = async(req,res) => {
                    }
                });
                
-        // Qr code generation    
-
-    var objFriends = { name:req.body.name,location_id:req.body.location_id,address_1:req.body.address_1,address_2:req.body.address_2,
-        country_id:req.body.country_id,state_id:req.body.state_id,city:req.body.city,zipcode:req.body.zipcode,email:req.body.email,contact_no:req.body.contact_no,
-        latitude:req.body.latitude,longitude:req.body.longitude,description:req.body.description,open_time:req.body.open_time, close_time:req.body.close_time,
-        invoice_tag_id:req.body.invoice_tag_id,hardware_cost:req.body.hardware_cost, software_cost:req.body.software_cost ,app_color:req.body.app_color,max_budget_customer_audit:req.body.max_budget_customer_audit ,
-        installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets ,
-        autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,
-        multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit , image: imagePath
-    };
-
-    CompanyData.findOneAndUpdate(
-       { _id: req.body._id },
-       { $push: { location: objFriends  } },
-      function (error, success) {
-            if (error) {
-                console.log(error);
-                res.send(error)
-            } else {
-                console.log(success);
-                res.send(success)
-            }
-        });
+        // Qr code generation   
 
 }
 
@@ -212,7 +227,7 @@ export const updateLocation = async (req, res) => {
             installation_cost:req.body.installation_cost  ,installation_cost:req.body.installation_cost  ,num_tablets:req.body.num_tablets , image: imagePath ,
             autoMail:req.body.autoMail    };
 
-            console.log(req.body);
+            
         // await CompanyData.findOneAndUpdate(
         //  { _id: company_id },
         //  { $pull: { location: { _id: req.body._id } } } ,
@@ -221,6 +236,17 @@ export const updateLocation = async (req, res) => {
         //     { _id: company_id},
         //     { $push: { location: objFriends  } },
         //     );
+
+         var question_id = [];
+          if (req.body.question_id.length > 0 )
+          {
+            question_id = req.body.question_id.split(",");
+          }
+        var location_skills = [];
+          if (req.body.location_skills.length > 0 )
+          {
+            location_skills = req.body.location_skills.split(",");
+          }
         await CompanyData.updateOne(
                { _id: company_id, "location._id": req.body._id },
                { $set: { 
@@ -236,6 +262,10 @@ export const updateLocation = async (req, res) => {
                 "location.$.autoMail" :req.body.autoMail,
                 "location.$.showQRCode" :req.body.showQRCode,
                 "location.$.showLocationManager" :req.body.showLocationManager,
+                "location.$.appPassword" :req.body.app_password,
+                "location.$.language" :req.body.language,
+                "location.$.question_id" :req.body.question_id,
+                "location.$.location_skills" :req.body.location_skills,
                 
 
                 } }

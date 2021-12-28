@@ -20,7 +20,7 @@ const company = mongoose.Schema({
             image:String,invoice_tag_id:String,hardware_cost:String,show_qr_code:String,is_show_location:String,software_cost:String,num_tablets:String,start_date:String,mobileiron_user_created:String,allow_frequent_ratings:String,
             installation_cost:String,max_budget_customer_audit:String,app_color:String,autoMail:String,useLocationSkills:String,categoryWiseSkill:String,billing_start_date:String,billing_frequency:String,
             showQRCode:String,category_wise_skill:String,multiLocation:String,allow_complain_mails:String,use_location_skills:String,is_multilocation:String,showLocationManager:String,allowFrequestRatings:String,customerAudit:String, old_location_id: String
-            ,hide_team:String,show_customer_audit:String,password:String
+            ,hide_team:String,show_customer_audit:String,password:String,appPassword:String,language:String,question_id:Array,location_skills:Array
             }],
     user_location: [{user_id:Number, location_id:String}],
     ratings: [{location_id:String, employee_id:String, rating:String,out_of:String,feedback:String,other_feedback:String,

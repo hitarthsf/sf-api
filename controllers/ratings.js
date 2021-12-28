@@ -34,7 +34,7 @@ export const createRating = async (req, res) => {
     // if positive rating and no employee is selected then assign rating to all the employee and location manager of that location
     if (employees.length == 0 && data.rating > 3  )
     {
-        const employees_ids = await UsersData.aggregate([
+        const employees_ids = await UserData.aggregate([
                 {
                   $match : {"location_id" : data.location_id , "type" : { $in :['employee' , 'location_manager'] }}
                 }
