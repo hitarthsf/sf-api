@@ -16,10 +16,11 @@ import QRCode from 'qrcode';
 import aws from "aws-sdk";
 export const migrateCompanies = async (req, res) => {
 
-    const connection = mysql.createConnection({
-        host: '192.168.64.2',
-        user: 'hitarth29',
-        password: 'Pfbvq3Ed4l/HMycS',
+     const connection = mysql.createConnection({
+        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
+        user: 'admin',
+        port:3306,
+        password: 'Rethinksoft',
         database: 'ratings_db'
     });
     connection.connect(async (err) => {
@@ -72,10 +73,12 @@ export const migrateCompanies = async (req, res) => {
                                         if (attributeValueRow.type == 1) {
                                             positiveSkills.push({
                                                 name: attributeValueRow.name,
+                                                old_skill_id :attributeValueRow.id,
                                             });
                                         } else {
                                             negativeSkills.push({
                                                 name: attributeValueRow.name,
+                                                old_skill_id :attributeValueRow.id,
                                             })
                                         }
                                     });
@@ -169,6 +172,7 @@ export const migrateRatings = async (req,res) => {
     const connection = mysql.createConnection({
         host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
         user: 'admin',
+        port:3306,
         password: 'Rethinksoft',
         database: 'ratings_db'
     });
@@ -182,6 +186,16 @@ export const migrateRatings = async (req,res) => {
     connection.connect(async (err) => {
         if (err) throw err
         console.log('You are now connected...');
+        
+        // await connection.query(`SELECT 
+        //         ratings.*,
+        //         rating_customer.name as customer_name, 
+        //         rating_customer.email as customer_email, 
+        //         rating_customer.phone as customer_phone
+        //         from ratings 
+        //         left join rating_customer on ratings.id = rating_customer.ratings_id
+        //         LIMIT 1  `, async (err, ratingRows) => { console.log(ratingRows);} );
+            
         const allMongoCompanyObj = await CompanyData.find();
 
         var companyMap = new Map();
@@ -319,13 +333,20 @@ export const migrateRatingsLoop = async (req,res) => {
     
     var page          = req.query['page']  ? req.query['page'] : 1 ;
     var skip          = (page - 1) * 2500 ;  
-            
-    const connection = mysql.createConnection({
-        host: '192.168.64.2',
-        user: 'hitarth29',
-        password: 'Pfbvq3Ed4l/HMycS',
+    
+       const connection = mysql.createConnection({
+        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
+        user: 'admin',
+        port:3306,
+        password: 'Rethinksoft',
         database: 'ratings_db'
-    });
+    });     
+    // const connection = mysql.createConnection({
+    //     host: '192.168.64.2',
+    //     user: 'hitarth29',
+    //     password: 'Pfbvq3Ed4l/HMycS',
+    //     database: 'ratings_db'
+    // });
 
     connection.connect(async (err) => {
 
@@ -482,11 +503,18 @@ res.status(209).json(`total numbers of ratings  are imported.`);
 }
 export const migrateLogins = async (req,res) => {
     const connection = mysql.createConnection({
-        host: '192.168.64.2',
-        user: 'hitarth29',
-        password: 'Pfbvq3Ed4l/HMycS',
+        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
+        user: 'admin',
+        port:3306,
+        password: 'Rethinksoft',
         database: 'ratings_db'
     });
+    // const connection = mysql.createConnection({
+    //     host: '192.168.64.2',
+    //     user: 'hitarth29',
+    //     password: 'Pfbvq3Ed4l/HMycS',
+    //     database: 'ratings_db'
+    // });
     connection.connect(async (err) => {
         if (err) throw err
         console.log('You are now connected...');
@@ -512,11 +540,18 @@ export const migrateLogins = async (req,res) => {
 
 export const updateMigratedLocationNames = async (req, res) => {
     const connection = mysql.createConnection({
-         host: '192.168.64.2',
-        user: 'hitarth29',
-        password: 'Pfbvq3Ed4l/HMycS',
+        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
+        user: 'admin',
+        port:3306,
+        password: 'Rethinksoft',
         database: 'ratings_db'
     });
+    // const connection = mysql.createConnection({
+    //      host: '192.168.64.2',
+    //     user: 'hitarth29',
+    //     password: 'Pfbvq3Ed4l/HMycS',
+    //     database: 'ratings_db'
+    // });
     connection.connect(async (err) => {
         if (err) throw err
         console.log('You are now connected...');
@@ -590,4 +625,70 @@ export const generateLocationQRcode = async (req, res) => {
                     });
             })
         );
+}
+
+
+export const locationSkills = async (req, res) => {
+    const connection = mysql.createConnection({
+        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
+        user: 'admin',
+        port:3306,
+        password: 'Rethinksoft',
+        database: 'ratings_db'
+    });
+
+    connection.connect(async (err) => {
+        if (err) throw err
+         console.log('You are now connected...');
+
+        var companyObj = await CompanyData.find({_id : "61cc461c94a58604f9be7e61"});
+        await Promise.all(
+            companyObj.map(async (singleCompany) => {
+                var locationSkill = [] ; 
+                var skillMap = new Map();
+                singleCompany.attributes.forEach((attribute) => {
+                    // Positive Skills
+                    if(attribute.positive_skills.length > 0)
+                    {
+                        attribute.positive_skills.map(async (positiveSkills) => {
+                            skillMap.set(positiveSkills.old_skill_id, positiveSkills._id);
+                        }) ;      
+                    }
+                    //Negative Skills
+                    if(attribute.negative_skills.length > 0 ) 
+                    {
+                        attribute.negative_skills.map(async (negativeSkills) => {
+                            skillMap.set(negativeSkills.old_skill_id, negativeSkills._id);
+                        }) ;           
+                    }
+                })
+                
+                // location loop 
+                singleCompany.location.map(async (locationData) => {
+                    
+                    await connection.query(`SELECT * FROM location_area_skills WHERE location_id= ${locationData.old_location_id}`, async (err, rows) => {
+                        var locationSkill = [] ; 
+                        rows.map(async (rowData) => {
+                            if (skillMap.get(rowData.skill_id.toString())) 
+                            {
+                            locationSkill.push(skillMap.get(rowData.skill_id.toString()).toString())         
+                            }
+                         
+                        } )
+                        
+                        console.log(locationSkill);
+                        var companyUpdate = await CompanyData.updateOne(
+                               { _id: singleCompany._id, "location._id": locationData._id },
+                               { $set: { 
+                                "location.$.location_skills" :locationSkill
+                                } }
+                            );             
+                    }); 
+
+                    
+                 })
+                
+                }
+            ))
+        })
 }

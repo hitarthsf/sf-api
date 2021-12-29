@@ -28,10 +28,12 @@ const company = mongoose.Schema({
         attributes: [{
             id: String,name: String,is_active:String, createdAt: { type : Date, default: new Date()  },
             positive_skills: [{
-                name: String
+                name: String,
+                old_skill_id:String
             }],
             negative_skills: [{
-                name: String
+                name: String,
+                old_skill_id:String
             }],
             updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
             attribute_skills:[{
