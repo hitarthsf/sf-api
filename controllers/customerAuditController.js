@@ -504,10 +504,10 @@ export const fetchFrontCustomerAudit = async(req,res) => {
 
   var   expire      = false ;
   var 	check_expire = await CustomerAuditAnswersData.find({"customer_audit_id" : _id});
-  if (check_expire.length > 0 )
-  {
-  	expire = true ; 
-  }
+  // if (check_expire.length > 0 )
+  // {
+  // 	expire = true ; 
+  // }
 	var audit 					= await CustomerAuditData.findOne({"_id" : _id});		
 	var company 				= await CompanyData.findOne({"_id":audit.company_id});
 	var locationName 		= company.name ;
@@ -551,6 +551,31 @@ export const answerCustomerAudit = async(req,res) => {
 	const total_question 						= req.body.totalCount;
 	var max_score = 0 ; 
 	try { 
+		// image code
+		 if (req.body.answer_7.files) {
+       var audit_image = `customerAudit/` + req.body.customer_aduit_id + `-${req.body.answer_7.files.image.name}`;
+       aws.config.update({
+           accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+           secretAccessKey: "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",
+           region: "us-east-1"
+       });
+       const s3 = new aws.S3();
+       var params = {
+           ACL: 'public-read',
+           Bucket: "sf-ratings-profile-image",
+           Body: bufferToStream(req.body.answer_7.files.image.data),
+           Key: audit_image
+       };
+
+       s3.upload(params, (err, data) => {
+           if (err) {
+               console.log('Error occured while trying to upload to S3 bucket', err);
+               res.status(409).json({ message : 'Error occured while trying to upload to S3 bucket'});
+           }
+       });
+   }
+   // image code ends 
+		console.log(audit_image);
 	for (var i = 1; i <= total_question; i++) {
 
 		var answerObj = {
