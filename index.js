@@ -21,6 +21,7 @@ import screenSaverRoutes from './routes/screenSaver.js';
 import tagRoutes from './routes/tag.js';
 import customerAuditRoutes from './routes/customerAudit.js';
 import clientSurveyRoutes from './routes/clientSurvey.js';
+import skillProfileRoutes from './routes/skillProfile.js';
 
 //dot env configuration
 import dotenv from 'dotenv';
@@ -58,6 +59,7 @@ app.use('/screenSaver',screenSaverRoutes);
 app.use('/tag',tagRoutes);
 app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
+app.use('/skillProfile',skillProfileRoutes);
 
 
 

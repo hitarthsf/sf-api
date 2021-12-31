@@ -43,6 +43,10 @@ const company = mongoose.Schema({
             deletedAt: {  type : Date,  default: new Date()}
             }]
         }],
+    skill_profile: [{
+        id: String,name: String,skill_id:Array, createdAt: { type : Date, default: new Date()  },
+        updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
+    }],
     abusive_word: [{
         id: String,word: String, createdAt: { type : Date, default: new Date()  },
         updatedAt: {  type : Date,  default: new Date()}, deletedAt: {  type : Date,  default: new Date()},
