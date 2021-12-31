@@ -243,7 +243,7 @@ export const updateLocation = async (req, res) => {
             question_id = req.body.question_id.split(",");
           }
         var location_skills = [];
-          if (req.body.location_skills.length > 0 )
+          if (req.body.location_skills &&  req.body.location_skills.length > 0 )
           {
             location_skills = req.body.location_skills.split(",");
           }
