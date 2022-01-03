@@ -1,4 +1,4 @@
-import UserMigratedData from "../models/UserMigratedData.js";
+
 import UserLoginData from "../models/UserLoginData.js";
 import _ from "lodash";
 import mysql from "mysql";
