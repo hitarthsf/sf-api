@@ -8,7 +8,7 @@ import {
   addDiscussLog,
   getSingleLocation,
   updateSingleLocation,
-} from "../controllers/location.js";
+} from "../controllers/locationController.js";
 
 const router = express.Router();
 

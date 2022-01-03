@@ -6,7 +6,7 @@ import {
   singleRating,
   complaintManagement,
   ratingChat,
-} from "../controllers/ratings.js";
+} from "../controllers/ratingsController.js";
 
 const router = express.Router();
 

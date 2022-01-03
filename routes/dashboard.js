@@ -11,7 +11,7 @@ import {
   getEmployeeRank,
   getUserStats,
   getUserStatDetails,
-} from "../controllers/dashboard.js";
+} from "../controllers/dashboardController.js";
 
 const router = express.Router();
 

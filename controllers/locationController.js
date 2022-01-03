@@ -1,6 +1,5 @@
 import LocationData from "../models/LocationData.js";
 import CompanyData from "../models/CompanyData.js";
-
 import LocationSupportLogData from "../models/LocationSupportLogData.js";
 import aws from "aws-sdk";
 import { Readable } from "stream";

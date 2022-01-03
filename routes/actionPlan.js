@@ -5,7 +5,7 @@ import {
   addActionPlan,
   deleteActionPlan,
   updateActionPlan,
-} from "../controllers/action_plan.js";
+} from "../controllers/actionPlanController.js";
 
 const router = express.Router();
 

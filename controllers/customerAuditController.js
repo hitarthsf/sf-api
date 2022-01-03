@@ -284,8 +284,8 @@ export const addCustomerAudit = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "hitarth.rc@@gmail.com",
-        pass: "mrdldgjyzjfofnek",
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD,
       },
     });
 
@@ -379,8 +379,8 @@ export const editCustomerAudit = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: "hitarth.rc@@gmail.com",
-        pass: "mrdldgjyzjfofnek",
+        user: process.env.SMTP_EMAIL,
+        pass: process.env.SMTP_PASSWORD
       },
     });
 

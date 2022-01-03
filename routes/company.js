@@ -15,20 +15,17 @@ import {
   getLocationListPost,
   updateCompany,
   deleteCompany,
-  updateLocation,
   getLocation,
-  migration,
   getLocationList,
   getSkillList,
   fetchLocationByLoggedInUser,
-} from "../controllers/company.js";
+} from "../controllers/companyController.js";
 
 companyRoutes.post("/createCompany", createCompany);
 companyRoutes.post("/fetchCompany", getCompany);
 companyRoutes.get("/fetchCompanyGet", getCompanyGet);
 companyRoutes.post("/fetchLocation", getLocation);
 companyRoutes.post("/updateCompany", updateCompany);
-companyRoutes.post("/updateLocation", updateLocation);
 companyRoutes.post("/deleteCompany", deleteCompany);
 companyRoutes.get("/fetchLocationList", getLocationList);
 companyRoutes.get("/fetchSkillList", getSkillList);
@@ -38,7 +35,7 @@ companyRoutes.get("/test", function (req, res) {
   res.send("test home page");
 });
 
-companyRoutes.post("/migration", migration);
+
 
 companyRoutes.get(
   "/fetchLocationByLoggedInUser",
