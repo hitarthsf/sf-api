@@ -1,10 +1,9 @@
-import express from 'express';
+import express from "express";
 
-import {addClientSurvey } from '../controllers/clientSurveyController.js';
+import { addClientSurvey } from "../controllers/clientSurveyController.js";
 
 const router = express.Router();
 
-router.post('/addClientSurvey', addClientSurvey);
-
+router.post("/addClientSurvey", addClientSurvey);
 
 export default router;
