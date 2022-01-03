@@ -1,6 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const rating = mongoose.Schema({
+
     location_id: String,
     company_id: String,
     user_id: String,
@@ -35,9 +36,9 @@ const rating = mongoose.Schema({
         type : Date,
         default: new Date()
     },
+
 });
 
-
-const RatingData = mongoose.model('rating', rating);
+const RatingData = mongoose.model("rating", rating);
 
 export default RatingData;
