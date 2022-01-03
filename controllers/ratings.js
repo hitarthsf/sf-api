@@ -239,9 +239,10 @@ export const singleRating = async (req, res) => {
         
     ]);
     const companyData = await CompanyData.findOne({"_id":companyId});
+    const commets_data = [] ; 
     const responseData =  await Promise.all(
         ratings.map(async (rating) => {
-            rating.companyName = companyData.name;
+            //rating.companyName = companyData.name;
             if (!rating.is_assign)
             {
              rating.is_assign = 0;   
@@ -273,6 +274,19 @@ export const singleRating = async (req, res) => {
                 rating.skillName = rating.skillName.join(",");
                 return ratingSkill;
             });
+            if(rating.rating_comments.length > 0 )
+                {
+                    await Promise.all(
+                        rating.rating_comments.map(async (comment_data_array) => {
+                            comment_data_array.user_name = ""
+                            comment_data_array.image = "https://app.servefirst.co.uk/front/images/user.png";
+                            var user_data = await UserData.findOne({"_id":comment_data_array.user_id});
+                            comment_data_array.user_name = user_data.name ;
+                            commets_data.push(comment_data_array);
+                            
+                         })  , ) 
+                } 
+                ratings.commets_data = commets_data;
             await Promise.all(
                 rating.rating_employees.map(async (ratingEmployee) => {
                     ratingEmployee.employeeDetails = await UserData.findOne({"_id":ratingEmployee.employee_id});
@@ -346,16 +360,19 @@ export const ratingChat = async (req, res) => {
    var commets_data = [] ; 
    const responseData =  await Promise.all(
         ratings.map(async (rating) => {
+            if(rating.rating_comments.length > 0 )
+                {
+                    await Promise.all(
+                        rating.rating_comments.map(async (comment_data_array) => {
+                            comment_data_array.user_name = ""
+                            comment_data_array.image = "https://app.servefirst.co.uk/front/images/user.png";
+                            var user_data = await UserData.findOne({"_id":comment_data_array.user_id});
+                            comment_data_array.user_name = user_data.name ;
+                            commets_data.push(comment_data_array);
+                            
+                         })  , ) 
+                } 
             
-            await Promise.all(
-             rating.rating_comments.map(async (comment_data_array) => {
-                comment_data_array.user_name = ""
-                comment_data_array.image = "https://app.servefirst.co.uk/front/images/user.png";
-                var user_data = await UserData.findOne({"_id":comment_data_array.user_id});
-                comment_data_array.user_name = user_data.name ;
-                commets_data.push(comment_data_array);
-                
-             })  , ) 
             return rating;
         }),
 

@@ -26,6 +26,7 @@ const rating = mongoose.Schema({
     old_location_id: String,
     old_rating_id: String,
     other_feedback: String,
+    rating_comments:Array,
     createdAt: {
         type : Date,
         default: new Date()
