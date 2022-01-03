@@ -4,6 +4,8 @@ import aws from "aws-sdk";
 import { Readable } from "stream";
 import jwt from "jsonwebtoken";
 
+//Action : createCompany
+//Comment : Create New Company
 export const createCompany = async (req, res) => {
   const company = req.body;
   if (!company.name) {
@@ -53,8 +55,9 @@ export const createCompany = async (req, res) => {
   }
 };
 
+//Action : getCompany
+//Comment : Get All Company Listing Page
 export const getCompany = async (req, res) => {
-  //res.send('THIS GOOD');
   const page = req.body.page;
   const perPage = parseInt(req.body.perPage);
   const showTotalCount = req.body.showTotalCount;
@@ -91,9 +94,9 @@ export const getCompany = async (req, res) => {
   }
 };
 
-/// get Compaany list
+//Action : getCompanyGet
+//Comment : Get All Company Listing For Dropdowns
 export const getCompanyGet = async (req, res) => {
-  //res.send('THIS GOOD');
   const page = req.body.page;
   const perPage = parseInt(req.body.perPage);
   const showTotalCount = req.body.showTotalCount;
@@ -111,42 +114,21 @@ export const getCompanyGet = async (req, res) => {
 };
 
 export const getLocationListPost = async (req, res) => {
-  //res.send('THIS GOOD');
   const id = req.body._id;
   try {
     const AllCompany = await CompanyData.findOne({ _id: id });
-    // const companyList = [];
-    // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
-    //     fetchedLocations.location.map((location) => {
-    //         companyList.push({
-    //             _id: location._id,
-    //             name: location.name,
-    //         });
-    //     });
-    // }
-
     res.status(200).json(AllCompany);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-export const getLocation = async (req, res) => {
-  //res.send('THIS GOOD');
+export const getLocation = async (req, res) => { 
   const id = req.body._id;
   try {
-    const AllCompany = await CompanyData.findOne({ _id: id }, { location: 1 });
-    // const companyList = [];
-    // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
-    //     fetchedLocations.location.map((location) => {
-    //         companyList.push({
-    //             _id: location._id,
-    //             name: location.name,
-    //         });
-    //     });
-    // }
+    const AllLocation = await CompanyData.findOne({ _id: id }, { location: 1 });
     res.status(200).json(companyList);
-    res.status(200).json(AllCompany);
+    res.status(200).json(AllLocation);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -154,10 +136,7 @@ export const getLocation = async (req, res) => {
 
 export const updateCompany = async (req, res) => {
   console.log(req.body);
-  //const { id } = req.body._id;
   const company = req.body;
-
-  // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
 
   company.image = "";
   if (req.files) {
