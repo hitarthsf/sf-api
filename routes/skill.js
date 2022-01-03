@@ -5,7 +5,7 @@ import {
   getSkill,
   updateSkill,
   deleteSkill,
-} from "../controllers/skill.js";
+} from "../controllers/skillController.js";
 
 const router = express.Router();
 

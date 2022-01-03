@@ -77,9 +77,9 @@ export const createUser = async (req, res) => {
   if (req.files) {
     user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
     aws.config.update({
-      accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-      secretAccessKey: "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",
-      region: "us-east-1",
+      accessKeyId: process.env.AWS_S3_API_KEY,
+      secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+      region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     var params = {
@@ -216,9 +216,9 @@ export const updateUser = async (req, res) => {
   if (req.files) {
     user.image = `userAvatar/` + Date.now() + `-${req.files.image.name}`;
     aws.config.update({
-      accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-      secretAccessKey: "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",
-      region: "us-east-1",
+      accessKeyId: process.env.AWS_S3_API_KEY,
+      secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+      region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     var params = {
@@ -269,9 +269,9 @@ function bufferToStream(buffer) {
 
 export const uploadPhoto = async (req, res) => {
   aws.config.update({
-    accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-    secretAccessKey: "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",
-    region: "us-east-1",
+    accessKeyId: process.env.AWS_S3_API_KEY,
+      secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+      region: process.env.AWS_S3_ACCESS_REGION,
   });
   const s3 = new aws.S3();
   var params = {

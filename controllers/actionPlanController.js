@@ -5,8 +5,9 @@ import CompanyData from "../models/CompanyData.js";
 export const getActionPlan = async (req, res) => {
   try {
     const AllCompany = await CompanyData.findOne({
-      _id: "617fb45ad1bf0ec9a8cd3863",
+      _id: req.query.company_id,
     });
+    
     res.status(200).json({ data: AllCompany.action_plan, message: "Success" });
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -23,7 +24,7 @@ export const addActionPlan = async (req, res) => {
   };
 
   CompanyData.findOneAndUpdate(
-    { _id: "617fb45ad1bf0ec9a8cd3863" },
+    { _id: req.body.company_id },
     { $push: { action_plan: objFriends } },
     function (error, success) {
       if (error) {
@@ -40,7 +41,7 @@ export const addActionPlan = async (req, res) => {
 export const updateActionPlan = async (req, res) => {
   const id = req.body._id;
   await CompanyData.updateOne(
-    { _id: "617fb45ad1bf0ec9a8cd3863" },
+    { _id: req.body.company_id },
     { $pull: { action_plan: { _id: id } } },
     { multi: true },
     function (error, success) {
@@ -59,7 +60,7 @@ export const updateActionPlan = async (req, res) => {
   };
   
   CompanyData.findOneAndUpdate(
-    { _id: "617fb45ad1bf0ec9a8cd3863" },
+    { _id: req.body.company_id },
     { $push: { action_plan: objFriends } },
     function (error, success) {
       if (error) {
@@ -78,7 +79,7 @@ export const updateActionPlan = async (req, res) => {
 export const deleteActionPlan = async (req, res) => {
   const id = req.body._id;
   await CompanyData.updateOne(
-    { _id: "617fb45ad1bf0ec9a8cd3863" },
+    { _id: req.body.company_id },
     { $pull: { action_plan: { _id: id } } },
     { multi: true },
     function (error, success) {
