@@ -35,7 +35,7 @@
     "ecs-up": "source .env && cross-var ecs-cli compose --project-name ${AWS_CLUSTER_NAME} service up --create-log-groups --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME} --private-dns-namespace sf-network --enable-service-discovery",
     "ecs-down": "source .env && cross-var ecs-cli compose service rm ${AWS_CLUSTER_NAME} --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME}",
     "ecs-list": "source .env && cross-var ecs-cli compose --project-name ${AWS_CLUSTER_NAME} service ps --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME}",
-    "2": "",
+    "tf-create-s3-backend": "source .env && cross-var aws s3api create-bucket --bucket $TF_VAR_remote_backend --region $AWS_REGION --create-bucket-configuration LocationConstraint=$AWS_REGION && cross-var aws s3api put-bucket-versioning --bucket $TF_VAR_remote_backend --versioning-configuration Status=Enabled",
     "3": ""
   },
   "keywords": [],
