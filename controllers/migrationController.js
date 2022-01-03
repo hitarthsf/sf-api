@@ -1,12 +1,7 @@
-import CompanyMigratedData from '../models/CompanyMigratedData.js';
 import UserMigratedData from '../models/UserMigratedData.js';
-import RatingMigratedData from '../models/RatingMigratedData.js';
-import RatingMigratedSkillData from '../models/RatingMigratedSkillData.js';
-import RatingMigratedEmployeeData from '../models/RatingMigratedEmployeeData.js';
 import UserLoginData from '../models/UserLoginData.js';
 import _ from 'lodash';
 import mysql from 'mysql';
-import mongoose from "mongoose";
 import CompanyData from "../models/CompanyData.js";
 import RatingData from "../models/RatingData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
@@ -14,6 +9,8 @@ import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import UsersData from "../models/UsersData.js";
 import QRCode from 'qrcode';
 import aws from "aws-sdk";
+
+//Migration Script For Company, Locations, Company Attributes, Company Skills
 export const migrateCompanies = async (req, res) => {
 
      const connection = mysql.createConnection({
@@ -501,6 +498,7 @@ export const migrateRatingsLoop = async (req,res) => {
 console.log("-----------------  DONE  -------------------");
 res.status(209).json(`total numbers of ratings  are imported.`);
 }
+
 export const migrateLogins = async (req,res) => {
     const connection = mysql.createConnection({
         host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
@@ -538,53 +536,7 @@ export const migrateLogins = async (req,res) => {
     });
 }
 
-export const updateMigratedLocationNames = async (req, res) => {
-    const connection = mysql.createConnection({
-        host: 'sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com',
-        user: 'admin',
-        port:3306,
-        password: 'Rethinksoft',
-        database: 'ratings_db'
-    });
-    // const connection = mysql.createConnection({
-    //      host: '192.168.64.2',
-    //     user: 'hitarth29',
-    //     password: 'Pfbvq3Ed4l/HMycS',
-    //     database: 'ratings_db'
-    // });
-    connection.connect(async (err) => {
-        if (err) throw err
-        console.log('You are now connected...');
-
-        const companyList = await CompanyData.find();
-        await Promise.all(
-            companyList.map(async (companyObj) => {
-                const companyId= companyObj._id;
-                console.log('companyObj', companyObj._id, companyObj.old_company_id);
-                console.log('saaaaaa', `SELECT * FROM location WHERE location_area_id= ${companyObj.old_company_id}`);
-                await connection.query(`SELECT * FROM location WHERE location_area_id= ${companyObj.old_company_id}`, async (err, rows) => {
-                    rows.map(async (mySQLRow) => {
-                        await CompanyData.update({_id:companyId}, {$set:{
-                                "location.$[updateLocation].name": mySQLRow.name,
-                            }}, {
-                            "arrayFilters": [
-                                {"updateLocation.old_location_id" : mySQLRow.id}
-                            ]
-                        }, (error, result) => {
-                            if (error) {
-                                console.log('errorerror', companyId, mySQLRow.name);
-                            }
-                            console.log('resultresult', companyId, mySQLRow.name);
-                        });
-                    });
-                });
-            }),
-        )
-    });
-}
-
 export const generateLocationQRcode = async (req, res) => {
-
     const mongoCompanyList = await CompanyData.find();
 
         await Promise.all(
@@ -626,7 +578,6 @@ export const generateLocationQRcode = async (req, res) => {
             })
         );
 }
-
 
 export const locationSkills = async (req, res) => {
     const connection = mysql.createConnection({
@@ -691,4 +642,17 @@ export const locationSkills = async (req, res) => {
                 }
             ))
         })
+}
+
+export const testConnection = async (req, res) => {
+    console.log('Vishal');
+    const connection = mysql.createConnection({
+        host: 'servefirststack-rds-kch7qcnvlrum.ckhpypuhrn9e.eu-west-2.rds.amazonaws.com',
+        user: 'servefirst',
+        port:3306,
+        password: 'Xt444#bcdEh@D2F',
+        database: 'servefirst'
+    });
+    
+    return 'vishal';
 }
