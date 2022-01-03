@@ -1,36 +1,36 @@
 # ecs.tf
 
 resource "aws_ecs_cluster" "main" {
-  name = "cb-cluster"
+  name = "sfv2-cluster"
 }
 
-data "template_file" "cb_app" {
-  template = file("./templates/ecs/cb_app.json.tpl")
+data "template_file" "sfv2_api" {
+  template = file("./templates/ecs/sfv2_api.json.tpl")
 
   vars = {
-    app_image      = var.app_image
-    app_port       = var.app_port
+    api_image      = var.api_image
+    api_port       = var.api_port
     fargate_cpu    = var.fargate_cpu
     fargate_memory = var.fargate_memory
     aws_region     = var.aws_region
   }
 }
 
-resource "aws_ecs_task_definition" "app" {
-  family                   = "cb-app-task"
+resource "aws_ecs_task_definition" "api" {
+  family                   = "sfv2-api-task"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = var.fargate_cpu
   memory                   = var.fargate_memory
-  container_definitions    = data.template_file.cb_app.rendered
+  container_definitions    = data.template_file.sfv2_api.rendered
 }
 
 resource "aws_ecs_service" "main" {
-  name            = "cb-service"
+  name            = "sfv2-service"
   cluster         = aws_ecs_cluster.main.id
-  task_definition = aws_ecs_task_definition.app.arn
-  desired_count   = var.app_count
+  task_definition = aws_ecs_task_definition.api.arn
+  desired_count   = var.api_count
   launch_type     = "FARGATE"
 
   network_configuration {
@@ -40,9 +40,9 @@ resource "aws_ecs_service" "main" {
   }
 
   load_balancer {
-    target_group_arn = aws_alb_target_group.app.id
-    container_name   = "cb-app"
-    container_port   = var.app_port
+    target_group_arn = aws_alb_target_group.api.id
+    container_name   = "sfv2-api"
+    container_port   = var.api_port
   }
 
   depends_on = [aws_alb_listener.front_end, aws_iam_role_policy_attachment.ecs_task_execution_role]
