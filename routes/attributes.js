@@ -1,12 +1,17 @@
-import express from 'express';
+import express from "express";
 
-import {getAttribute, addAttribute, updateAttribute, deleteAttribute} from '../controllers/attribute.js';
+import {
+  getAttribute,
+  addAttribute,
+  updateAttribute,
+  deleteAttribute,
+} from "../controllers/attribute.js";
 
 const router = express.Router();
 
-router.post('/fetchAttribute', getAttribute);
-router.post('/addAttribute', addAttribute);
-router.post('/updateAttribute', updateAttribute);
-router.post('/deleteAttribute', deleteAttribute);
+router.post("/fetchAttribute", getAttribute);
+router.post("/addAttribute", addAttribute);
+router.post("/updateAttribute", updateAttribute);
+router.post("/deleteAttribute", deleteAttribute);
 
 export default router;
