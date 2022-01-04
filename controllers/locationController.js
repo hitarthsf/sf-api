@@ -75,7 +75,7 @@ export const createLocation = async (req, res) => {
     installation_cost: req.body.installation_cost,
     num_tablets: req.body.num_tablets,
     autoMail: req.body.autoMail,
-    useLocationSkills: req.body.useLocationSkills,
+    use_location_skills: req.body.useLocationSkills,
     categoryWiseSkill: req.body.categoryWiseSkill,
     showQRCode: req.body.showQRCode,
     multiLocation: req.body.multiLocation,
@@ -323,7 +323,11 @@ export const updateLocation = async (req, res) => {
         "location.$.appPassword": req.body.app_password,
         "location.$.language": req.body.language,
         "location.$.question_id": req.body.question_id,
-        "location.$.location_skills": req.body.location_skills,
+        "location.$.location_skills": req.body.location_skills.length > 0  ? req.body.location_skills.split(",") : [] ,
+        "location.$.use_location_skills": req.body.useLocationSkills ? req.body.useLocationSkills : '0',
+        "location.$.hide_team": req.body.hide_team ? req.body.hide_team : '0',
+        
+        
       },
     }
   );
