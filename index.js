@@ -37,8 +37,6 @@ app.use(cors());
 app.use(fileUpload());
 
 // init and configure passport
-//app.use(passport.initialize());
-
 app.use('/company',companyRoutes);
 app.use('/location',locationRoutes);
 app.use('/users',usersRoutes);
