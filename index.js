@@ -37,6 +37,8 @@ app.use(cors());
 app.use(fileUpload());
 
 // init and configure passport
+//app.use(passport.initialize());
+
 app.use('/company',companyRoutes);
 app.use('/location',locationRoutes);
 app.use('/users',usersRoutes);
@@ -60,7 +62,7 @@ app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 
 
-const CONNECTION_URL = process.env.CONNECTION_URL;
+const CONNECTION_URL =  process.env.CONNECTION_URL; // 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/test?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
 const PORT = process.env.PORT || 5000;
 
 app.get("/", async (req, res,next) => {
