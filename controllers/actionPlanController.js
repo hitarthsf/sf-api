@@ -1,5 +1,6 @@
 import CompanyData from "../models/CompanyData.js";
-
+import RatingData from "../models/RatingData.js";
+import RatingSkillData from "../models/RatingSkillData.js";
 //Action : getActionPlan
 //Comment : Get all Action Plans for Active Company
 export const getActionPlan = async (req, res) => {
@@ -93,3 +94,61 @@ export const deleteActionPlan = async (req, res) => {
     }
   );
 };
+
+
+//Action : createActionPlanSkill
+//Comment : Create Action Plan Skill Table 
+export const createActionPlanSkill = async (req, res) => {
+
+  const locationId  = req.body.location_id.split(",");
+  const month       = req.body.month;
+  const year        = req.body.year;
+
+
+// Declaring match variable to match all the filters with proper conditions
+const match = {};
+// Location Filter
+if (locationId) {
+  match.location_id = { $in: locationId };
+}
+// month filter
+if (month ) {
+  match.created_at  =  { $month: month } ;
+}
+// year filter
+// if (year ) {
+//   match.created_at  =  { $year: year } ;
+// }
+
+var rating = await RatingData.aggregate([
+  { $addFields: { ratingId: { $toString: "$_id" } } },
+  
+  {
+    $match: match,
+  },
+  {
+    $project: { _id: 1   },
+  },
+]);
+
+
+const ratingIdArray = rating.map((ratingObj) => ratingObj._id.toString());
+
+var skillRanks = await RatingSkillData.aggregate([
+{
+  $match: {
+    rating_id: {
+      $in: ratingIdArray,
+    },
+  },
+},
+{
+  $group: {
+    _id: "$skill_id",
+    count: { $sum: 1 },
+  },
+},
+{ $sort: { count: order } },
+]);
+
+}
