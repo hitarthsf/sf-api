@@ -282,8 +282,10 @@ export const addCustomerAudit = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD,
+        user: "hitarth.rc@@gmail.com",
+        pass: "mrdldgjyzjfofnek",
+        // user: process.env.SMTP_EMAIL,
+        // pass: process.env.SMTP_PASSWORD,
       },
     });
 
@@ -377,8 +379,10 @@ export const editCustomerAudit = async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: "gmail",
       auth: {
-        user: process.env.SMTP_EMAIL,
-        pass: process.env.SMTP_PASSWORD
+        user: "hitarth.rc@@gmail.com",
+        pass: "mrdldgjyzjfofnek",
+        // user: process.env.SMTP_EMAIL,
+        // pass: process.env.SMTP_PASSWORD
       },
     });
 
@@ -586,9 +590,12 @@ export const answerCustomerAudit = async (req, res) => {
         req.body.customer_aduit_id +
         `-${req.body.answer_7.files.image.name}`;
       aws.config.update({
-        accessKeyId: process.env.AWS_S3_API_KEY,
-        secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-        region: process.env.AWS_S3_ACCESS_REGION,
+        accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+      secretAccessKey: "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",
+      region: "us-east-1",
+        // accessKeyId: process.env.AWS_S3_API_KEY,
+        // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+        // region: process.env.AWS_S3_ACCESS_REGION,
       });
       const s3 = new aws.S3();
       var params = {
