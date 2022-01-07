@@ -21,6 +21,9 @@ export const createLocation = async (req, res) => {
       accessKeyId: "AKIATVUCPHF35FWG7ZNI",
       secretAccessKey: "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",
       region: "us-east-1",
+      // accessKeyId: process.env.AWS_S3_API_KEY,
+      // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+      // region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     let params = {
@@ -75,7 +78,7 @@ export const createLocation = async (req, res) => {
     installation_cost: req.body.installation_cost,
     num_tablets: req.body.num_tablets,
     autoMail: req.body.autoMail,
-    useLocationSkills: req.body.useLocationSkills,
+    use_location_skills: req.body.useLocationSkills,
     categoryWiseSkill: req.body.categoryWiseSkill,
     showQRCode: req.body.showQRCode,
     multiLocation: req.body.multiLocation,
@@ -120,8 +123,11 @@ export const createLocation = async (req, res) => {
   );
   aws.config.update({
     accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-    secretAccessKey: "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",
-    region: "us-east-1",
+      secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+      region: "us-east-1",
+    // accessKeyId: process.env.AWS_S3_API_KEY,
+    // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+    // region: process.env.AWS_S3_ACCESS_REGION,
   });
   const s3 = new aws.S3();
   var params = {
@@ -195,6 +201,9 @@ export const updateLocation = async (req, res) => {
       accessKeyId: "AKIATVUCPHF35FWG7ZNI",
       secretAccessKey: "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",
       region: "us-east-1",
+      // accessKeyId: process.env.AWS_S3_API_KEY,
+      // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+      // region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     let params = {
@@ -232,8 +241,11 @@ export const updateLocation = async (req, res) => {
   );
   aws.config.update({
     accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-    secretAccessKey: "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",
-    region: "us-east-1",
+      secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+      region: "us-east-1",
+    // accessKeyId: process.env.AWS_S3_API_KEY,
+    // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+    // region: process.env.AWS_S3_ACCESS_REGION,
   });
   const s3 = new aws.S3();
   var params = {
@@ -253,9 +265,6 @@ export const updateLocation = async (req, res) => {
   });
 
   // Qr code generation
-
-  // autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit,
-  // add
   var objFriends = {
     name: req.body.name,
     location_id: req.body.location_id,
@@ -283,15 +292,6 @@ export const updateLocation = async (req, res) => {
     image: imagePath,
     autoMail: req.body.autoMail,
   };
-
-  // await CompanyData.findOneAndUpdate(
-  //  { _id: company_id },
-  //  { $pull: { location: { _id: req.body._id } } } ,
-  //  { multi: true },);
-  // await CompanyData.findOneAndUpdate(
-  //     { _id: company_id},
-  //     { $push: { location: objFriends  } },
-  //     );
 
   var question_id = [];
   if (req.body.question_id.length > 0) {
@@ -323,24 +323,20 @@ export const updateLocation = async (req, res) => {
         "location.$.appPassword": req.body.app_password,
         "location.$.language": req.body.language,
         "location.$.question_id": req.body.question_id,
-        "location.$.location_skills": req.body.location_skills,
+        "location.$.location_skills": req.body.location_skills.length > 0  ? req.body.location_skills.split(",") : [] ,
+        "location.$.use_location_skills": req.body.useLocationSkills ? req.body.useLocationSkills : '0',
+        "location.$.hide_team": req.body.hide_team ? req.body.hide_team : '0',
+        
+        
       },
     }
   );
   res.json({ message: "Location updated successfully." });
-  // below function can be used for optimization
-  // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
-  // const updatedLocation = { ...location, _id: req.body._id };
-  // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
-  // } catch (e) {
-  //     res.status(209).json(e);
-  // }
 };
 
 export const deleteLocation = async (req, res) => {
   const id = req.body._id;
   const company_id = req.body.company_id;
-  console.log(id);
 
   await CompanyData.updateOne(
     { _id: company_id },

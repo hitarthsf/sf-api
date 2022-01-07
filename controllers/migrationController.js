@@ -38,11 +38,18 @@ export const migrateCompanies = async (req, res) => {
                 companyObject["location"] = rows;
               }
             );
+            
+            //Get Abusive Words
+            await connection.query(
+              `SELECT * FROM abusive_words`,
+              async (err, row) => {                    
+                companyObject["abusive_word"] = row;                    
+              }
+            );
 
             // Fetch company attributes & skills
             await connection.query(
-              `SELECT 
-                            attribute.id as attributeId, 
+              `SELECT   attribute.id as attributeId, 
                             attribute.name as attributeName, 
                             attribute.created_at as createdAt, 
                             attribute.updated_at as updatedAt, 
@@ -94,7 +101,8 @@ export const migrateCompanies = async (req, res) => {
                   }
                 });
                 companyObject["attributes"] = attributes;
-
+                console.log('Vishal');
+                //Save Company
                 const newCompany = new CompanyData({
                   ...companyObject,
                   createdAt: new Date().toISOString(),
@@ -105,6 +113,7 @@ export const migrateCompanies = async (req, res) => {
                 );
               }
             );
+
           })
         ).then((value) => {
           res.status(209).json(`total ${rows.length} companies are imported.`);
@@ -188,19 +197,19 @@ export const migrateRatings = async (req, res) => {
   var page = req.query["page"];
   var skip = (page - 1) * 1000;
 
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
   // const connection = mysql.createConnection({
-  //     host: '192.168.64.2',
-  //     user: 'hitarth29',
-  //     password: 'Pfbvq3Ed4l/HMycS',
-  //     database: 'ratings_db'
+  //   host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+  //   user: "admin",
+  //   port: 3306,
+  //   password: "Rethinksoft",
+  //   database: "ratings_db",
   // });
+  const connection = mysql.createConnection({
+      host: '192.168.64.2',
+      user: 'hitarth29',
+      password: 'Pfbvq3Ed4l/HMycS',
+      database: 'ratings_db'
+  });
 
   connection.connect(async (err) => {
     if (err) throw err;
@@ -264,80 +273,81 @@ export const migrateRatings = async (req, res) => {
       userMap.set(user.old_user_id, user._id);
     });
 
-    // await connection.query(`SELECT
-    //         ratings.*,
-    //         rating_customer.name as customer_name,
-    //         rating_customer.email as customer_email,
-    //         rating_customer.phone as customer_phone
-    //         from ratings
-    //         left join rating_customer on ratings.id = rating_customer.ratings_id
-    //         LIMIT 1000 OFFSET ${skip} `, async (err, ratingRows) => {
+    await connection.query(`SELECT
+            ratings.*,
+            rating_customer.name as customer_name,
+            rating_customer.email as customer_email,
+            rating_customer.phone as customer_phone
+            from ratings
+            left join rating_customer on ratings.id = rating_customer.ratings_id
+            where ratings.location_id = 31
+            LIMIT 1000 OFFSET ${skip} `, async (err, ratingRows) => {
 
-    //     ratingRows.map(async (ratingRow) => {
+        ratingRows.map(async (ratingRow) => {
 
-    //         const ratingObj = ratingRow;
-    //         ratingObj['old_location_id'] = ratingRow.location_id;
-    //         ratingObj['company_id'] = locationDataMap.get(ratingRow.location_id.toString()).companyNodeId;
-    //         ratingObj['location_id'] = locationDataMap.get(ratingRow.location_id.toString()).nodeId;
-    //         ratingObj['old_rating_id'] = ratingRow.id;
-    //         ratingObj['rating'] = 0;
+            const ratingObj = ratingRow;
+            ratingObj['old_location_id'] = ratingRow.location_id;
+            ratingObj['company_id'] = locationDataMap.get(ratingRow.location_id.toString()).companyNodeId;
+            ratingObj['location_id'] = locationDataMap.get(ratingRow.location_id.toString()).nodeId;
+            ratingObj['old_rating_id'] = ratingRow.id;
+            
 
-    //         const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
-    //         //await ratingMongoObj.save();
-    //         console.log(ratingMongoObj);
+            const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
+            await ratingMongoObj.save();
+            console.log(ratingMongoObj);
 
-    //         // skill code
-    //          await connection.query(`SELECT ratings_skill.*, skills.name, skills.type
-    //             from ratings_skill
-    //             left join skills on skills.id = ratings_skill.skills_id
-    //             WHERE ratings_id = ${ratingObj.id}`, async (err, ratingSkills) => {
-    //             ratingObj['skills'] = ratingSkills;
+            // skill code
+             await connection.query(`SELECT ratings_skill.*, skills.name, skills.type
+                from ratings_skill
+                left join skills on skills.id = ratings_skill.skills_id
+                WHERE ratings_id = ${ratingObj.id}`, async (err, ratingSkills) => {
+                ratingObj['skills'] = ratingSkills;
 
-    //             ratingSkills.map(async (mySqlRatingSkill) => {
-    //                     if (mySqlRatingSkill.name) {
-    //                         let skillId = null;
+                ratingSkills.map(async (mySqlRatingSkill) => {
+                        if (mySqlRatingSkill.name) {
+                            let skillId = null;
 
-    //                         skillId = companyMap.get(locationDataMap.get(ratingObj.old_location_id.toString()).old_company_id).skills.get(mySqlRatingSkill.name);
+                            skillId = companyMap.get(locationDataMap.get(ratingObj.old_location_id.toString()).old_company_id).skills.get(mySqlRatingSkill.name);
 
-    //                         if (skillId) {
-    //                             const ratingSkillMongoObj = new RatingSkillData({
-    //                                 rating_id: ratingMongoObj.id,
-    //                                 skill_id: skillId,
-    //                                 rating: 0,
-    //                                 location_id: ratingObj.location_id,
-    //                                 company_id: ratingObj.company_id,
-    //                                 createdAt: ratingMongoObj.createdAt
-    //                             });
-    //                             //await ratingSkillMongoObj.save();
-    //                             console.log(ratingSkillMongoObj)
-    //                         }
-    //                     }
-    //             });
-    //         });
+                            if (skillId) {
+                                const ratingSkillMongoObj = new RatingSkillData({
+                                    rating_id: ratingMongoObj.id,
+                                    skill_id: skillId,
+                                    rating: ratingRow.rating,
+                                    location_id: ratingObj.location_id,
+                                    company_id: ratingObj.company_id,
+                                    createdAt: ratingMongoObj.createdAt
+                                });
+                                await ratingSkillMongoObj.save();
+                                console.log(ratingSkillMongoObj)
+                            }
+                        }
+                });
+            });
 
-    //         await connection.query(`SELECT rating_user.*
-    //             from rating_user
-    //             WHERE ratings_id = ${ratingObj.id}`, async (err, ratingEmployees) => {
-    //             ratingObj['employees'] = ratingEmployees;
+            await connection.query(`SELECT rating_user.*
+                from rating_user
+                WHERE ratings_id = ${ratingObj.id}`, async (err, ratingEmployees) => {
+                ratingObj['employees'] = ratingEmployees;
 
-    //             ratingEmployees.map(async (mySqlRatingEmployee) => {
-    //                 if (mySqlRatingEmployee.user_id) {
+                ratingEmployees.map(async (mySqlRatingEmployee) => {
+                    if (mySqlRatingEmployee.user_id) {
 
-    //                         const ratingEmployeeMongoObj = new RatingEmployeeData({
-    //                             rating_id: ratingMongoObj.id,
-    //                             employee_id: userMap.get(mySqlRatingEmployee.user_id.toString()),
-    //                             rating: 0,
-    //                             location_id: ratingObj.location_id,
-    //                             company_id: ratingObj.company_id,
-    //                             createdAt: ratingMongoObj.createdAt
-    //                         });
-    //                         //await ratingEmployeeMongoObj.save();
-    //                         console.log(ratingEmployeeMongoObj)
-    //                 }
-    //             });
-    //         });
-    //     });
-    // });
+                            const ratingEmployeeMongoObj = new RatingEmployeeData({
+                                rating_id: ratingMongoObj.id,
+                                employee_id: userMap.get(mySqlRatingEmployee.user_id.toString()),
+                                rating: ratingRow.rating,
+                                location_id: ratingObj.location_id,
+                                company_id: ratingObj.company_id,
+                                createdAt: ratingMongoObj.createdAt
+                            });
+                            await ratingEmployeeMongoObj.save();
+                            console.log(ratingEmployeeMongoObj)
+                    }
+                });
+            });
+        });
+    });
   });
   console.log("-----------------  DONE  -------------------");
   res.status(209).json(`total numbers of ratings  are imported.`);
@@ -593,8 +603,11 @@ export const generateLocationQRcode = async (req, res) => {
         );
         aws.config.update({
           accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-          secretAccessKey: "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",
-          region: "us-east-1",
+      secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+      region: "us-east-1",
+          // accessKeyId: process.env.AWS_S3_API_KEY,
+          // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+          // region: process.env.AWS_S3_ACCESS_REGION,
         });
         const s3 = new aws.S3();
         var params = {

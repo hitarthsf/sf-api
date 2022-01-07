@@ -553,6 +553,8 @@ export const latestReview = async (req, res) => {
     );
     match.ratingId = { $in: employee_rating_id };
   }
+  match.feedback != null;
+
   const companyData = await CompanyData.findOne({ _id: companyId });
 
   const ratings = await RatingData.aggregate([
@@ -587,6 +589,7 @@ export const latestReview = async (req, res) => {
   const responseData = await Promise.all(
     ratings.map(async (rating) => {
       rating.companyName = companyData.name;
+      rating.skillName = [];
       if (!rating.is_assign) {
         rating.is_assign = 0;
       }
@@ -597,25 +600,29 @@ export const latestReview = async (req, res) => {
       if (fetchedLocation) {
         rating.locationName = fetchedLocation.name;
       }
-      rating.skillName = [];
+      
       rating.rating_skills.map(async (ratingSkill) => {
         companyData.attributes.map((attribute) => {
           const matchingObj = _.find(attribute.positive_skills, (skill) => {
             return skill._id == ratingSkill.skill_id;
           });
           if (matchingObj) {
-            rating.skillName.push(matchingObj.name);
+            if(rating.skillName)
+            {
+              //rating.skillName.push(matchingObj.name);  
+            }
+            
           }
           if (ratingSkill.skillName === "") {
             const matchingObj = _.find(attribute.negative_skills, {
               _id: ratingSkill.skill_id,
             });
             if (matchingObj) {
-              rating.skillName.push(matchingObj.name);
+              //rating.skillName.push(matchingObj.name);
             }
           }
         });
-        rating.skillName = rating.skillName.join(",");
+        //rating.skillName = rating.skillName.join(",");
         return ratingSkill;
       });
       await Promise.all(
