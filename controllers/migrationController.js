@@ -49,8 +49,7 @@ export const migrateCompanies = async (req, res) => {
 
             // Fetch company attributes & skills
             await connection.query(
-              `SELECT 
-                            attribute.id as attributeId, 
+              `SELECT   attribute.id as attributeId, 
                             attribute.name as attributeName, 
                             attribute.created_at as createdAt, 
                             attribute.updated_at as updatedAt, 
@@ -291,7 +290,7 @@ export const migrateRatings = async (req, res) => {
             ratingObj['company_id'] = locationDataMap.get(ratingRow.location_id.toString()).companyNodeId;
             ratingObj['location_id'] = locationDataMap.get(ratingRow.location_id.toString()).nodeId;
             ratingObj['old_rating_id'] = ratingRow.id;
-            ratingObj['rating'] = 0;
+            
 
             const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
             await ratingMongoObj.save();
@@ -314,7 +313,7 @@ export const migrateRatings = async (req, res) => {
                                 const ratingSkillMongoObj = new RatingSkillData({
                                     rating_id: ratingMongoObj.id,
                                     skill_id: skillId,
-                                    rating: 0,
+                                    rating: ratingRow.rating,
                                     location_id: ratingObj.location_id,
                                     company_id: ratingObj.company_id,
                                     createdAt: ratingMongoObj.createdAt
@@ -337,7 +336,7 @@ export const migrateRatings = async (req, res) => {
                             const ratingEmployeeMongoObj = new RatingEmployeeData({
                                 rating_id: ratingMongoObj.id,
                                 employee_id: userMap.get(mySqlRatingEmployee.user_id.toString()),
-                                rating: 0,
+                                rating: ratingRow.rating,
                                 location_id: ratingObj.location_id,
                                 company_id: ratingObj.company_id,
                                 createdAt: ratingMongoObj.createdAt

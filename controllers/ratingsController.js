@@ -14,8 +14,8 @@ export const createRating = async (req, res) => {
   var is_assign = data.employees ? "1" : "0";
 
   const ratingObj = {
-    location_id: data.location_id,
-    company_id: data.company_id,
+    location_id: data.locationId,
+    company_id: data.companyId,
     rating: data.rating,
     dropout_page: data.dropout_page ? data.dropout_page : "",
     feedback: data.feedback ? data.feedback : "",

@@ -553,6 +553,8 @@ export const latestReview = async (req, res) => {
     );
     match.ratingId = { $in: employee_rating_id };
   }
+  match.feedback != null;
+
   const companyData = await CompanyData.findOne({ _id: companyId });
 
   const ratings = await RatingData.aggregate([
