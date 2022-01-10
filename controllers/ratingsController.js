@@ -257,7 +257,7 @@ export const singleRating = async (req, res) => {
         rating.locationName = fetchedLocation.name;
       }
       rating.skillName = [];
-      commets_data = [] ; 
+      var commets_data = [] ; 
       rating.rating_skills.map(async (ratingSkill) => {
         companyData.attributes.map((attribute) => {
           const matchingObj = _.find(attribute.positive_skills, (skill) => {
@@ -275,7 +275,7 @@ export const singleRating = async (req, res) => {
             }
           }
         });
-        rating.skillName = rating.skillName.join(",");
+        //rating.skillName = rating.skillName.join(",");
         return ratingSkill;
       });
       await Promise.all(
