@@ -13,7 +13,7 @@ export const locationLogin = async (req, res) => {
     allCompany.map(async (company) => {
       const fetchedLocation = _.find(company.location, (location) => {
         location.companyId = "";
-        if (location.location_id == locationId) {
+        if (location.location_id != "" && location.location_id == locationId ) {
           location.companyId = company._id;
           location.location_area_id = company._id;
           res.status(200).json(location);
@@ -30,21 +30,42 @@ export const getSkills = async (req, res) => {
   const type = req.body.type;
 
   const companyData = await CompanyData.findOne({ _id: companyId });
-
+  var locationData  = ""; 
+  const dataLocation = await companyData.location.forEach((locations) => { if (locationId == locations._id) { locationData = locations }   }); 
   // check skills from comapny data
   var skills = [];
   if (type == "positive") {
     const data = await companyData.attributes.forEach((attribute) => {
-      var count = 0;
+      
       let matchingObj = _.find(attribute.positive_skills, (skill) => {
-        skills.push(skill);
+        if ( locationData.use_location_skills == "1" )
+        { 
+          if (locationData.location_skills.includes(skill._id))
+          {
+            skills.push(skill);  
+          }
+        }
+        else
+        {
+          skills.push(skill);  
+        }
       });
     });
   } else {
     const data = await companyData.attributes.forEach((attribute) => {
       var count = 0;
       let matchingObj = _.find(attribute.negative_skills, (skill) => {
-        skills.push(skill);
+        if ( locationData.use_location_skills == "1" )
+        {
+          if (locationData.location_skills.includes(skill._id))
+          {
+            skills.push(skill);  
+          }
+        }
+        else
+        {
+          skills.push(skill);  
+        }
       });
     });
   }
