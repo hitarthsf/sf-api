@@ -554,10 +554,7 @@ export const latestReview = async (req, res) => {
     match.ratingId = { $in: employee_rating_id };
   }
   match.feedback != null;
-<<<<<<< HEAD:controllers/dashboard.js
-=======
 
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/dashboardController.js
   const companyData = await CompanyData.findOne({ _id: companyId });
 
   const ratings = await RatingData.aggregate([
@@ -610,15 +607,11 @@ export const latestReview = async (req, res) => {
             return skill._id == ratingSkill.skill_id;
           });
           if (matchingObj) {
-<<<<<<< HEAD:controllers/dashboard.js
-            //rating.skillName.push(matchingObj.name);
-=======
             if(rating.skillName)
             {
               //rating.skillName.push(matchingObj.name);  
             }
             
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/dashboardController.js
           }
           if (ratingSkill.skillName === "") {
             const matchingObj = _.find(attribute.negative_skills, {

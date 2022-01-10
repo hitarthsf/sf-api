@@ -326,11 +326,8 @@ export const updateLocation = async (req, res) => {
         "location.$.location_skills": req.body.location_skills.length > 0  ? req.body.location_skills.split(",") : [] ,
         "location.$.use_location_skills": req.body.useLocationSkills ? req.body.useLocationSkills : '0',
         "location.$.hide_team": req.body.hide_team ? req.body.hide_team : '0',
-<<<<<<< HEAD:controllers/location.js
-=======
         
         
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/locationController.js
       },
     }
   );
