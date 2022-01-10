@@ -5,7 +5,7 @@ import {
   addAttribute,
   updateAttribute,
   deleteAttribute,
-} from "../controllers/attribute.js";
+} from "../controllers/attributeController.js";
 
 const router = express.Router();
 

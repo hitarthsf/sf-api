@@ -554,6 +554,10 @@ export const latestReview = async (req, res) => {
     match.ratingId = { $in: employee_rating_id };
   }
   match.feedback != null;
+<<<<<<< HEAD:controllers/dashboard.js
+=======
+
+>>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/dashboardController.js
   const companyData = await CompanyData.findOne({ _id: companyId });
 
   const ratings = await RatingData.aggregate([
@@ -588,6 +592,7 @@ export const latestReview = async (req, res) => {
   const responseData = await Promise.all(
     ratings.map(async (rating) => {
       rating.companyName = companyData.name;
+      rating.skillName = [];
       if (!rating.is_assign) {
         rating.is_assign = 0;
       }
@@ -598,14 +603,22 @@ export const latestReview = async (req, res) => {
       if (fetchedLocation) {
         rating.locationName = fetchedLocation.name;
       }
-      rating.skillName = [];
+      
       rating.rating_skills.map(async (ratingSkill) => {
         companyData.attributes.map((attribute) => {
           const matchingObj = _.find(attribute.positive_skills, (skill) => {
             return skill._id == ratingSkill.skill_id;
           });
           if (matchingObj) {
+<<<<<<< HEAD:controllers/dashboard.js
             //rating.skillName.push(matchingObj.name);
+=======
+            if(rating.skillName)
+            {
+              //rating.skillName.push(matchingObj.name);  
+            }
+            
+>>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/dashboardController.js
           }
           if (ratingSkill.skillName === "") {
             const matchingObj = _.find(attribute.negative_skills, {
@@ -616,7 +629,7 @@ export const latestReview = async (req, res) => {
             }
           }
         });
-        rating.skillName = rating.skillName.join(",");
+        //rating.skillName = rating.skillName.join(",");
         return ratingSkill;
       });
       await Promise.all(

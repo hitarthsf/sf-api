@@ -4,7 +4,7 @@ import {
   getPrivacyLocation,
   createPrivacyLocation,
   deletePrivacyLocation,
-} from "../controllers/privacyLocation.js";
+} from "../controllers/privacyLocationController.js";
 
 const router = express.Router();
 

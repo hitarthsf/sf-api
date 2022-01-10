@@ -4,14 +4,12 @@ import UserData from "../models/UsersData.js";
 import CompanyData from "../models/CompanyData.js";
 import CustomerAuditAnswersData from "../models/CustomerAuditAnswersData.js";
 import * as nodemailer from "nodemailer";
-import fs from "fs";
 import * as path from "path";
-import Email from "email-templates";
-import QRCode from "qrcode";
 import hbs from "nodemailer-express-handlebars";
 import _ from "lodash";
 import aws from "aws-sdk";
 import { Readable } from "stream";
+
 // Add Customr Audit Question Set
 export const addCustomerAuditQuestion = async (req, res) => {
   var company_id = req.body.company_id;
@@ -286,6 +284,8 @@ export const addCustomerAudit = async (req, res) => {
       auth: {
         user: "hitarth.rc@@gmail.com",
         pass: "mrdldgjyzjfofnek",
+        // user: process.env.SMTP_EMAIL,
+        // pass: process.env.SMTP_PASSWORD,
       },
     });
 
@@ -381,6 +381,8 @@ export const editCustomerAudit = async (req, res) => {
       auth: {
         user: "hitarth.rc@@gmail.com",
         pass: "mrdldgjyzjfofnek",
+        // user: process.env.SMTP_EMAIL,
+        // pass: process.env.SMTP_PASSWORD
       },
     });
 
@@ -589,8 +591,11 @@ export const answerCustomerAudit = async (req, res) => {
         `-${req.body.answer_7.files.image.name}`;
       aws.config.update({
         accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-        secretAccessKey: "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",
-        region: "us-east-1",
+      secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+      region: "us-east-1",
+        // accessKeyId: process.env.AWS_S3_API_KEY,
+        // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+        // region: process.env.AWS_S3_ACCESS_REGION,
       });
       const s3 = new aws.S3();
       var params = {

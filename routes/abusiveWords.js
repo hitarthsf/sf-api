@@ -1,10 +1,12 @@
 import express from "express";
 import AuthUtils from "../utils/AuthUtils.js";
+
 import {
   getAbusiveWords,
   createAbusiveWords,
   deleteAbusiveWords,
-} from "../controllers/abusiveWords.js";
+} from "../controllers/abusiveWordsController.js";
+
 import { default as passport } from "../utils/passport.js";
 const router = express.Router();
 
