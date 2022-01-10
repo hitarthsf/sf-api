@@ -6,7 +6,7 @@ const rating = mongoose.Schema({
     company_id: String,
     user_id: String,
     out_of : String,
-    rating: Number,
+    rating: String,
     dropout_page: String,
     feedback: String,
     customer_name: String,

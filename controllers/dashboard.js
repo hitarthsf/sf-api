@@ -553,6 +553,7 @@ export const latestReview = async (req, res) => {
     );
     match.ratingId = { $in: employee_rating_id };
   }
+  match.feedback != null;
   const companyData = await CompanyData.findOne({ _id: companyId });
 
   const ratings = await RatingData.aggregate([
@@ -604,14 +605,14 @@ export const latestReview = async (req, res) => {
             return skill._id == ratingSkill.skill_id;
           });
           if (matchingObj) {
-            rating.skillName.push(matchingObj.name);
+            //rating.skillName.push(matchingObj.name);
           }
           if (ratingSkill.skillName === "") {
             const matchingObj = _.find(attribute.negative_skills, {
               _id: ratingSkill.skill_id,
             });
             if (matchingObj) {
-              rating.skillName.push(matchingObj.name);
+              //rating.skillName.push(matchingObj.name);
             }
           }
         });
