@@ -21,7 +21,7 @@ import {
   getLocationList,
   getSkillList,
   fetchLocationByLoggedInUser,
-} from "../controllers/company.js";
+} from "../controllers/companyContoller.js";
 
 companyRoutes.post("/createCompany", createCompany);
 companyRoutes.post("/fetchCompany", getCompany);

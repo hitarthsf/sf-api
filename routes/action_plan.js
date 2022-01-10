@@ -6,7 +6,7 @@ import {
   deleteActionPlan,
   updateActionPlan,
   createActionPlanSkill,
-} from "../controllers/action_plan.js";
+} from "../controllers/actionPlanController.js";
 
 const router = express.Router();
 
