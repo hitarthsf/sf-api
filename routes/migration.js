@@ -9,6 +9,7 @@ import {
   generateLocationQRcode,
   locationSkills,
   testConnection,
+  createFromOld,
 } from "../controllers/migrationController.js";
 
 const router = express.Router();
@@ -28,5 +29,7 @@ router.get("/generateLocationQRcode", generateLocationQRcode);
 router.get("/locationSkills", locationSkills);
 
 router.get("/testConnection", testConnection);
+
+router.post("/createFromOld", createFromOld);
 
 export default router;

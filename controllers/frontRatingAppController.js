@@ -39,7 +39,7 @@ export const getSkills = async (req, res) => {
   var skills = [];
   if (type == "positive") {
     const data = await companyData.attributes.forEach((attribute) => {
-      var count = 0;
+      
       let matchingObj = _.find(attribute.positive_skills, (skill) => {
         if ( locationData.use_location_skills == "1" )
         { 
@@ -59,7 +59,7 @@ export const getSkills = async (req, res) => {
     const data = await companyData.attributes.forEach((attribute) => {
       var count = 0;
       let matchingObj = _.find(attribute.negative_skills, (skill) => {
-        console.log(skill._id)
+        
         if ( locationData.use_location_skills == "1" )
         {
           if (locationData.location_skills.includes(skill._id))

@@ -38,6 +38,7 @@ export const migrateCompanies = async (req, res) => {
                 companyObject["location"] = rows;
               }
             );
+               
             
             //Get Abusive Words
             await connection.query(
@@ -280,7 +281,6 @@ export const migrateRatings = async (req, res) => {
             rating_customer.phone as customer_phone
             from ratings
             left join rating_customer on ratings.id = rating_customer.ratings_id
-            where ratings.location_id = 31
             LIMIT 1000 OFFSET ${skip} `, async (err, ratingRows) => {
 
         ratingRows.map(async (ratingRow) => {
@@ -293,6 +293,7 @@ export const migrateRatings = async (req, res) => {
             
 
             const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
+            
             await ratingMongoObj.save();
             console.log(ratingMongoObj);
 
@@ -318,6 +319,7 @@ export const migrateRatings = async (req, res) => {
                                     company_id: ratingObj.company_id,
                                     createdAt: ratingMongoObj.createdAt
                                 });
+                                
                                 await ratingSkillMongoObj.save();
                                 console.log(ratingSkillMongoObj)
                             }
@@ -341,6 +343,7 @@ export const migrateRatings = async (req, res) => {
                                 company_id: ratingObj.company_id,
                                 createdAt: ratingMongoObj.createdAt
                             });
+                            
                             await ratingEmployeeMongoObj.save();
                             console.log(ratingEmployeeMongoObj)
                     }
@@ -715,3 +718,104 @@ export const testConnection = async (req, res) => {
 
   return "vishal";
 };
+
+
+
+//Action : createFromOld
+//Comment : Create Rating From Old Ids 
+export const createFromOld = async (req, res) => {
+  // getting the data from request
+  const data = req.body;
+  const skills = data.skills ? data.skills.split(",") : [];
+  const employees = data.employees ? data.employees.split(",") : [];
+  var is_assign = data.employees ? "1" : "0";
+  // get location_id and company_id from mongodb 
+  var companyData   = await CompanyData.find();
+  var mongoLocation = "" ; 
+  var mongoCompany = "" ; 
+  await companyData.map((comapny) => { comapny.location.map((locationData) =>  { if (locationData.old_location_id == data.location_id) {   mongoLocation = locationData  ; mongoCompany = comapny} } ) }); 
+
+  // creating rating object
+  const ratingObj = {
+    location_id: mongoLocation._id,
+    company_id: mongoCompany._id,
+    rating: data.rating,
+    dropout_page: data.dropout_page ? data.dropout_page : "",
+    feedback: data.feedback ? data.feedback : "",
+    customer_name: data.customer_name,
+    is_standout: data.is_standout ? data.is_standout : 0,
+    customer_phone: data.customer_phone ? data.customer_phone : "",
+    customer_email: data.customer_email ? data.customer_email : "",
+    other_feedback: data.other_feedback ? data.other_feedback : "",
+    is_assign: is_assign,
+  };
+
+  const rating = new RatingData(ratingObj);
+  await rating.save();
+
+  // if positive rating and no employee is selected then assign rating to all the employee and location manager of that location
+  if (employees.length == 0 && data.rating > 3) {
+    const employees_ids = await UserData.aggregate([
+      {
+        $match: {
+          location_id: data.location_id,
+          type: { $in: ["employee", "location_manager"] },
+        },
+      },
+    ]);
+    employees_ids.forEach(function (myDoc) {
+      employees.push(myDoc._id);
+    });
+  }
+
+  if (employees.length > 0) {
+    // get user from monogo 
+    employees.map(async (employeeId) => {
+      const mongoUser = await UserData.findOne({"old_user_id": employeeId});
+      const savedEmployees = new RatingEmployeeData({
+        rating_id: rating._id,
+        employee_id: mongoUser._id,
+        rating: data.rating,
+        location_id: data.location_id,
+        company_id: data.company_id,
+      });
+      console.log(savedEmployees);
+
+      await savedEmployees.save();
+    });
+  }
+
+  // getting the skill array from the company 
+  // getting skill loop
+  var skillMap = new Map();
+  await companyData.map((comapny) => { comapny.attribute.forEach((attribute) => {
+    // Positive Skills
+    if (attribute.positive_skills.length > 0) {
+      attribute.positive_skills.map(async (positiveSkills) => {
+        skillMap.set(positiveSkills.old_skill_id, positiveSkills._id);
+      });
+    }
+    //Negative Skills
+    if (attribute.negative_skills.length > 0) {
+      attribute.negative_skills.map(async (negativeSkills) => {
+        skillMap.set(negativeSkills.old_skill_id, negativeSkills._id);
+      });
+    }
+  })
+}); 
+
+  if (skills.length > 0) {
+    skills.map(async (skillId) => {
+      const savedSkills = new RatingSkillData({
+        rating_id: rating._id,
+        skill_id: skillMap.get(skillId.toString()),
+        rating: data.rating,
+        location_id: data.location_id,
+        company_id: data.company_id,
+      });
+      await savedSkills.save();
+    });
+  }
+
+  res.status(201).json(rating);
+} 
