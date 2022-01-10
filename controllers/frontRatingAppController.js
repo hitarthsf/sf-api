@@ -32,12 +32,9 @@ export const getSkills = async (req, res) => {
   const companyData = await CompanyData.findOne({ _id: companyId });
   var locationData  = ""; 
   const dataLocation = await companyData.location.forEach((locations) => { if (locationId == locations._id) { locationData = locations }   }); 
-<<<<<<< HEAD:controllers/frontRatingApp.js
-=======
   
   
   
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/frontRatingAppController.js
   // check skills from comapny data
   var skills = [];
   if (type == "positive") {
@@ -55,20 +52,14 @@ export const getSkills = async (req, res) => {
         {
           skills.push(skill);  
         }
-<<<<<<< HEAD:controllers/frontRatingApp.js
-=======
         
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/frontRatingAppController.js
       });
     });
   } else {
     const data = await companyData.attributes.forEach((attribute) => {
       var count = 0;
       let matchingObj = _.find(attribute.negative_skills, (skill) => {
-<<<<<<< HEAD:controllers/frontRatingApp.js
-=======
-        console.log(skill._id)
->>>>>>> 00ad4a55785ad2c94201b543266fa8100e4d6156:controllers/frontRatingAppController.js
+        
         if ( locationData.use_location_skills == "1" )
         {
           if (locationData.location_skills.includes(skill._id))
