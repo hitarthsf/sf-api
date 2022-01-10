@@ -5,21 +5,13 @@
       "options": {
         "awslogs-group": "${awslogs_group}",
         "awslogs-region": "${awslogs_region}",
-        "awslogs-stream-prefix": "rails"
+        "awslogs-stream-prefix": "node"
       }
     },
     "environment": [
       {
         "name": "AWS_REGION",
         "value": "${aws_region}"
-      },
-      {
-        "name": "RAILS_LOG_TO_STDOUT",
-        "value": "true"
-      },
-      {
-        "name": "RAILS_ENV",
-        "value": "production"
       }
     ],
     "secrets": [
@@ -34,6 +26,6 @@
     ],
     "image": "${image}",
     "essential": true,
-    "name": "rails"
+    "name": "node"
   }
 ]

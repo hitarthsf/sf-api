@@ -29,17 +29,17 @@ resource "aws_codepipeline" "codepipeline" {
     action {
       name             = "Source"
       category         = "Source"
-      owner            = "AWS"
-      provider         = "CodeStarSourceConnection"
+      owner            = "ThirdParty"
+      provider         = "GitHub"
       version          = "1"
       output_artifacts = ["SourceArtifacts"]
 
       # ref: https://docs.aws.amazon.com/ja_jp/codepipeline/latest/userguide/action-reference-GitHub.html
       configuration = {
-        #Owner         = dirname(data.github_repository.repo.full_name)
-        FullRepositoryId = data.github_repository.repo.name
-        BranchName       = var.target_branch
-        ConnectionArn    = aws_codestarconnections_connection.example.arn
+        Owner                = dirname(data.github_repository.repo.full_name)
+        Repo                 = data.github_repository.repo.name
+        Branch               = var.target_branch
+        PollForSourceChanges = false
       }
     }
   }
@@ -86,31 +86,26 @@ resource "aws_codepipeline" "codepipeline" {
       }
     }
 
-    action {
-      name            = "Deploy-web"
-      category        = "Deploy"
-      owner           = "AWS"
-      provider        = "CodeDeployToECS"
-      input_artifacts = ["BuildArtifacts"]
-      version         = "1"
+    # action {
+    #   name            = "Deploy-web"
+    #   category        = "Deploy"
+    #   owner           = "AWS"
+    #   provider        = "CodeDeployToECS"
+    #   input_artifacts = ["BuildArtifacts"]
+    #   version         = "1"
 
-      configuration = {
-        ApplicationName                = aws_codedeploy_app.app.name
-        DeploymentGroupName            = aws_codedeploy_deployment_group.web.deployment_group_name
-        Image1ArtifactName             = "BuildArtifacts"
-        Image1ContainerName            = "IMAGE1_NAME"
-        TaskDefinitionTemplateArtifact = "BuildArtifacts"
-        TaskDefinitionTemplatePath     = "${local.env}/web/taskdef.json"
-        AppSpecTemplateArtifact        = "BuildArtifacts"
-        AppSpecTemplatePath            = "${local.env}/web/appspec.yaml"
-      }
-    }
+    #   configuration = {
+    #     ApplicationName                = aws_codedeploy_app.app.name
+    #     DeploymentGroupName            = aws_codedeploy_deployment_group.web.deployment_group_name
+    #     Image1ArtifactName             = "BuildArtifacts"
+    #     Image1ContainerName            = "IMAGE1_NAME"
+    #     TaskDefinitionTemplateArtifact = "BuildArtifacts"
+    #     TaskDefinitionTemplatePath     = "${local.env}/web/taskdef.json"
+    #     AppSpecTemplateArtifact        = "BuildArtifacts"
+    #     AppSpecTemplatePath            = "${local.env}/web/appspec.yaml"
+    #   }
+    # }
   }
-}
-
-resource "aws_codestarconnections_connection" "example" {
-  name          = "github connection"
-  provider_type = "GitHub"
 }
 
 data "github_repository" "repo" {

@@ -50,8 +50,8 @@ resource "aws_ecs_service" "api" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.api_blue.arn
-    container_name   = "rails"
-    container_port   = 3000
+    container_name   = "node"
+    container_port   = 5000
   }
 
   network_configuration {

@@ -5,5 +5,5 @@ Resources:
       Properties:
         TaskDefinition: "<TASK_DEFINITION>"
         LoadBalancerInfo:
-          ContainerName: "rails"
-          ContainerPort: "3000"
+          ContainerName: "node"
+          ContainerPort: "5000"

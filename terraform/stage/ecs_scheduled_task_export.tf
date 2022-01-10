@@ -13,7 +13,7 @@ resource "aws_cloudwatch_event_rule" "export" {
 resource "aws_ecs_task_definition" "export" {
   family = "${local.env}-export"
   container_definitions = templatefile("${path.module}/templates/export/container_definitions.json", {
-    image               = data.terraform_remote_state.common.outputs.ecr_rails_blog_example_repository_url
+    image               = data.terraform_remote_state.common.outputs.api_repository_url
     awslogs_group       = aws_cloudwatch_log_group.export.name
     awslogs_region      = data.aws_region.current.name
     aws_region          = data.aws_region.current.name
@@ -44,13 +44,12 @@ resource "aws_cloudwatch_event_target" "export" {
   }
 
   input = <<EOF
-{
-  "containerOverrides": [
-    {
-      "name": "rails",
-      "command": ["rails", "scheduled:export", "RAILS_ENV=production"]
-    }
-  ]
-}
-EOF
+  {
+    "containerOverrides": [
+      {
+        "name": "node"
+      }
+    ]
+  }
+  EOF
 }

@@ -1,20 +1,16 @@
 [
   {
-    "name": "rails",
-    "image": "ruby:alpine",
+    "name": "nginx",
+    "image": "nginx:latest",
     "cpu": 256,
     "memory": 512,
-    "command": [
-      "sh",
-      "-c",
-      "mkdir okcomputer && touch okcomputer/all && ruby -run -e httpd . -p 3000"
-    ],
+    "command": ["nginx"],
     "essential": true,
     "portMappings": [
       {
-        "containerPort": 3000,
+        "containerPort": 5000,
         "protocol": "tcp",
-        "hostPort": 3000
+        "hostPort": 5000
       }
     ]
   }

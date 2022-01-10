@@ -19,7 +19,8 @@ resource "aws_ssm_parameter" "database_url" {
   key_id = "alias/aws/ssm"
 
   # TODO: database user and password should be updated 
-  value = "postgres://postgres:password@${aws_db_instance.db.endpoint}/blog_${local.env}"
+  #value = "postgres://postgres:password@${aws_db_instance.db.endpoint}/blog_${local.env}"
+  value = "postgres://postgres:password@instance_url/blog_${local.env}"
 }
 
 resource "aws_ssm_parameter" "asset_bucket" {

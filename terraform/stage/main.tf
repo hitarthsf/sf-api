@@ -22,7 +22,7 @@ provider "aws" {
 }
 
 provider "github" {
-  owner = "mpon"
+  owner = "servefirstcx"
 }
 
 provider "random" {

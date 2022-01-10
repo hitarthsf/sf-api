@@ -1,5 +1,5 @@
 locals {
-  env = "stg"
+  env = "stage"
   azs = slice(data.aws_availability_zones.available.names, 0, 2)
 }
 
@@ -10,17 +10,17 @@ variable "vpc_cidr" {
 
 variable "github_owner" {
   type    = string
-  default = "mpon"
+  default = "servefirstcx"
 }
 
 variable "github_repo" {
   type    = string
-  default = "rails-blog-example"
+  default = "sf-api"
 }
-
+# TODO: Change to "staging" branch
 variable "target_branch" {
   type    = string
-  default = "staging"
+  default = "alan_test"
 }
 
 variable "remote_backend" {
