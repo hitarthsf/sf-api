@@ -6,7 +6,7 @@ import RatingSkillData from "../models/RatingSkillData.js";
 export const getActionPlan = async (req, res) => {
   try {
     const AllCompany = await CompanyData.findOne({
-      _id: req.query.company_id,
+      _id: "617fb45ad1bf0ec9a8cd3863",
     });
     
     res.status(200).json({ data: AllCompany.action_plan, message: "Success" });
@@ -25,7 +25,7 @@ export const addActionPlan = async (req, res) => {
   };
 
   CompanyData.findOneAndUpdate(
-    { _id: req.body.company_id },
+    { _id: "617fb45ad1bf0ec9a8cd3863" },
     { $push: { action_plan: objFriends } },
     function (error, success) {
       if (error) {
@@ -42,7 +42,7 @@ export const addActionPlan = async (req, res) => {
 export const updateActionPlan = async (req, res) => {
   const id = req.body._id;
   await CompanyData.updateOne(
-    { _id: req.body.company_id },
+    { _id: "617fb45ad1bf0ec9a8cd3863" },
     { $pull: { action_plan: { _id: id } } },
     { multi: true },
     function (error, success) {
@@ -61,7 +61,7 @@ export const updateActionPlan = async (req, res) => {
   };
   
   CompanyData.findOneAndUpdate(
-    { _id: req.body.company_id },
+    { _id: "617fb45ad1bf0ec9a8cd3863" },
     { $push: { action_plan: objFriends } },
     function (error, success) {
       if (error) {
@@ -80,7 +80,7 @@ export const updateActionPlan = async (req, res) => {
 export const deleteActionPlan = async (req, res) => {
   const id = req.body._id;
   await CompanyData.updateOne(
-    { _id: req.body.company_id },
+    { _id: "617fb45ad1bf0ec9a8cd3863" },
     { $pull: { action_plan: { _id: id } } },
     { multi: true },
     function (error, success) {
