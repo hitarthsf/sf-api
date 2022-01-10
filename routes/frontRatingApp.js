@@ -4,7 +4,7 @@ import {
   locationLogin,
   getSkills,
   getEmployee,
-} from "../controllers/frontRatingApp.js";
+} from "../controllers/frontRatingAppController.js";
 
 const router = express.Router();
 

@@ -8,9 +8,9 @@ import usersRoutes from './routes/users.js';
 import categoryRoutes from './routes/category.js';
 import skillRoutes from './routes/skill.js';
 import attributesRoutes from './routes/attributes.js';
-import action_planRoutes from './routes/action_plan.js';
+import action_planRoutes from './routes/actionPlan.js';
 import abusiveWordsRoutes from './routes/abusiveWords.js';
-import privacyLocationRoutes from './routes/privacy_location.js';
+import privacyLocationRoutes from './routes/privacyLocation.js';
 import authRoutes from './routes/auth.js';
 import stateRoutes from './routes/state.js';
 import ratingRoutes from './routes/ratings.js';
@@ -62,12 +62,6 @@ app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 
 
-
-//const CONNECTION_URL  = 'mongodb+srv://muskan:1ASVCr7yBZQUKzh4@ratings-dev.knldc.mongodb.net/ratings?authSource=admin&replicaSet=atlas-11l9kt-shard-0&readPreference=primary&appname=MongoDB%20Compass%20Isolated%20Edition%20Beta&ssl=true';
-//const CONNECTION_URL  = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings?retryWrites=true&w=majority';
-//const CONNECTION_URL  = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority&ssl=true';
-//const CONNECTION_URL  = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration?ssl=true&replicaSet=atlas-t3f5se-shard-0&authSource=admin&retryWrites=true&w=majority&ssl=true';
-//const CONNECTION_URL    = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration?retryWrites=true&w=majority';
 const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration_live?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
 const PORT = process.env.PORT || 5000;
 
