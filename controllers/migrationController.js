@@ -38,7 +38,13 @@ export const migrateCompanies = async (req, res) => {
                 companyObject["location"] = rows;
               }
             );
-
+               //Get Abusive Words
+            await connection.query(
+              `SELECT * FROM abusive_words`,
+              async (err, row) => {                    
+                companyObject["abusive_word"] = row;                    
+              }
+            );
             // Fetch company attributes & skills
             await connection.query(
               `SELECT 
@@ -94,7 +100,7 @@ export const migrateCompanies = async (req, res) => {
                   }
                 });
                 companyObject["attributes"] = attributes;
-
+                console.log('Vishal');
                 const newCompany = new CompanyData({
                   ...companyObject,
                   createdAt: new Date().toISOString(),
