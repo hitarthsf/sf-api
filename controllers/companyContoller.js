@@ -115,15 +115,15 @@ export const getLocationListPost = async (req, res) => {
   const id = req.body._id;
   try {
     const AllCompany = await CompanyData.findOne({ _id: id });
-    // const companyList = [];
-    // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
-    //     fetchedLocations.location.map((location) => {
-    //         companyList.push({
-    //             _id: location._id,
-    //             name: location.name,
-    //         });
-    //     });
-    // }
+    const companyList = [];
+    if (fetchedLocations.location !== undefined && fetchedLocations.location) {
+        fetchedLocations.location.map((location) => {
+            companyList.push({
+                _id: location._id,
+                name: location.name,
+            });
+        });
+    }
 
     res.status(200).json(AllCompany);
   } catch (error) {
