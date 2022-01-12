@@ -3,8 +3,10 @@ import UsersData from "../models/UsersData.js";
 import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
+import ScreenSaverData from "../models/ScreenSaverData.js";
 import curly from "node-libcurl";
 import http from "http";
+import https from "https";
 //Action : locationLogin
 //Comment : Location Login
 export const locationLogin = async (req, res) => {
@@ -161,9 +163,10 @@ export const saveDetails = async (req, res) => {
     })
     })
     // Company Loop Ends
-
+    
     const data = req.body;
-    //const skills = data.skills ? data.skills.split(",") : [];
+    
+    const skills = data.skill_id ? data.skill_id.split(",") : [];
     const employees =  data.employee_id ;
     var is_assign = data.employee_id ? "1" : "0";
   
@@ -228,22 +231,148 @@ export const saveDetails = async (req, res) => {
     res.status(200).json({"status" : 200 , "message" : "Rating Added"  ,"data" : []});
 }
 
+//Action : getAllData
+//Comment : Sync all data api 
+export const getAllData = async (req, res) => {  
+
+    // Company Loop Starts
+    const companyData   = await CompanyData.find({});
+    var userData        = await UsersData.find({});
+    var locationData    =  "" ;
+    var skillPositive   = [] ; 
+    var skillNegative   = [] ; 
+     companyData.map(async (company) => {  company.location.map( async ( location) => {
+        if(location._id == req.body.main_location) 
+        {   
+            locationData = location;
+             // Getting Skill Loop
+             company.attributes.forEach((attribute) => {
+                // Check Condition for Positive Skills 
+                if (attribute.positive_skills.length > 0  ) {
+                attribute.positive_skills.map(async (positiveSkills) => {
+                    // Check If Use Location Skill is on 
+                    if (location.use_location_skills == "1")
+                    {
+                        if (location.location_skills.includes( positiveSkills._id) )
+                        {
+                            var skillObj = {"name" : positiveSkills.name , "id" : positiveSkills._id};
+                            skillPositive.push(skillObj);
+                        }
+                    }
+                    else
+                    {
+                        var skillObj = {"name" : positiveSkills.name , "id" : positiveSkills._id};   
+                        skillPositive.push(skillObj);
+                    }
+                });
+                }
+                // Check Condition for Negative Skills
+                if (attribute.negative_skills.length > 0 ) {
+                attribute.negative_skills.map(async (negativeSkills) => {
+                    // Check If Use Location Skill is on 
+                    if (location.use_location_skills == "1")
+                    {
+                        if (location.location_skills.includes( negativeSkills._id) )
+                        {
+                            var skillObj = {"name" : negativeSkills.name , "id" : negativeSkills._id};
+                            skillNegative.push(skillObj);
+                        }
+                    }
+                    else
+                    {
+                        var skillObj = {"name" : negativeSkills.name , "id" : negativeSkills._id};   
+                        skillNegative.push(skillObj);
+                    }
+                    
+                });
+                }
+            });
+            
+        }
+        
+        })
+    })
+
+    var userList = [] ;
+    // User Loop Starts
+    userData.map(async (user) => {  
+        if (user.location_id.includes( req.body.main_location))
+        {
+            var userObj = { "name" : user.name , "id" : user._id , "image" : "" }
+            userList.push(userObj)
+        }
+    })
+
+
+    // Screen Saver 
+    const screenSaver = await ScreenSaverData.find({ company_id: company_id }); 
+    var screenSaverData = [];
+    screenSaver.map((singelScreenSaver) => screenSaverData.push(singelScreenSaver) );
+    
+
+    // make final object
+    var allDetails = {
+        "name" : locationData.name,
+        "id"   : locationData._id,
+        "app_color" : locationData.app_color,
+        "is_multilocation" : 0,
+        "app_default_language":"english",
+        "employee" : userList,
+        "skill_positive"  : skillPositive ,
+        "skill_negative"  : skillNegative ,
+        "url" : "",
+        "screen_saveer" : screenSaverData,
+        "skill_flag" : 0 ,
+        "qr_code" : ""
+
+    }
+
+    res.status(200).json({"status" : 200 , "message" : "All details"  ,"data" : allDetails});
+}
+
+
+//Action : skillFlag
+//Comment : Skill Flag
+
+export const skillFlag = async (req, res) => {
+
+    var flag = { "flag" : 0 }
+    res.status(200).json({"status" : 200 , "message" : "Flag of skill"  ,"data" : flag});
+}
 
 export const curlFunction = async (req, res) => {
     // const { statusCode, data, headers } = await curly.get('http://www.google.com')
     // res.send(statusCode);  
+    var postData = JSON.stringify({
+        message: {
+          from: "auto@servefirst.co.uk",
+          to: "vishal@servefirst.co.uk",
+    
+          replyTo: ["help@servefirst.co.uk"],
+        },
+        contactProperties: {
+          user_type: "Manager",
+          firstname: "James",
+          lastname: "Bond",
+        },
+        customProperties: ".json_encode($data).",
+        emailId: "vishal@servefirst.co.uk",
+      });
 
-
-var options = {
-    host: 'https://gorest.co.in/public/v1/users',
-    port: 80,
-    path: '/upload',
-    method: 'GET'
-  };
+    var options = {
+        transports: ['websocket'], pingTimeout: 3000, pingInterval: 5000,
+        host: "api.hubapi.com",
+        path: "/marketing/v3/transactional/single-email/send?hapikey=d2ba2004-5a85-4475-bf5d-91ac88d87090",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Content-Length": postData.length,
+        },
+      };
   
   var req = http.request(options, function(res) {
-    console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    console.log('STATUS: ' + res);
+    
     res.setEncoding('utf8');
     res.on('data', function (chunk) {
       console.log('BODY: ' + chunk);
