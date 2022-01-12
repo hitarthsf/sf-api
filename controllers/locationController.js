@@ -16,7 +16,7 @@ export const createLocation = async (req, res) => {
   }
 
   let imagePath = "";
-  if (req.files) {
+  if (req.files.image) {
     imagePath = `location/` + Date.now() + `-${req.files.image.name}`;
     aws.config.update({
       accessKeyId: "AKIATVUCPHF35FWG7ZNI",
@@ -42,6 +42,36 @@ export const createLocation = async (req, res) => {
       }
     });
   }
+
+  // background image 
+  let imagePathBackground = "";
+  if (req.files.app_background_image) {
+    imagePathBackground = `location_background/` + Date.now() + `-${req.files.app_background_image.name}`;
+    aws.config.update({
+      accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+      secretAccessKey: "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",
+      region: "us-east-1",
+    });
+    const s3 = new aws.S3();
+    let params = {
+      ACL: "public-read",
+      Bucket: "sf-ratings-profile-image",
+      Body: bufferToStream(req.files.app_background_image.data),
+      Key: imagePathBackground,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.log("Error occured while trying to upload to S3 bucket", err);
+        res
+          .status(409)
+          .json({
+            message: "Error occurred while trying to upload to S3 bucket",
+          });
+      }
+    });
+  }
+  // background image 
   var question_id = [];
   if (req.body.question_id.length > 0) {
     question_id = req.body.question_id.split(",");
@@ -88,6 +118,9 @@ export const createLocation = async (req, res) => {
     language: req.body.language,
     question_id: question_id,
     location_skills: location_skills,
+    hide_team: req.body.showTeam,
+    multi_location_id : req.body.multi_location_id.split(","),
+    app_background_image: imagePathBackground
   };
 
   CompanyData.findOneAndUpdate(
