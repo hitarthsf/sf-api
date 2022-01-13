@@ -4,9 +4,7 @@ import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
 import ScreenSaverData from "../models/ScreenSaverData.js";
-import curly from "node-libcurl";
-import http from "http";
-import https from "https";
+
 //Action : locationLogin
 //Comment : Location Login
 export const locationLogin = async (req, res) => {
@@ -341,51 +339,6 @@ export const skillFlag = async (req, res) => {
 }
 
 export const curlFunction = async (req, res) => {
-    // const { statusCode, data, headers } = await curly.get('http://www.google.com')
-    // res.send(statusCode);  
-    var postData = JSON.stringify({
-        message: {
-          from: "auto@servefirst.co.uk",
-          to: "vishal@servefirst.co.uk",
-    
-          replyTo: ["help@servefirst.co.uk"],
-        },
-        contactProperties: {
-          user_type: "Manager",
-          firstname: "James",
-          lastname: "Bond",
-        },
-        customProperties: ".json_encode($data).",
-        emailId: "vishal@servefirst.co.uk",
-      });
-
-    var options = {
-        transports: ['websocket'], pingTimeout: 3000, pingInterval: 5000,
-        host: "api.hubapi.com",
-        path: "/marketing/v3/transactional/single-email/send?hapikey=d2ba2004-5a85-4475-bf5d-91ac88d87090",
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Content-Length": postData.length,
-        },
-      };
   
-  var req = http.request(options, function(res) {
-    console.log('STATUS: ' + res);
-    
-    res.setEncoding('utf8');
-    res.on('data', function (chunk) {
-      console.log('BODY: ' + chunk);
-    });
-  });
-  
-  req.on('error', function(e) {
-    console.log('problem with request: ' + e.message);
-  });
-  
-  // write data to request body
-  req.write('data\n');
-  req.write('data\n');
-  req.end();
 }
 
