@@ -488,7 +488,7 @@ export const getSingleLocation = async (req, res) => {
         "useLocationSkills": location.use_location_skills,
         "company_id": company._id,
         "location_area_id": company._id,
-
+        "showTeam":location.hide_team
       }
       res
         .status(201)
