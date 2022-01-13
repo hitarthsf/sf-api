@@ -93,5 +93,34 @@ export const deleteContact = async (req, res) => {
 
 //Hubspot Method Assign Contact to Company
 export const assignContactToCompany = async (req, res) => {
-    
+  //   const contactId = "667551";
+  //   const toObjectType = "company";
+  //   const after = undefined;
+  //   const limit = 500;
+
+  const companyId = "3407645494";
+  const toObjectType = "contact";
+  const toObjectId = "667551";
+  const associationType = "7655212425";
+  try {
+    // const apiResponse = await hubspotClient.crm.contacts.associationsApi.getAll(
+    //   contactId,
+    //   toObjectType,
+    //   after,
+    //   limit
+    // );
+
+    const apiResponse =
+      await hubspotClient.crm.companies.associationsApi.create(
+        companyId,
+        toObjectType,
+        toObjectId,
+        associationType
+      );
+    res.status(201).json(apiResponse.body);
+  } catch (e) {
+    e.message === "HTTP request failed"
+      ? res.status(400).json(e.response)
+      : res.status(400).json(e);
+  }
 };

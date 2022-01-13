@@ -13,6 +13,6 @@ const router = express.Router();
 router.post("/sendMail", sendMail);
 router.get("/getHubspotCompanies", getHubspotCompanies);
 router.post("/createContact", createContact);
-router.post("/assignContactToCompany", assignContactToCompany);
+router.put("/assignContactToCompany", assignContactToCompany);
 
 export default router;
