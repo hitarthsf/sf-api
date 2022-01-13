@@ -115,6 +115,13 @@ export const getLocationListPost = async (req, res) => {
   const id = req.body._id;
   try {
     const AllCompany = await CompanyData.findOne({ _id: id });
+    var responseData =  AllCompany.map((comapny) => { 
+      company.location.map( (location) => {
+        location.comapny_id = comapny._id;
+        
+      })
+
+    })
     const companyList = [];
     // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
     //     fetchedLocations.location.map((location) => {

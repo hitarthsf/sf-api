@@ -437,16 +437,66 @@ export const getSingleLocation = async (req, res) => {
   var company = await CompanyData.findOne({ _id: company_id });
 
   var locationData = [];
-  const responseData = await Promise.all(
-    company.location.map(async (location) => {
-      location.qr_code = "";
-      if (id == location._id) {
-        location.qr_code = "qrcode/" + location._id + ".png";
-        locationData.push(location);
+  var locationAllData = "";
+  company.location.map( (location) => {
+    location.qr_code = "";
+    if (id == location._id) {
+      location.qr_code = "qrcode/" + location._id + ".png";
+      locationData.push(location);
+      location.company_id = company._id ; 
+      
+      locationAllData = 
+      {
+        "_id": location._id,
+        "question_id": location.question_id,
+        "location_skills": location._id,
+        "multi_location_id": location.multi_location_id,
+        "name": location.name,
+        "location_id": location.location_id,
+        "address_1": location.address_1,
+        "address_2": location.address_2,
+        "country_id": location.country_id,
+        "state_id": location.state_id,
+        "city": location.city,
+        "zipcode": location.zipcode,
+        "email": location.email,
+        "contact_no": location.contact_no,
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "description": location.description,
+        "open_time": location.open_time,
+        "close_time": location.close_time,
+        "invoice_tag_id": location._id,
+        "hardware_cost": location.hardware_cost,
+        "software_cost": location.software_cost,
+        "app_color": location.app_color,
+        "max_budget_customer_audit": location.max_budget_customer_audit,
+        "installation_cost": location.installation_cost,
+        "num_tablets": location.num_tablets,
+        "autoMail": location.autoMail,
+        "useLocationSkills": location.useLocationSkills,
+        "categoryWiseSkill": location.categoryWiseSkill,
+        "showQRCode": location.showQRCode,
+        "multiLocation": location.multiLocation,
+        "showLocationManager": location.showLocationManager,
+        "allowFrequestRatings": location.allowFrequestRatings,
+        "customerAudit": location.customerAudit,
+        "image": location.image,
+        "appPassword": location.appPassword,
+        "hide_team": location.hide_team,
+        "language": location.language,
+        "start_date": location.start_date,
+        "use_location_skills": location.use_location_skills,
+        "comapny_id": company._id,
+        "location_area_id": company._id,
+
       }
-    })
-  );
-  res
-    .status(201)
-    .json({ data: locationData, message: "Location Details Successfully !!" });
+      res
+        .status(201)
+        .json({ data: locationAllData, message: "Location Details Successfully !!" });
+    
+    }
+  })
+  
 };
+  
