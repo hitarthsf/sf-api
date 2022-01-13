@@ -449,7 +449,7 @@ export const getSingleLocation = async (req, res) => {
       {
         "_id": location._id,
         "question_id": location.question_id,
-        "location_skills": location._id,
+        "location_skills": location.location_skills,
         "multi_location_id": location.multi_location_id,
         "name": location.name,
         "location_id": location.location_id,
@@ -483,11 +483,10 @@ export const getSingleLocation = async (req, res) => {
         "customerAudit": location.customerAudit,
         "image": location.image,
         "appPassword": location.appPassword,
-        "hide_team": location.hide_team,
         "language": location.language,
         "start_date": location.start_date,
-        "use_location_skills": location.use_location_skills,
-        "comapny_id": company._id,
+        "useLocationSkills": location.use_location_skills,
+        "company_id": company._id,
         "location_area_id": company._id,
 
       }
