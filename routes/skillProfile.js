@@ -6,8 +6,8 @@ import {
   editSkillProfile,
   deleteSkillProfile,
   singleSkillProfile,
-} from "../controllers/skillProfileController.js";
-
+} from "../controllers/skillProfileContoller.js";
+//, getSkillProfile, updateSkillProfile, deleteSkillProfile
 const router = express.Router();
 
 router.post("/createSkillProfile", createSkillProfile);

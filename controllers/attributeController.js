@@ -1,19 +1,22 @@
+import express from "express";
+import { MesssageProvider, Messages } from "../core/index.js";
+import AuthUtils from "../utils/AuthUtils.js";
 import CompanyData from "../models/CompanyData.js";
+import jwt from "jsonwebtoken";
 
-//Action : getAttribute
-//Comment : Get all attributes for Company
 export const getAttribute = async (req, res) => {
+  //res.send('THIS GOOD');
   const id = req.body.company_id;
   try {
+    //  const AllCompany = await CompanyData.find({"_id":id});
     const AllCompany = await CompanyData.find({ _id: id });
+    console.log(id);
     res.status(200).json(AllCompany);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
 };
 
-//Action : addAttribute
-//Comment : Add New Attribute In Company
 export const addAttribute = async (req, res) => {
   const compId = req.body.company_id;
   const positiveSkills = req.body.positiveSkills.split(",").map((skill) => {
@@ -43,11 +46,35 @@ export const addAttribute = async (req, res) => {
   );
 };
 
-//Action : editAttribute
-//Comment : Edit Attribute In Company
+export const editAttribute = async (req, res) => {
+  const compId = req.body.company_id;
+  console.log(compId);
+  var objFriends = {
+    name: req.body.name,
+    positive_skills: req.body.positive_skills,
+    negative_skills: req.body.negative_skills,
+  };
+  console.log(objFriends);
+  await CompanyData.findOneAndUpdate(
+    { _id: compId },
+    { $push: { attributes: objFriends } },
+    function (error, success) {
+      if (error) {
+        console.log(error);
+        res.send(error);
+      } else {
+        console.log(success);
+        res.send(success);
+      }
+    }
+  );
+};
+
 export const updateAttribute = async (req, res) => {
   const id = req.body._id;
   const compId = req.body.company_id;
+  console.log(id);
+  console.log(compId);
   await CompanyData.updateOne(
     { _id: compId },
     { $pull: { attributes: { _id: id } } },
@@ -63,6 +90,7 @@ export const updateAttribute = async (req, res) => {
     }
   );
 
+  console.log(req.body.positive_skills);
   var objFriends = {
     name: req.body.name,
     positive_skills: req.body.positiveSkills.split(","),
@@ -74,20 +102,23 @@ export const updateAttribute = async (req, res) => {
     { $push: { attributes: objFriends } },
     function (error, success) {
       if (error) {
+        console.log(error);
         res.send(error);
       } else {
+        console.log(success);
         res.send(success);
       }
     }
   );
 };
 
-//Action : deleteAttribute
-//Comment : Delete Attribute In Company
 export const deleteAttribute = async (req, res) => {
   const id = req.body._id;
   const compId = req.body.company_id;
 
+  // const Company = await CompanyData.findOneAndUpdate({"_id":"6111149b961aa70d06fe58f1"});
+  // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
+  // make it dynamic
   await CompanyData.updateOne(
     { _id: compId },
     { $pull: { attributes: { _id: id } } },

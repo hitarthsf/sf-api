@@ -38,19 +38,17 @@ export const migrateCompanies = async (req, res) => {
                 companyObject["location"] = rows;
               }
             );
-               
-            
-            //Get Abusive Words
+               //Get Abusive Words
             await connection.query(
               `SELECT * FROM abusive_words`,
               async (err, row) => {                    
                 companyObject["abusive_word"] = row;                    
               }
             );
-
             // Fetch company attributes & skills
             await connection.query(
-              `SELECT   attribute.id as attributeId, 
+              `SELECT 
+                            attribute.id as attributeId, 
                             attribute.name as attributeName, 
                             attribute.created_at as createdAt, 
                             attribute.updated_at as updatedAt, 
@@ -103,7 +101,6 @@ export const migrateCompanies = async (req, res) => {
                 });
                 companyObject["attributes"] = attributes;
                 console.log('Vishal');
-                //Save Company
                 const newCompany = new CompanyData({
                   ...companyObject,
                   createdAt: new Date().toISOString(),
@@ -114,7 +111,6 @@ export const migrateCompanies = async (req, res) => {
                 );
               }
             );
-
           })
         ).then((value) => {
           res.status(209).json(`total ${rows.length} companies are imported.`);
@@ -198,19 +194,19 @@ export const migrateRatings = async (req, res) => {
   var page = req.query["page"];
   var skip = (page - 1) * 1000;
 
-  // const connection = mysql.createConnection({
-  //   host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-  //   user: "admin",
-  //   port: 3306,
-  //   password: "Rethinksoft",
-  //   database: "ratings_db",
-  // });
   const connection = mysql.createConnection({
-      host: '192.168.64.2',
-      user: 'hitarth29',
-      password: 'Pfbvq3Ed4l/HMycS',
-      database: 'ratings_db'
+    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+    user: "admin",
+    port: 3306,
+    password: "Rethinksoft",
+    database: "ratings_db",
   });
+  // const connection = mysql.createConnection({
+  //     host: '192.168.64.2',
+  //     user: 'hitarth29',
+  //     password: 'Pfbvq3Ed4l/HMycS',
+  //     database: 'ratings_db'
+  // });
 
   connection.connect(async (err) => {
     if (err) throw err;
@@ -293,8 +289,7 @@ export const migrateRatings = async (req, res) => {
             
 
             const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
-            
-            await ratingMongoObj.save();
+            //await ratingMongoObj.save();
             console.log(ratingMongoObj);
 
             // skill code
@@ -319,8 +314,7 @@ export const migrateRatings = async (req, res) => {
                                     company_id: ratingObj.company_id,
                                     createdAt: ratingMongoObj.createdAt
                                 });
-                                
-                                await ratingSkillMongoObj.save();
+                                //await ratingSkillMongoObj.save();
                                 console.log(ratingSkillMongoObj)
                             }
                         }
@@ -343,8 +337,7 @@ export const migrateRatings = async (req, res) => {
                                 company_id: ratingObj.company_id,
                                 createdAt: ratingMongoObj.createdAt
                             });
-                            
-                            await ratingEmployeeMongoObj.save();
+                            //await ratingEmployeeMongoObj.save();
                             console.log(ratingEmployeeMongoObj)
                     }
                 });
@@ -606,11 +599,8 @@ export const generateLocationQRcode = async (req, res) => {
         );
         aws.config.update({
           accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-      secretAccessKey: "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",
-      region: "us-east-1",
-          // accessKeyId: process.env.AWS_S3_API_KEY,
-          // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-          // region: process.env.AWS_S3_ACCESS_REGION,
+          secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+          region: "us-east-1",
         });
         const s3 = new aws.S3();
         var params = {

@@ -5,7 +5,7 @@ import _ from "lodash";
 
 export const locationLogin = async (req, res) => {
   const locationId = req.body.locationId;
-  console.log(locationId);
+
   const allCompany = await CompanyData.find();
 
   // check location from comapny data
@@ -32,9 +32,6 @@ export const getSkills = async (req, res) => {
   const companyData = await CompanyData.findOne({ _id: companyId });
   var locationData  = ""; 
   const dataLocation = await companyData.location.forEach((locations) => { if (locationId == locations._id) { locationData = locations }   }); 
-  
-  
-  
   // check skills from comapny data
   var skills = [];
   if (type == "positive") {
@@ -52,14 +49,12 @@ export const getSkills = async (req, res) => {
         {
           skills.push(skill);  
         }
-        
       });
     });
   } else {
     const data = await companyData.attributes.forEach((attribute) => {
       var count = 0;
       let matchingObj = _.find(attribute.negative_skills, (skill) => {
-        
         if ( locationData.use_location_skills == "1" )
         {
           if (locationData.location_skills.includes(skill._id))

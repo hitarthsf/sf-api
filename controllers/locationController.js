@@ -1,5 +1,6 @@
 import LocationData from "../models/LocationData.js";
 import CompanyData from "../models/CompanyData.js";
+
 import LocationSupportLogData from "../models/LocationSupportLogData.js";
 import aws from "aws-sdk";
 import { Readable } from "stream";
@@ -15,15 +16,12 @@ export const createLocation = async (req, res) => {
   }
 
   let imagePath = "";
-  if (req.files) {
+  if (req.files.image) {
     imagePath = `location/` + Date.now() + `-${req.files.image.name}`;
     aws.config.update({
       accessKeyId: "AKIATVUCPHF35FWG7ZNI",
       secretAccessKey: "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",
       region: "us-east-1",
-      // accessKeyId: process.env.AWS_S3_API_KEY,
-      // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-      // region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     let params = {
@@ -44,6 +42,36 @@ export const createLocation = async (req, res) => {
       }
     });
   }
+
+  // background image 
+  let imagePathBackground = "";
+  if (req.files.app_background_image) {
+    imagePathBackground = `location_background/` + Date.now() + `-${req.files.app_background_image.name}`;
+    aws.config.update({
+      accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+      secretAccessKey: "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",
+      region: "us-east-1",
+    });
+    const s3 = new aws.S3();
+    let params = {
+      ACL: "public-read",
+      Bucket: "sf-ratings-profile-image",
+      Body: bufferToStream(req.files.app_background_image.data),
+      Key: imagePathBackground,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.log("Error occured while trying to upload to S3 bucket", err);
+        res
+          .status(409)
+          .json({
+            message: "Error occurred while trying to upload to S3 bucket",
+          });
+      }
+    });
+  }
+  // background image 
   var question_id = [];
   if (req.body.question_id.length > 0) {
     question_id = req.body.question_id.split(",");
@@ -90,6 +118,9 @@ export const createLocation = async (req, res) => {
     language: req.body.language,
     question_id: question_id,
     location_skills: location_skills,
+    hide_team: req.body.showTeam,
+    multi_location_id : req.body.multi_location_id.split(","),
+    app_background_image: req.body.app_background_image
   };
 
   CompanyData.findOneAndUpdate(
@@ -123,11 +154,8 @@ export const createLocation = async (req, res) => {
   );
   aws.config.update({
     accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-      secretAccessKey: "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",
-      region: "us-east-1",
-    // accessKeyId: process.env.AWS_S3_API_KEY,
-    // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-    // region: process.env.AWS_S3_ACCESS_REGION,
+    secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+    region: "us-east-1",
   });
   const s3 = new aws.S3();
   var params = {
@@ -201,9 +229,6 @@ export const updateLocation = async (req, res) => {
       accessKeyId: "AKIATVUCPHF35FWG7ZNI",
       secretAccessKey: "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",
       region: "us-east-1",
-      // accessKeyId: process.env.AWS_S3_API_KEY,
-      // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-      // region: process.env.AWS_S3_ACCESS_REGION,
     });
     const s3 = new aws.S3();
     let params = {
@@ -224,6 +249,35 @@ export const updateLocation = async (req, res) => {
       }
     });
   }
+  // background image code starts
+  let imagePathBackground = "";
+  if (req.files) {
+    imagePathBackground = `location_background/` + Date.now() + `-${req.files.app_background_image.name}`;
+    aws.config.update({
+      accessKeyId: "AKIATVUCPHF35FWG7ZNI",
+      secretAccessKey: "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",
+      region: "us-east-1",
+    });
+    const s3 = new aws.S3();
+    let params = {
+      ACL: "public-read",
+      Bucket: "sf-ratings-profile-image",
+      Body: bufferToStream(req.files.app_background_image.data),
+      Key: imagePathBackground,
+    };
+
+    s3.upload(params, (err, data) => {
+      if (err) {
+        console.log("Error occured while trying to upload to S3 bucket", err);
+        res
+          .status(409)
+          .json({
+            message: "Error occurred while trying to upload to S3 bucket",
+          });
+      }
+    });
+  }
+  //background image code ends 
   // Qr code generation
   const qrOption = {
     margin: 7,
@@ -241,11 +295,8 @@ export const updateLocation = async (req, res) => {
   );
   aws.config.update({
     accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-      secretAccessKey: "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",
-      region: "us-east-1",
-    // accessKeyId: process.env.AWS_S3_API_KEY,
-    // secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
-    // region: process.env.AWS_S3_ACCESS_REGION,
+    secretAccessKey: "Bk500ixN5JrQ3IVldeSress9Q+dBPX6x3DFIL/qf",
+    region: "us-east-1",
   });
   const s3 = new aws.S3();
   var params = {
@@ -265,34 +316,9 @@ export const updateLocation = async (req, res) => {
   });
 
   // Qr code generation
-  var objFriends = {
-    name: req.body.name,
-    location_id: req.body.location_id,
-    address_1: req.body.address_1,
-    address_2: req.body.address_2,
-    country_id: req.body.country_id,
-    state_id: req.body.state_id,
-    city: req.body.city,
-    zipcode: req.body.zipcode,
-    email: req.body.email,
-    contact_no: req.body.contact_no,
-    latitude: req.body.latitude,
-    longitude: req.body.longitude,
-    description: req.body.description,
-    open_time: req.body.open_time,
-    close_time: req.body.close_time,
-    invoice_tag_id: req.body.invoice_tag_id,
-    hardware_cost: req.body.hardware_cost,
-    software_cost: req.body.software_cost,
-    app_color: req.body.app_color,
-    max_budget_customer_audit: req.body.max_budget_customer_audit,
-    installation_cost: req.body.installation_cost,
-    installation_cost: req.body.installation_cost,
-    num_tablets: req.body.num_tablets,
-    image: imagePath,
-    autoMail: req.body.autoMail,
-  };
 
+  // autoMail:req.body.autoMail ,useLocationSkills:req.body.useLocationSkills , categoryWiseSkill:req.body.categoryWiseSkill ,showQRCode:req.body.showQRCode ,multiLocation:req.body.multiLocation ,showLocationManager:req.body.showLocationManager , allowFrequestRatings:req.body.allowFrequestRatings ,customerAudit:req.body.customerAudit,
+  
   var question_id = [];
   if (req.body.question_id.length > 0) {
     question_id = req.body.question_id.split(",");
@@ -308,6 +334,25 @@ export const updateLocation = async (req, res) => {
         "location.$.name": req.body.name,
         "location.$.address_1": req.body.address_1,
         "location.$.address_2": req.body.address_2,
+        "location.$.country_id": req.body.country_id,
+        "location.$.state_id": req.body.state_id,
+        "location.$.city": req.body.city,
+        "location.$.zipcode": req.body.zipcode,
+        "location.$.contact_no": req.body.contact_no,
+        "location.$.description": req.body.description,
+        "location.$.open_time": req.body.open_time,
+        "location.$.close_time": req.body.close_time,
+        "location.$.invoice_tag_id": req.body.invoice_tag_id,
+        "location.$.hardware_cost": req.body.hardware_cost,
+        "location.$.software_cost": req.body.software_cost,
+        "location.$.start_date": req.body.start_date,
+        "location.$.autoMail": req.body.autoMail,
+        "location.$.allowFrequestRatings": req.body.allowFrequestRatings,
+
+        "location.$.multiLocation": req.body.multiLocation,
+        "location.$.customerAudit": req.body.customerAudit,
+        "location.$.multi_location_id": req.body.multi_location_id.length > 0  ? req.body.multi_location_id.split(",") : [],
+        
         "location.$.email": req.body.email,
         "location.$.installation_cost": req.body.installation_cost,
         "location.$.longitude": req.body.longitude,
@@ -325,18 +370,24 @@ export const updateLocation = async (req, res) => {
         "location.$.question_id": req.body.question_id,
         "location.$.location_skills": req.body.location_skills.length > 0  ? req.body.location_skills.split(",") : [] ,
         "location.$.use_location_skills": req.body.useLocationSkills ? req.body.useLocationSkills : '0',
-        "location.$.hide_team": req.body.hide_team ? req.body.hide_team : '0',
-        
-        
+        "location.$.hide_team": req.body.showTeam ? req.body.showTeam : '0',
       },
     }
   );
   res.json({ message: "Location updated successfully." });
+  // below function can be used for optimization
+  // if (!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`No company with id: ${id}`);
+  // const updatedLocation = { ...location, _id: req.body._id };
+  // await LocationData.findByIdAndUpdate(req.body._id, updatedLocation, { new: true });
+  // } catch (e) {
+  //     res.status(209).json(e);
+  // }
 };
 
 export const deleteLocation = async (req, res) => {
   const id = req.body._id;
   const company_id = req.body.company_id;
+  console.log(id);
 
   await CompanyData.updateOne(
     { _id: company_id },
@@ -386,21 +437,66 @@ export const getSingleLocation = async (req, res) => {
   var company = await CompanyData.findOne({ _id: company_id });
 
   var locationData = [];
-  const responseData = await Promise.all(
-    company.location.map(async (location) => {
-      location.qr_code = "";
-      if (id == location._id) {
-        location.qr_code = "qrcode/" + location._id + ".png";
-        locationData.push(location);
+  var locationAllData = "";
+  company.location.map( (location) => {
+    location.qr_code = "";
+    if (id == location._id) {
+      location.qr_code = "qrcode/" + location._id + ".png";
+      locationData.push(location);
+      location.company_id = company._id ; 
+      
+      locationAllData = 
+      {
+        "_id": location._id,
+        "question_id": location.question_id,
+        "location_skills": location.location_skills,
+        "multi_location_id": location.multi_location_id,
+        "name": location.name,
+        "location_id": location.location_id,
+        "address_1": location.address_1,
+        "address_2": location.address_2,
+        "country_id": location.country_id,
+        "state_id": location.state_id,
+        "city": location.city,
+        "zipcode": location.zipcode,
+        "email": location.email,
+        "contact_no": location.contact_no,
+        "latitude": location.latitude,
+        "longitude": location.longitude,
+        "description": location.description,
+        "open_time": location.open_time,
+        "close_time": location.close_time,
+        "invoice_tag_id": location._id,
+        "hardware_cost": location.hardware_cost,
+        "software_cost": location.software_cost,
+        "app_color": location.app_color,
+        "max_budget_customer_audit": location.max_budget_customer_audit,
+        "installation_cost": location.installation_cost,
+        "num_tablets": location.num_tablets,
+        "autoMail": location.autoMail,
+        "useLocationSkills": location.useLocationSkills,
+        "categoryWiseSkill": location.categoryWiseSkill,
+        "showQRCode": location.showQRCode,
+        "multiLocation": location.multiLocation,
+        "showLocationManager": location.showLocationManager,
+        "allowFrequestRatings": location.allowFrequestRatings,
+        "customerAudit": location.customerAudit,
+        "image": location.image,
+        "appPassword": location.appPassword,
+        "language": location.language,
+        "start_date": location.start_date,
+        "useLocationSkills": location.use_location_skills,
+        "company_id": company._id,
+        "location_area_id": company._id,
+        "showTeam":location.hide_team,
+        "app_background_image":location.app_background_image
       }
-    })
-  );
-  const make = "Ford";
-  const model = "Mustang";
-  const car = { make, model };
-  console.log(car);
-
-  res
-    .status(201)
-    .json({ data: locationData, message: "Location Details Successfully !!" });
+      res
+        .status(201)
+        .json({ data: locationAllData, message: "Location Details Successfully !!" });
+    
+    }
+  })
+  
 };
+  

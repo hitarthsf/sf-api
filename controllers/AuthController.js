@@ -137,6 +137,7 @@ const login = async (request, response) => {
 
 // logout user will be on front part
 // remove token
+
 const AuthController = {
   register,
   login,

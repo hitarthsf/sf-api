@@ -1,8 +1,8 @@
 import ClientSurveyData from "../models/ClientSurveyData.js";
 
-//Action : addClientSurvey
-//Comment : Add New Client Survey
+// Add clinet Survey to DB
 export const addClientSurvey = async (req, res) => {
+  // make the array
   var question_answer = [];
 
   for (var i = 1; i <= 15; i++) {

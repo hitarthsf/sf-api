@@ -1,7 +1,5 @@
 import CategoryData from "../models/CategoryData.js";
 
-//Action : createCategory
-//Comment : Create Category For Active Company
 export const createCategory = async (req, res) => {
   const name = req.body.name;
   const company_id = req.body.company_id;
@@ -21,6 +19,7 @@ export const createCategory = async (req, res) => {
 };
 
 export const getCategory = async (req, res) => {
+  //res.send('THIS GOOD');
   try {
     const AllCategory = await CategoryData.find({
       company_id: req.body.company_id,
@@ -31,8 +30,6 @@ export const getCategory = async (req, res) => {
   }
 };
 
-//Action : updateCategory
-//Comment : Update Category For Active Company
 export const updateCategory = async (req, res) => {
   const name = req.body.name;
   const company_id = req.body.company_id;
@@ -47,10 +44,10 @@ export const updateCategory = async (req, res) => {
   res.status(201).json(updatedCategory);
 };
 
-//Action : deleteCategory
-//Comment : Delete Category
 export const deleteCategory = async (req, res) => {
   const id = req.body._id;
+
   await CategoryData.findByIdAndRemove(id);
+
   res.json({ message: "Category deleted successfully." });
 };

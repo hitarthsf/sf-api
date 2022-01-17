@@ -22,7 +22,8 @@ import tagRoutes from './routes/tag.js';
 import customerAuditRoutes from './routes/customerAudit.js';
 import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
-
+import apiRoutes from './routes/api.js';
+import cronRoutes from './routes/cron.js'
 //dot env configuration
 import dotenv from 'dotenv';
 //import passport from 'passport';
@@ -60,6 +61,8 @@ app.use('/tag',tagRoutes);
 app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
+app.use('/api',apiRoutes);
+app.use('/cron',cronRoutes);
 
 
 const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration_live?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
