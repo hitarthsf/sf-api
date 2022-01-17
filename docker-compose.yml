@@ -10,7 +10,7 @@ services:
         ports:
             - "${PORT}:80"
         volumes:
-            - ./nginx/nginx-dev.conf:/etc/nginx/nginx.conf
+            - ./docker-images/nginx/nginx-dev.conf:/etc/nginx/nginx.conf
         networks:
             - sf-api-network
     api:
