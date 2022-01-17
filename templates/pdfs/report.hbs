@@ -1,0 +1,1312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>
+    </title>
+    <style type="text/css">
+      @font-face {
+        font-family: Sans-serif;
+        src: url(sansation_light.woff);
+      }
+      html{
+        width: 100%;
+        height: 100%;
+        padding: 0;
+        margin: 0;
+      }
+      body {
+        font-family: Sans-serif;
+      }
+      .b-purple {
+        background-color: #6e257f;
+        height: 1100px;
+      }
+      .sf-logo-yellow {
+        top: 95px;
+        position: absolute;
+        left: 55px;
+        height: 50px;
+      }
+      .header-logo-sf {
+        top: 25px;
+        position: absolute;
+        left: 25px;
+        height: 50px;
+      }
+      .hr-1-page {
+        position: absolute;
+        top: 260px;
+        width: 230px;
+        border-top: 4px solid #fffefe;
+        left:120px;
+      }
+      .dataheader
+      {
+        color: white;
+        font-size: 50px;
+        top: 90px;
+        position: absolute;
+        left:120px;
+      }
+      .color-white
+      {
+        color: white;
+      }
+      .font-size
+      {
+        font-size: 24px;
+      }
+      .prepared
+      {
+        position: absolute;
+        top: 340px;
+        left:120px;
+        font-weight: 800px;
+      }
+      .time-period
+      {
+        position: absolute;
+        top: 490px;
+        left:120px;
+        font-weight: 800px;
+      }
+      .time-of-day
+      {
+        position: absolute;
+        top: 750px;
+        left:120px;
+        font-weight: 800px;
+      }
+      .footer-yellow
+      {
+        top: 1092px;
+        position: absolute;
+        background: #fac156;
+        height: 30px;
+        width: 100%;
+        z-index: 9;
+      }
+      .header-yellow
+      {
+        background: #fac156;
+        height: 20px;
+        width: 100%;
+      }
+      .footer-logo
+      {
+        top: 1000px;
+        position: absolute;
+        left: 100px;
+      }
+      .text-left
+      {
+        text-align: left;
+      }
+      .page_break {
+        page-break-before: always;
+      }
+      .header
+      {
+        background-color: #6e257f;
+        height: 100px;
+      }
+      .header-text
+      {
+        position: absolute;
+        left: 100px;
+        top: 30px;
+        font-family: Sans-serif;
+      }
+      .employee-rank-table
+      {
+      }
+      .employee-rank-table th
+      {
+        background: #f5f5f5;
+        border-radius: 20px;
+        width: 100px;
+        font-size: 12px;
+      }
+      .text-centre{
+        text-align: center !important;
+        ;
+      }
+      .a-heading{
+        background-color: #6e247f;
+        padding:8px 10px 10px;
+        color:#fff;
+        border-radius:.5rem .5rem 0 0;
+      }
+      .a-heading img{
+        float:left;
+        width:26px;
+        margin:0 5px;
+      }
+      .a-heading span{
+        display:inline-block;
+        padding-top:0px;
+      }
+      .data-table{
+        width:100%;
+        font-family: Sans-serif;
+      }
+      .data-table tr th,td {
+        padding:10px;
+        letter-spacing: .05em;
+        font-size: .875rem;
+        line-height: 1.25rem;
+        color:black;
+      }
+      .data-table th {
+        background-color: #f5f5f5 !important }
+      .data-table tr td {
+        border-bottom: 1px solid #f6f6f6;
+      }
+      .data-table{
+        border:0px;
+        border-collapse: collapse;
+      }
+      .data-table tr th{
+        text-align:left;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+        border-bottom: 1px solid #f6f6f6;
+        background-color:white;
+      }
+      .page-padding {
+        padding: 30px;
+      }
+      .page-number 
+      {
+        position: absolute;
+        top: 1095px;
+        right: 30px;
+        height: 25px;
+        width: 25px;
+        background-color: #6e257f;
+        border-radius: 80%;
+        color: white;
+        text-align: center;
+        font-weight: 600;
+        z-index: 999;
+      }
+      .page-number-text
+      {
+        position: absolute;
+        margin-top: 10px;
+        padding-top: 10px;
+        color: white;
+        font-weight: 600;
+      }
+      .page-number-text-div
+      {
+        position: absolute;
+        top: 1097px;
+        right: 47px;
+        color: white;
+        font-weight: 600;
+        z-index: 9999;
+      }
+      .float-left {
+        float: left;
+      }
+      .float-right {
+        float: right;
+      }
+      .rounded-box,.item-count{
+        justify-content: space-between;
+        text-align:left;
+      }
+      .rounded-box,.item-count img{
+        width:24px;
+        height:24px;
+      }
+      .rounded-box img{
+        width:1.5rem;
+        height:1.5rem;
+      }
+      .rounded-box{
+        border-radius: .5rem;
+        height: 100px;
+        width: 250px;
+        background-color: white;
+        display:inline-block;
+        padding:.75rem;
+        border: 1px solid #e1e1e1;
+      }
+      .review-icons{
+        float:left;
+        padding:10px 16px;
+        width:110px;
+      }
+      .review-icons img{
+        width:70px;
+        padding-left: 20px;
+      }
+      .review-icons p{
+        text-align:center;
+      }
+      .box-block-2 .a-heading span{
+        display:inline-block;
+        padding-top:0px;
+        padding-left:40px;
+      }
+      .comment{
+        padding:10px 15px;
+        border-bottom:1px solid #e1e1e1;
+      }
+      .comment .message-date{
+        color:#74747a;
+      }
+      .comment .comment-title img{
+        width:15px;
+      }
+      .comment .location-name {
+        width:700px;
+      }
+      .review-right{
+        width:220px;
+        display:inline-block;
+        text-align:right;
+      }
+      .frist-box .count {
+        margin-top: 20px;
+        margin-left: 25px;
+      }
+      .frist-box .count-number {
+        font-size: 30px;
+      }
+      .frist-box .count-title {
+        font-size: 10px;
+        margin-top: 20px;
+      }
+      .frist-box .left-side-box {
+        float: left;
+      }
+      .frist-box .right-side-box {
+        float: right;
+      }
+      .frist-box .right-side-box .arrow-up {
+        margin-top:  10px;
+        margin-right: 60px;
+      }
+      .frist-box .right-side-box .sentence {
+        font-size: 10px;
+      }
+      .frist-box .right-side-box .last-month-data {
+        font-size: 20px;
+        margin-right: 50px;
+      }
+      .second-box {
+        margin-left : 20px;
+        position: absolute;
+        right: 120px;
+        top : 150px;
+      }
+      .second-box  .count {
+        margin-top: 20px;
+        margin-left: 25px;
+      }
+      .second-box  .count-number {
+        font-size: 30px;
+      }
+      .second-box  .count-title {
+        font-size: 10px;
+        margin-top: 20px;
+      }
+      .second-box  .left-side-box {
+        float: left;
+      }
+      .second-box  .right-side-box {
+        float: right;
+      }
+      .second-box  .right-side-box .arrow-up {
+        margin-top:  10px;
+        margin-right: 60px;
+      }
+      .second-box  .right-side-box .sentence {
+        font-size: 10px;
+      }
+      .second-box  .right-side-box .last-month-data {
+        font-size: 20px;
+        margin-right: 50px;
+      }
+      .third-box {
+        padding-top: 50px;
+      }
+      .third-box .count {
+        margin-top: 20px;
+        margin-left: 25px;
+      }
+      .third-box .count-number {
+        font-size: 30px;
+      }
+      .third-box .count-title {
+        font-size: 10px;
+        margin-top: 20px;
+      }
+      .third-box .left-side-box {
+        float: left;
+      }
+      .third-box .right-side-box {
+        float: right;
+      }
+      .third-box .right-side-box .arrow-up {
+        margin-top:  10px;
+      }
+      .third-box .right-side-box .sentence {
+        font-size: 10px;
+      }
+      .third-box  .right-side-box .last-month-data {
+        font-size: 20px;
+        margin-right: 50px;
+      }
+      .fourth-box {
+        margin-left : 20px;
+        position: absolute;
+        right: 120px;
+        top : 278px;
+      }
+      .fourth-box {
+        padding-top: 50px;
+      }
+      .fourth-box .count {
+        margin-top: 20px;
+        margin-left: 25px;
+      }
+      .fourth-box .count-number {
+        font-size: 30px;
+      }
+      .fourth-box .count-title {
+        font-size: 10px;
+        margin-top: 20px;
+      }
+      .fourth-box .left-side-box {
+        float: left;
+      }
+      .fourth-box .right-side-box {
+        float: right;
+      }
+      .fourth-box .right-side-box .arrow-up {
+        margin-top:  10px;
+      }
+      .fourth-box .right-side-box .sentence {
+        font-size: 10px;
+      }
+      .fourth-box  .right-side-box .last-month-data {
+        font-size: 20px;
+        margin-right: 50px;
+      }
+      .d-f {
+        display: flex;
+      }
+      .d-in {
+        display: inline-block;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="b-purple">
+      <div>        
+        <img class="sf-logo-yellow" src="https://stage.servefirst.co.uk/adminlayout/images/logo-yellow.png">
+        <div>
+          <span class="dataheader" >DATA ANALYSIS 
+            <br> REPORT
+          </span>
+        </div>
+        <div>
+          <hr class="hr-1-page" >
+        </div>            
+        <div class="time-period">
+          <span style="color: #c781da;">TIME PERIOD  
+          </span>
+          <br>
+          <br>
+          <span class="color-white font-size">
+            {{ startProcessedDate }} To {{ endProcessedDate }} 
+          </span>
+        </div>
+        <div class="time-of-day">
+          <span style="color: #c781da;">TIME OF CREATION  
+          </span>
+          <br>
+          <br>
+          <span class="color-white font-size">
+            {{ currentTime }}
+          </span>
+        </div>
+        <div class="footer-logo">
+          <img height="55" src="https://stage.servefirst.co.uk/adminlayout/images/logo-white.png">
+        </div>
+        <div class="footer-yellow">
+        </div>
+      </div>
+    </div>
+    <!-- page 3-->
+    <div class="page_break">
+      <div class="header">
+        <img  class="header-logo-sf" style="" src="https://stage.servefirst.co.uk/adminlayout/images/logo-yellow.png">
+        <div class="color-white header-text">
+          <span style="font-size: 17px; ">
+            <strong>CUSTOMER FEEDBACK SUMMARY 
+            </strong>
+          </span>
+          <br>
+          <span style="font-size: 10px; top: 25px; position: absolute;"> {{startProcessedDate }} To {{endProcessedDate }}
+          </span>
+        </div>
+      </div>
+      <div class="header-yellow">
+      </div>
+      <div class="page-padding">
+        <div class=""> 
+          <div class="rounded-box frist-box">
+            <div class="count left-side-box">
+              <strong>
+                <span class="count-number">{{ totalRatings }}
+                </span>
+              </strong>
+              <br>
+              <span class="count-title">Total Ratings 
+              </span> 
+            </div>
+            <div class="right-side-box"> 
+              <div> 
+                {{#if totalRatings > totalRatingsLastMonth }}   
+                <img class="arrow-up " src="https://stage.servefirst.co.uk/front/report_pdf/img/trending-up-regular-24.png" alt="">
+                {{else}}
+                <img class="arrow-up " src="https://stage.servefirst.co.uk/front/report_pdf/img/trending-down-regular-24.png" alt="">
+                {{/#if}}
+                <div class="last-month-data ">{{ totalRatingsLastMonth }}
+                </div>
+                <div class="sentence">{{$data['before_sentence']}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="second-box">
+          <div class="rounded-box ">
+            <div class="count left-side-box">
+              <strong>
+                <span class="count-number">@if ( $data['avg_ratings'] == 0 ) - @else {{$data['avg_ratings'] }}@endif/5
+                </span>
+              </strong>
+              <br>
+              <span class="count-title">Avg. Rating 
+              </span> 
+            </div>
+            <div class="right-side-box"> 
+              <div>
+                @if (  $data['avg_ratings']  >  $data['avg_ratings_last_month']) 
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
+                @else
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
+                @endif
+                <div class="last-month-data">{{$data['avg_ratings_last_month']}}
+                </div>
+                <div class="sentence">{{$data['before_sentence']}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="third-box ">
+          <div class="rounded-box ">
+            <div class="count left-side-box">
+              <strong>
+                <span class="count-number">{{ $data['npsScore']}}
+                </span>
+              </strong>
+              <br>
+              <span class="count-title">Net Promoter Score 
+              </span> 
+            </div>
+            <div class="right-side-box"> 
+              <div>
+                @if (  $data['npsScore']  >  $data['npsScore_last_month']) 
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
+                @else
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
+                @endif
+                <div class="last-month-data">{{$data['npsScore_last_month']}}
+                </div>
+                <div class="sentence">{{$data['before_sentence']}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="fourth-box ">
+          <div class="rounded-box ">
+            <div class="count left-side-box">
+              <strong>
+                <span class="count-number">@if ( $data['avg_ratings'] == 0 ) - @else {{ ( $data['avg_ratings'] * 100 ) / 5   }}@endif%
+                </span>
+              </strong>
+              <br>
+              <span class="count-title">Avg. Rating 
+              </span> 
+            </div>
+            <div class="right-side-box"> 
+              <div>
+                @if (  $data['avg_ratings']  >  $data['avg_ratings_last_month']) 
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
+                @else
+                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
+                @endif
+                <div class="last-month-data">{{($data['avg_ratings_last_month'] * 100 ) / 5 }}%
+                </div>
+                <div class="sentence">{{$data['before_sentence']}}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div>
+          <h3>Overall Distribution
+          </h3>
+        </div>   
+        <div>
+          <div class="a-content">
+            <div class="review-icons">
+              <img src="{{asset('front/report_pdf/img/hate.png')}}" />
+              <br/>
+              <div class="text-center">
+                <p class="font-semibold"> {{$data['overall_ratings']['one']}}
+                </p>
+                <p>{{number_format((float)(($data['overall_ratings']['one'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
+                </p>
+              </div>
+            </div>
+            <div class="review-icons">
+              <img src="{{asset('front/report_pdf/img/disappointed.png')}}" />
+              <br/>
+              <div class="text-center">
+                <p class="font-semibold"> {{$data['overall_ratings']['two']}}
+                </p>
+                <p>{{number_format((float)(($data['overall_ratings']['two'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
+                </p>
+              </div>
+            </div>
+            <div class="review-icons">
+              <img src="{{asset('front/report_pdf/img/neutral.png')}}" />
+              <br/>
+              <div class="text-center">
+                <p class="font-semibold">{{$data['overall_ratings']['three']}}
+                </p>
+                <p>{{number_format((float)(($data['overall_ratings']['three'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
+                </p>
+              </div>
+            </div>
+            <div class="review-icons">
+              <img src="{{asset('front/report_pdf/img/like.png')}}" />
+              <br/>
+              <div class="text-center">
+                <p class="font-semibold"> {{$data['overall_ratings']['four']}}
+                </p>
+                <p>{{number_format((float)(($data['overall_ratings']['four'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
+                </p>
+              </div>
+            </div>
+            <div class="review-icons">
+              <img src="{{asset('front/report_pdf/img/love.png')}}" />
+              <br/>
+              <div class="text-center">
+                <p class="font-semibold"> {{$data['overall_ratings']['five']}}
+                </p>
+                <p>{{number_format((float)(($data['overall_ratings']['five'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <br>
+        <div>
+          <h3>Attributes
+          </h3>
+        </div>
+        <div class="a-content">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th class="text-left">ATTRIBUTE
+                </th>
+                <th class="text-left">AVG.
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach( $data['attribute_graph'] as $top_attribute_graph_key => $top_attribute_graph_value )
+              @if( $top_attribute_graph_key 
+              < 5 )
+                 <tr>
+              <td class="text-left">{{$top_attribute_graph_value['name']}}
+              </td>
+              <td class="text-left">{{$top_attribute_graph_value['y']}}
+              </td>
+            </tr>
+          @endif
+          @endforeach
+          </tbody>
+        </table>
+    </div>
+    </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count}}
+    </span>
+  </div>
+  </div>
+<!-- page 3-->
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; ">
+        <strong>CUSTOMER FEEDBACK SUMMARY 
+        </strong>
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;"> {{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    <div>
+      <h3>Employee Rank
+      </h3>
+    </div>
+    <div class="a-content text-centre ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank
+            </th>
+            <th>Employee
+            </th>
+            <th>Location
+            </th>
+            <th>AVG.
+            </th>
+            <th>No. Ratings
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @if( isset($data['top_employee']) && count($data['top_employee']) > 1  )
+        <tbody>
+          @php
+          $count = 0;
+          @endphp
+          @foreach(  $data['top_employee'] as $employee )
+          @php
+          $count = $count + 1 ;
+          @endphp
+          <tr>
+            <td>{{$count}}
+            </td>
+            <td>{{$employee->name}} 
+            </td>
+            <td>{{$employee->location_name}}
+            </td>
+            <td>@if($employee->rating == 0 ) - @else {{number_format((float)$employee->rating,2)}}  @endif
+            </td>
+            <td>{{$employee->count}}
+            </td>
+          </tr>
+          @endforeach
+          @else
+          <tr>
+            <td colspan="4" class="text-center">
+              No Data
+            </td>
+          </tr>
+          @endif
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count}}
+    </span>
+  </div>
+</div>
+<!-- page 5 -->
+@if ( count($data['latest_reviews'] ) > 0 || count($data['complaints'] ) > 0) 
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; ">
+        <strong>CUSTOMER FEEDBACK SUMMARY 
+        </strong>
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    @if ( count($data['latest_reviews'] ) > 0 )
+    <div>
+      <h3>Latest Reviews
+      </h3>
+    </div>
+    <div class="a-content">
+      @foreach( $data['latest_reviews'] as $location_data_key => $location_data_value  )
+      <div class="comment" style="width: 700px !important; ">
+        <div class="comment-title">
+          <span class="font-semibold review-left" style="width: 400px;">Ratings: {{$location_data_value['rating']}}/5
+            <span class="review-icon"   style="width: 400px;">
+              @for ($i = 0; $i 
+              < $location_data_value['rating'] ; $i++)
+                                     <img style="margin-right: 5px; " src="{{asset('front/report_pdf/img/review.png')}}" />
+              @endfor                 
+            </span>
+          </span>
+          <span class="message-date review-right" style="float:right;width: 20%;"> {{Carbon\Carbon::parse($location_data_value['created_at'])->format('d-m-y H:i:s')}}
+          </span>          
+        </div>
+        <div class="comment-message" > 
+          <span class="" >Location: {{$location_data_value['location_name']}}
+          </span>  
+        </div>
+        @if ($location_data_value->assign_all == 1)
+        @if(isset($location_data_value['rating_user']) && count($location_data_value['rating_user']) > 0 )
+        @foreach ($location_data_value['rating_user'] as $rating_user)
+        @if(isset($rating_user['user']) && count($rating_user['user']) > 0  )
+        @foreach ($rating_user['user'] as $user)              
+        <div class="comment-message">
+          <span class="font-semibold review-left">Employee : {{$user->name}}
+          </span>  
+        </div>
+        @endforeach
+        @endif
+        @endforeach
+        @endif
+        @else
+        @if ($location_data_value->rating > 3) 
+        <div class="comment-message">
+          <span class="font-semibold review-left">Employee : Team
+          </span>
+        </div>
+        @endif
+        @endif
+        <div class="comment-message">
+          {{$location_data_value['feedback']}}
+        </div>
+      </div>
+      @endforeach
+    </div>
+    @endif
+    @if ( count($data['complaints'] ) > 0 )
+    <div>
+      <h3>Complaint Management 
+      </h3>
+    </div>
+    <div class="a-content text-centre">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th style="width: 100px;">Date
+            </th>
+            <th style="width: 30px;">Rating
+            </th>
+            <th>Location
+            </th>
+            <th>Attributes
+            </th>
+            <th>Feedback 
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @php  $count = 0;  @endphp
+          @foreach( $data['complaints'] as $complaints_key => $complaints_value)
+          <tr>
+            <td style="width: 100px;">{{Carbon\Carbon::parse($complaints_value->created_at)->format('d M , Y')}}
+            </td>
+            <td style="width: 30px;">{{$complaints_value->rating}}
+            </td>
+            <td>{{$complaints_value->location['name']}}
+            </td>
+            <td>{{$complaints_value->attribute_name}}
+            </td>
+            <td>{{$complaints_value->feedback}}
+            </td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+    @endif
+  </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count}}
+    </span>
+  </div>
+</div>
+@endif
+<!-- page 4 -->
+@if ( count($data['top_location']) > 1   ||  count($data['low_location']) > 1 )
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    @if (count($data['top_location']) > 1)
+    <div>
+      <h3>Top Ranking Sites
+      </h3>
+    </div>
+    <div class="a-content text-centre ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank
+            </th>
+            <th>Location
+            </th>
+            @if( Auth::user()->type == 'super_admin' )
+            <th>Area
+            </th>
+            @endif
+            <th>AVG. 
+            </th>
+            <th>No. Ratings
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach( $data['top_location'] as $top_location_key => $top_location_value )
+          @if( $top_location_key 
+          < 10 )
+              <tr>
+          <td>{{++$top_location_key}}
+          </td>
+          <td>{{$top_location_value['name']}}
+          </td>
+          @if( Auth::user()->type == 'super_admin' )
+          <td>{{$top_location_value['area']}}
+          </td>
+          @endif
+          <td>{{number_format($top_location_value['ratings'],2)}}
+          </td>
+          <td>{{$top_location_value['count']}}
+          </td>
+        </tr>
+      @endif
+      @endforeach
+      </tbody>
+    </table>
+</div>
+@endif
+@if (count($data['low_location']) > 1  )
+<div>
+  <h3>Bottom Ranking Sites
+  </h3>
+</div>
+<div class="a-content text-centre ">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Rank
+        </th>
+        <th>Location
+        </th>
+        @if( Auth::user()->type == 'super_admin' )
+        <th>Area
+        </th>
+        @endif
+        <th>AVG. 
+        </th>
+        <th>No. Ratings
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach( $data['low_location'] as $low_location_key => $low_location_value )
+      @if( $low_location_key  >  (count($data['low_location']) - 4)  )
+      <tr>
+        <td>{{++$low_location_key}}
+        </td>
+        <td>{{$low_location_value['name']}}
+        </td>
+        @if( Auth::user()->type == 'super_admin' )
+        <td>{{$low_location_value['area']}}
+        </td>
+        @endif
+        <td>{{number_format($low_location_value['ratings'],2)}}
+        </td>
+        <td>{{$low_location_value['count']}}
+        </td>
+      </tr>
+      @endif
+      @endforeach
+    </tbody>
+  </table>
+</div>
+@endif
+</div>
+<div class="footer-yellow">
+</div>
+<div class="page-number ">
+</div>
+@php $page_count = $page_count + 1 ; ; @endphp
+<div  class="page-number-text-div">
+  <span class="page-number-text"  >{{$page_count  }}
+  </span>
+</div>
+</div>
+@endif
+<!-- page 5 -->
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; ">
+        <strong>CUSTOMER FEEDBACK SUMMARY
+        </strong>
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    <div>
+      <h3>Daily Ratings Data
+      </h3>
+    </div>
+    <div class="a-content text-centre graph">
+      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['skills_negative_highchart'] }}"/>
+    </div>
+    <div>
+      <h3>Attribute Score
+      </h3>
+    </div>
+    <div class="a-content text-centre graph">
+      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['attribute_graph_data'] }}"/>
+    </div>
+  </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count}}
+    </span>
+  </div>
+</div>
+<!-- page 6 -->
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; "> 
+        <strong> CUSTOMER FEEDBACK SUMMARY
+        </strong>
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    <div>
+      <h3>NPS Scores
+      </h3>
+    </div>
+    <div class="a-content text-centre graph">
+      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['nps_data'] }}"/>
+    </div>
+    <!-- @if($data['tag_data'] != null )
+<div>
+<h3>Sector Scores</h3>
+</div>
+<div class="a-content text-centre graph">
+<img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['tag_data'] }}"/>
+</div>
+@endif -->
+  </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count}}
+    </span>
+  </div>
+</div>
+<!-- page 7 -->
+@if ( count($data['top_location_all']) > 1  )
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    @if (count($data['top_location_all']) > 1)
+    <div>
+      <h3>Location Rank
+      </h3>
+    </div>
+    <div class="a-content text-centre ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank
+            </th>
+            <th>Location
+            </th>
+            @if( Auth::user()->type == 'super_admin' )
+            <th>Area
+            </th>
+            @endif
+            <th>AVG. 
+            </th>
+            <th>No. Ratings
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach( $data['top_location_all'] as $top_location_all_key => $top_location_all_value )
+          <tr>
+            <td>{{++$top_location_all_key}}
+            </td>
+            <td>{{$top_location_all_value['name']}}
+            </td>
+            @if( Auth::user()->type == 'super_admin' )
+            <td>{{$top_location_all_value['area']}}
+            </td>
+            @endif
+            <td>{{number_format($top_location_all_value['ratings'],2)}}
+            </td>
+            <td>{{$top_location_all_value['count']}}
+            </td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+    @endif
+  </div>
+  <div class="footer-yellow">
+  </div>
+  <div class="page-number ">
+  </div>
+  @php $page_count = $page_count + 1 ; ; @endphp
+  <div  class="page-number-text-div">
+    <span class="page-number-text"  >{{$page_count  }}
+    </span>
+  </div>
+</div>
+@endif
+<!-- page 8 -->
+@if ( count($data['skills_negative']) > 1  ||  count($data['employees_with_negative_rating']) > 1 || count($data['employees_with_negative_rating']) > 1 )
+<div class="page_break">
+  <div class="header">
+    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
+    <div class="color-white header-text">
+      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
+      </span>
+      <br>
+      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
+      </span>
+    </div>
+  </div>
+  <div class="header-yellow">
+  </div>
+  <div class="page-padding">
+    @if (count($data['skills_negative']) > 1)
+    <div>
+      <h3>Weak Skills
+      </h3>
+    </div>
+    <div class="a-content text-centre ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank
+            </th>
+            <th>Skill
+            </th>
+            <th>Count 
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach( $data['skills_negative'] as $skills_negative_key => $skills_negative_value )
+          <tr>
+            <td>{{++$skills_negative_key}}
+            </td>
+            <td>{{$skills_negative_value['name']}}
+            </td>
+            <td>{{$skills_negative_value['y']}}
+            </td>
+          </tr>
+          @endforeach
+        </tbody>
+      </table>
+    </div>
+    @endif
+    <br>
+    @if (count($data['employees_with_negative_rating']) > 1)
+    <div>
+      <h3>Weak People
+      </h3>
+    </div>
+    <div class="a-content text-centre ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Rank
+            </th>
+            <th>Employee
+            </th>
+            <th>Location
+            </th>
+            <th>AVG.
+            </th>
+            <th>No. Ratings
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @if( isset($data['employees_with_negative_rating']) && count($data['employees_with_negative_rating']) > 1  )
+        <tbody>
+          @php
+          $count = 0;
+          @endphp
+          @foreach(  $data['employees_with_negative_rating'] as $employee_negative )
+          @php
+          $count = $count + 1 ;
+          @endphp
+          <tr>
+            <td>{{$count}}
+            </td>
+            <td>{{$employee_negative->name}} 
+            </td>
+            <td>{{$employee_negative->location_name}}
+            </td>
+            <td>@if($employee_negative->rating == 0 ) - @else {{number_format((float)$employee_negative->rating,2)}}  @endif
+            </td>
+            <td>{{$employee_negative->count}}
+            </td>
+          </tr>
+          @endforeach
+          @else
+          <tr>
+            <td colspan="4" class="text-center">
+              No Data
+            </td>
+          </tr>
+          @endif
+        </tbody>
+      </table>
+    </div>
+    @endif
+    <br>
+    @if (count($data['response']) > 1)
+    <div>
+      <h3>Action Plan
+      </h3>
+    </div>
+    <div class="a-content text-left ">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Action Plan
+            </th>
+            <th>Title
+            </th>
+            <th>Description
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @php $count = 1 ; @endphp
+          @foreach($data['response'] as $response_key => $response_value)
+          @if( count( $response_value['incidents']) > 0 )
+          @if( $count 
+          <= 3 && $response_value['incidents']['y'] != 0)
+             <tr>
+          <td >{{$count}}. In {{$data['month']}} there were {{$response_value['incidents']['y']}} incidents of " {{$response_value['incidents']['name']}} " at {{$data['location']}}. 
+          </td>
+          @if ($response_value['action_plan'] != null)
+          <td >
+            {{$response_value['action_plan']['action_title']}} 
+          </td>
+          <td>   
+            {{$response_value['action_plan']['action_desc']}}    
+          </td>
+          @endif
+        </tr>
+      @php  $count = $count + 1  ; @endphp
+      @endif
+      @endif
+      @endforeach
+      </tr>
+    </tbody>
+  </table>
+</div>
+@endif
+</div>
+<div class="footer-yellow">
+</div>
+<div class="page-number ">
+</div>
+@php $page_count = $page_count + 1 ; ; @endphp
+<div  class="page-number-text-div">
+  <span class="page-number-text"  >{{$page_count  }}
+  </span>
+</div>
+</div>
+@endif
+</body>
+</html>

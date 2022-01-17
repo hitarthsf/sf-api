@@ -23,6 +23,7 @@ import customerAuditRoutes from './routes/customerAudit.js';
 import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
 import hubSpotRoutes from './routes/hubSpot.js';
+import generalRoutes from './routes/general.js';
 
 //dot env configuration
 import dotenv from 'dotenv';
@@ -62,6 +63,7 @@ app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 app.use('/hubSpot',hubSpotRoutes);
+app.use('/general',generalRoutes);
 
 
 
