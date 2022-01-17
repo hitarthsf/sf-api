@@ -120,7 +120,7 @@ export const createLocation = async (req, res) => {
     location_skills: location_skills,
     hide_team: req.body.showTeam,
     multi_location_id : req.body.multi_location_id.split(","),
-    app_background_image: imagePathBackground
+    app_background_image: req.body.app_background_image
   };
 
   CompanyData.findOneAndUpdate(
