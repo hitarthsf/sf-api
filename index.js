@@ -69,7 +69,7 @@ const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.
 const PORT = process.env.PORT || 5000;
 
 app.get("/", async (req, res,next) => {
-      res.send({ success: true, message: 'Welcome to SFratings Backend.'})
+      res.send({ success: true, message: 'Welcome to SF ratings Backend.'})
 });
 
 mongoose.connect(CONNECTION_URL, {useNewUrlParser: true, useUnifiedTopology: true})
