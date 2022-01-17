@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+    #Nginx Service
+    nginx:
+        image: ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME_NGINX}
+        container_name: nginx_sf_api
+        restart: unless-stopped
+        tty: true
+        ports:
+            - "80:80"
+        networks:
+            - sf-api-network
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: sf-api-nginx
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: nginx
+    api:
+        image: ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}
+        container_name: sf-api
+        networks:
+            - sf-api-network
+        logging:
+            driver: awslogs
+            options: 
+                awslogs-group: sf-api
+                awslogs-region: ${AWS_REGION}
+                awslogs-stream-prefix: api
+        env_file:
+          - .env
+networks:
+    sf-api-network:
+        driver: bridge
