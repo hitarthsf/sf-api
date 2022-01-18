@@ -17,7 +17,7 @@ export const locationLogin = async (req, res) => {
             {
                 if (req.body.password)
                 {
-                    if (req.body.password == location.password)
+                    if (req.body.password == location.appPassword)
                     {
                         res.status(200).json({"status" : 200 , "message" : "Location","data" : location ,"allow_cppq" : 1, "url" :"" , "hexnode_flag" : 0});
                     }
