@@ -23,7 +23,7 @@ export const locationLogin = async (req, res) => {
                     }
                     else
                     {
-                        res.status(404).json({ message: "Invalid Password"});
+                        res.status(400).json({ message: "Invalid Password"});
                     }   
                 }
                 else
