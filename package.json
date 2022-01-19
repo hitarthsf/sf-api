@@ -5,7 +5,39 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "docker-compose up",
+    "start-no-docker": "node index.js",
+    "dev": "nodemon index.js",
+    "build": "npm run build-api",
+    "build-api": "source .env && cross-var docker build -t ${AWS_REPO_NAME}:latest .",
+    "build-nginx": "source .env && cross-var docker build -t ${AWS_REPO_NAME_NGINX}:latest ./docker-images/nginx",
+    "build-and-push": "npm run build-api && npm run ecr-tag-api && npm run ecr-push-api",
+    "test-env-var": "echo ${PORT}",
+    "stop": "docker-compose down -v",
+    "docker-remove-volumes": "docker-compose rm -vf",
+    "docker-pull": "source .env && cross-var docker pull ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}",
+    "ecr-create-repos": "npm run ecr-create-api && npm run ecr-create-nginx",
+    "ecr-create-api": "source .env && cross-var aws ecr create-repository --profile ${AWS_PROFILE} --repository-name ${AWS_REPO_NAME} --image-scanning-configuration scanOnPush=true --region ${AWS_REGION}",
+    "ecr-create-nginx": "source .env && cross-var aws ecr create-repository --profile ${AWS_PROFILE} --repository-name ${AWS_REPO_NAME_NGINX} --image-scanning-configuration scanOnPush=true --region ${AWS_REGION}",
+    "ecr-tag-repos": "npm run ecr-tag-api && npm run ecr-tag-nginx",
+    "ecr-tag-api": "source .env && cross-var docker tag ${AWS_REPO_NAME}:latest ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest",
+    "ecr-tag-nginx": "source .env && cross-var docker tag ${AWS_REPO_NAME_NGINX}:latest ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME_NGINX}:latest",
+    "ecr-push-repos": "npm run ecr-push-api && npm run ecr-push-nginx",
+    "ecr-push-api": "npm run ecr-login && source .env && cross-var docker push ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest",
+    "ecr-push-nginx": "npm run ecr-login && source .env && cross-var docker push ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME_NGINX}:latest",
+    "ecr-login": "source .env && cross-var aws ecr get-login-password --profile ${AWS_PROFILE} --region ${AWS_REGION} | cross-var docker login --username AWS --password-stdin ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}",
+    "ecs-configure": "source .env && cross-var ecs-cli configure --cluster ${AWS_CLUSTER_NAME} --region ${AWS_REGION} --default-launch-type FARGATE --config-name ${AWS_CLUSTER_NAME}",
+    "ecs-create-cluster": "source .env && cross-var ecs-cli up --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME}",
+    "aws-view-security group": "aws ec2 describe-security-groups --filters Name=vpc-id,Values=vpc-022ace733ed4f64e3",
+    "aws-enable-traffic": "aws ec2 authorize-security-group-ingress --group-id sg-0c0141caeaba71e6f --protocol tcp --port 80 --cidr 0.0.0.0/0",
+    "ecs-up": "source .env && cross-var ecs-cli compose --project-name ${AWS_CLUSTER_NAME} service up --create-log-groups --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME} --private-dns-namespace sf-network --enable-service-discovery",
+    "ecs-down": "source .env && cross-var ecs-cli compose service rm ${AWS_CLUSTER_NAME} --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME}",
+    "ecs-list": "source .env && cross-var ecs-cli compose --project-name ${AWS_CLUSTER_NAME} service ps --cluster-config ${AWS_CLUSTER_NAME} --ecs-profile ${AWS_CLUSTER_NAME}",
+    "tf-create-s3-backend": "source .env && cross-var aws s3api create-bucket --bucket $TF_VAR_remote_back,end --region $AWS_REGION --create-bucket-configuration LocationConstraint=$AWS_REGION && cross-var aws s3api put-bucket-versioning --bucket $TF_VAR_remote_backend --versioning-configuration Status=Enabled",
+    "ecr-create-node-alpine": "source .env && cross-var aws ecr create-repository --profile ${AWS_PROFILE} --repository-name sf-node-alpine --image-scanning-configuration scanOnPush=true --region ${AWS_REGION}",
+    "ecr-tag-node-alpine": "source .env && cross-var docker tag sf-node-alpine:latest ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/sf-node-alpine:latest",
+    "ecr-push-node-alpine": "npm run ecr-login && source .env && cross-var docker push ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/sf-node-alpine:latest",
+    "build-node-alpine": "source .env && cross-var docker build -t sf-node-alpine:latest ./docker-images/node-alpine"
   },
   "keywords": [],
   "author": "",
@@ -13,7 +45,7 @@
   "dependencies": {
     "@hubspot/api-client": "^5.0.0",
     "aws-sdk": "^2.991.0",
-    "bcrypt": "4.0.1",
+    "bcrypt": "5.0.1",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
@@ -41,5 +73,8 @@
     "puppeteer": "^13.0.1",
     "qr-image": "^3.2.0",
     "qrcode": "^1.5.0"
+  },
+  "devDependencies": {
+    "cross-var": "^1.1.0"
   }
 }

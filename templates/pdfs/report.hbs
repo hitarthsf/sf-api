@@ -1,1312 +1,486 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>
-    </title>
-    <style type="text/css">
-      @font-face {
-        font-family: Sans-serif;
-        src: url(sansation_light.woff);
-      }
-      html{
-        width: 100%;
-        height: 100%;
-        padding: 0;
-        margin: 0;
-      }
-      body {
-        font-family: Sans-serif;
-      }
-      .b-purple {
-        background-color: #6e257f;
-        height: 1100px;
-      }
-      .sf-logo-yellow {
-        top: 95px;
-        position: absolute;
-        left: 55px;
-        height: 50px;
-      }
-      .header-logo-sf {
-        top: 25px;
-        position: absolute;
-        left: 25px;
-        height: 50px;
-      }
-      .hr-1-page {
-        position: absolute;
-        top: 260px;
-        width: 230px;
-        border-top: 4px solid #fffefe;
-        left:120px;
-      }
-      .dataheader
-      {
-        color: white;
-        font-size: 50px;
-        top: 90px;
-        position: absolute;
-        left:120px;
-      }
-      .color-white
-      {
-        color: white;
-      }
-      .font-size
-      {
-        font-size: 24px;
-      }
-      .prepared
-      {
-        position: absolute;
-        top: 340px;
-        left:120px;
-        font-weight: 800px;
-      }
-      .time-period
-      {
-        position: absolute;
-        top: 490px;
-        left:120px;
-        font-weight: 800px;
-      }
-      .time-of-day
-      {
-        position: absolute;
-        top: 750px;
-        left:120px;
-        font-weight: 800px;
-      }
-      .footer-yellow
-      {
-        top: 1092px;
-        position: absolute;
-        background: #fac156;
-        height: 30px;
-        width: 100%;
-        z-index: 9;
-      }
-      .header-yellow
-      {
-        background: #fac156;
-        height: 20px;
-        width: 100%;
-      }
-      .footer-logo
-      {
-        top: 1000px;
-        position: absolute;
-        left: 100px;
-      }
-      .text-left
-      {
-        text-align: left;
-      }
-      .page_break {
-        page-break-before: always;
-      }
-      .header
-      {
-        background-color: #6e257f;
-        height: 100px;
-      }
-      .header-text
-      {
-        position: absolute;
-        left: 100px;
-        top: 30px;
-        font-family: Sans-serif;
-      }
-      .employee-rank-table
-      {
-      }
-      .employee-rank-table th
-      {
-        background: #f5f5f5;
-        border-radius: 20px;
-        width: 100px;
-        font-size: 12px;
-      }
-      .text-centre{
-        text-align: center !important;
-        ;
-      }
-      .a-heading{
-        background-color: #6e247f;
-        padding:8px 10px 10px;
-        color:#fff;
-        border-radius:.5rem .5rem 0 0;
-      }
-      .a-heading img{
-        float:left;
-        width:26px;
-        margin:0 5px;
-      }
-      .a-heading span{
-        display:inline-block;
-        padding-top:0px;
-      }
-      .data-table{
-        width:100%;
-        font-family: Sans-serif;
-      }
-      .data-table tr th,td {
-        padding:10px;
-        letter-spacing: .05em;
-        font-size: .875rem;
-        line-height: 1.25rem;
-        color:black;
-      }
-      .data-table th {
-        background-color: #f5f5f5 !important }
-      .data-table tr td {
-        border-bottom: 1px solid #f6f6f6;
-      }
-      .data-table{
-        border:0px;
-        border-collapse: collapse;
-      }
-      .data-table tr th{
-        text-align:left;
-        letter-spacing: .05em;
-        text-transform: uppercase;
-        border-bottom: 1px solid #f6f6f6;
-        background-color:white;
-      }
-      .page-padding {
-        padding: 30px;
-      }
-      .page-number 
-      {
-        position: absolute;
-        top: 1095px;
-        right: 30px;
-        height: 25px;
-        width: 25px;
-        background-color: #6e257f;
-        border-radius: 80%;
-        color: white;
-        text-align: center;
-        font-weight: 600;
-        z-index: 999;
-      }
-      .page-number-text
-      {
-        position: absolute;
-        margin-top: 10px;
-        padding-top: 10px;
-        color: white;
-        font-weight: 600;
-      }
-      .page-number-text-div
-      {
-        position: absolute;
-        top: 1097px;
-        right: 47px;
-        color: white;
-        font-weight: 600;
-        z-index: 9999;
-      }
-      .float-left {
-        float: left;
-      }
-      .float-right {
-        float: right;
-      }
-      .rounded-box,.item-count{
-        justify-content: space-between;
-        text-align:left;
-      }
-      .rounded-box,.item-count img{
-        width:24px;
-        height:24px;
-      }
-      .rounded-box img{
-        width:1.5rem;
-        height:1.5rem;
-      }
-      .rounded-box{
-        border-radius: .5rem;
-        height: 100px;
-        width: 250px;
-        background-color: white;
-        display:inline-block;
-        padding:.75rem;
-        border: 1px solid #e1e1e1;
-      }
-      .review-icons{
-        float:left;
-        padding:10px 16px;
-        width:110px;
-      }
-      .review-icons img{
-        width:70px;
-        padding-left: 20px;
-      }
-      .review-icons p{
-        text-align:center;
-      }
-      .box-block-2 .a-heading span{
-        display:inline-block;
-        padding-top:0px;
-        padding-left:40px;
-      }
-      .comment{
-        padding:10px 15px;
-        border-bottom:1px solid #e1e1e1;
-      }
-      .comment .message-date{
-        color:#74747a;
-      }
-      .comment .comment-title img{
-        width:15px;
-      }
-      .comment .location-name {
-        width:700px;
-      }
-      .review-right{
-        width:220px;
-        display:inline-block;
-        text-align:right;
-      }
-      .frist-box .count {
-        margin-top: 20px;
-        margin-left: 25px;
-      }
-      .frist-box .count-number {
-        font-size: 30px;
-      }
-      .frist-box .count-title {
-        font-size: 10px;
-        margin-top: 20px;
-      }
-      .frist-box .left-side-box {
-        float: left;
-      }
-      .frist-box .right-side-box {
-        float: right;
-      }
-      .frist-box .right-side-box .arrow-up {
-        margin-top:  10px;
-        margin-right: 60px;
-      }
-      .frist-box .right-side-box .sentence {
-        font-size: 10px;
-      }
-      .frist-box .right-side-box .last-month-data {
-        font-size: 20px;
-        margin-right: 50px;
-      }
-      .second-box {
-        margin-left : 20px;
-        position: absolute;
-        right: 120px;
-        top : 150px;
-      }
-      .second-box  .count {
-        margin-top: 20px;
-        margin-left: 25px;
-      }
-      .second-box  .count-number {
-        font-size: 30px;
-      }
-      .second-box  .count-title {
-        font-size: 10px;
-        margin-top: 20px;
-      }
-      .second-box  .left-side-box {
-        float: left;
-      }
-      .second-box  .right-side-box {
-        float: right;
-      }
-      .second-box  .right-side-box .arrow-up {
-        margin-top:  10px;
-        margin-right: 60px;
-      }
-      .second-box  .right-side-box .sentence {
-        font-size: 10px;
-      }
-      .second-box  .right-side-box .last-month-data {
-        font-size: 20px;
-        margin-right: 50px;
-      }
-      .third-box {
-        padding-top: 50px;
-      }
-      .third-box .count {
-        margin-top: 20px;
-        margin-left: 25px;
-      }
-      .third-box .count-number {
-        font-size: 30px;
-      }
-      .third-box .count-title {
-        font-size: 10px;
-        margin-top: 20px;
-      }
-      .third-box .left-side-box {
-        float: left;
-      }
-      .third-box .right-side-box {
-        float: right;
-      }
-      .third-box .right-side-box .arrow-up {
-        margin-top:  10px;
-      }
-      .third-box .right-side-box .sentence {
-        font-size: 10px;
-      }
-      .third-box  .right-side-box .last-month-data {
-        font-size: 20px;
-        margin-right: 50px;
-      }
-      .fourth-box {
-        margin-left : 20px;
-        position: absolute;
-        right: 120px;
-        top : 278px;
-      }
-      .fourth-box {
-        padding-top: 50px;
-      }
-      .fourth-box .count {
-        margin-top: 20px;
-        margin-left: 25px;
-      }
-      .fourth-box .count-number {
-        font-size: 30px;
-      }
-      .fourth-box .count-title {
-        font-size: 10px;
-        margin-top: 20px;
-      }
-      .fourth-box .left-side-box {
-        float: left;
-      }
-      .fourth-box .right-side-box {
-        float: right;
-      }
-      .fourth-box .right-side-box .arrow-up {
-        margin-top:  10px;
-      }
-      .fourth-box .right-side-box .sentence {
-        font-size: 10px;
-      }
-      .fourth-box  .right-side-box .last-month-data {
-        font-size: 20px;
-        margin-right: 50px;
-      }
-      .d-f {
-        display: flex;
-      }
-      .d-in {
-        display: inline-block;
-      }
-    </style>
-  </head>
-  <body>
-    <div class="b-purple">
-      <div>        
-        <img class="sf-logo-yellow" src="https://stage.servefirst.co.uk/adminlayout/images/logo-yellow.png">
-        <div>
-          <span class="dataheader" >DATA ANALYSIS 
-            <br> REPORT
-          </span>
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+
+  <!-- FAVICON -->
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+
+  <!-- PAGE TITLE -->
+  <title>
+    Serve First
+  </title>
+
+</head>
+<style>
+  /*! tailwindcss v2.2.7 | MIT License | https://tailwindcss.com*/
+/*! modern-normalize v1.1.0 | MIT License | https://github.com/sindresorhus/modern-normalize */html{-moz-tab-size:4;-o-tab-size:4;tab-size:4;line-height:1.15;-webkit-text-size-adjust:100%}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji}hr{height:0;color:inherit}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:initial}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}button,input,optgroup,select,textarea{font-family:inherit;font-size:100%;line-height:1.15;margin:0}button,select{text-transform:none}[type=button],[type=reset],[type=submit],button{-webkit-appearance:button}::-moz-focus-inner{border-style:none;padding:0}:-moz-focusring{outline:1px dotted ButtonText}:-moz-ui-invalid{box-shadow:none}legend{padding:0}progress{vertical-align:initial}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}button{background-color:initial;background-image:none}fieldset,ol,ul{margin:0;padding:0}ol,ul{list-style:none}html{font-family:Cerebri Sans,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji;line-height:1.5}body{font-family:inherit;line-height:inherit}*,:after,:before{box-sizing:border-box;border:0 solid}hr{border-top-width:1px}img{border-style:solid}textarea{resize:vertical}input::-moz-placeholder,textarea::-moz-placeholder{opacity:1;color:#9ca3af}input:-ms-input-placeholder,textarea:-ms-input-placeholder{opacity:1;color:#9ca3af}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}table{border-collapse:collapse}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}button,input,optgroup,select,textarea{padding:0;line-height:inherit;color:inherit}code,kbd,pre,samp{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,Liberation Mono,Courier New,monospace}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]{display:none}*,:after,:before{--tw-border-opacity:1;border-color:rgba(229,231,235,var(--tw-border-opacity));--tw-blur:var(--tw-empty,/*!*/ /*!*/);--tw-brightness:var(--tw-empty,/*!*/ /*!*/);--tw-contrast:var(--tw-empty,/*!*/ /*!*/);--tw-grayscale:var(--tw-empty,/*!*/ /*!*/);--tw-hue-rotate:var(--tw-empty,/*!*/ /*!*/);--tw-invert:var(--tw-empty,/*!*/ /*!*/);--tw-saturate:var(--tw-empty,/*!*/ /*!*/);--tw-sepia:var(--tw-empty,/*!*/ /*!*/);--tw-drop-shadow:var(--tw-empty,/*!*/ /*!*/);--tw-filter:var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow)}.col-span-3{grid-column:span 3/span 3}.col-span-2{grid-column:span 2/span 2}.mt-2{margin-top:.5rem}.mr-2{margin-right:.5rem}.ml-auto{margin-left:auto}.mt-1{margin-top:.25rem}.ml-4{margin-left:1rem}.mt-0{margin-top:0}.mt-0\.5{margin-top:.125rem}.block{display:block}.flex{display:flex}.table{display:table}.grid{display:grid}.hidden{display:none}.h-5{height:1.25rem}.h-10{height:2.5rem}.h-12{height:3rem}.h-48{height:12rem}.min-h-screen{min-height:100vh}.w-5{width:1.25rem}.w-auto{width:auto}.w-12{width:3rem}.w-full{width:100%}.flex-shrink-0{flex-shrink:0}.flex-shrink{flex-shrink:1}.grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}.grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}.items-start{align-items:flex-start}.items-center{align-items:center}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-x-8{-moz-column-gap:2rem;column-gap:2rem}.space-y-8>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(2rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(2rem*var(--tw-space-y-reverse))}.space-y-2>:not([hidden])~:not([hidden]){--tw-space-y-reverse:0;margin-top:calc(.5rem*(1 - var(--tw-space-y-reverse)));margin-bottom:calc(.5rem*var(--tw-space-y-reverse))}.divide-y>:not([hidden])~:not([hidden]){--tw-divide-y-reverse:0;border-top-width:calc(1px*(1 - var(--tw-divide-y-reverse)));border-bottom-width:calc(1px*var(--tw-divide-y-reverse))}.divide-x>:not([hidden])~:not([hidden]){--tw-divide-x-reverse:0;border-right-width:calc(1px*var(--tw-divide-x-reverse));border-left-width:calc(1px*(1 - var(--tw-divide-x-reverse)))}.divide-gray-200>:not([hidden])~:not([hidden]){--tw-divide-opacity:1;border-color:rgba(229,231,235,var(--tw-divide-opacity))}.overflow-x-hidden{overflow-x:hidden}.whitespace-nowrap{white-space:nowrap}.rounded-full{border-radius:9999px}.rounded-md{border-radius:.375rem}.border{border-width:1px}.border-2{border-width:2px}.border-l{border-left-width:1px}.border-t{border-top-width:1px}.border-dashed{border-style:dashed}.border-gray-200{--tw-border-opacity:1;border-color:rgba(229,231,235,var(--tw-border-opacity))}.bg-white{--tw-bg-opacity:1;background-color:rgba(255,255,255,var(--tw-bg-opacity))}.bg-gray-200{--tw-bg-opacity:1;background-color:rgba(229,231,235,var(--tw-bg-opacity))}.bg-purple-100{--tw-bg-opacity:1;background-color:rgba(219,201,223,var(--tw-bg-opacity))}.bg-purple-600{--tw-bg-opacity:1;background-color:rgba(110,37,127,var(--tw-bg-opacity))}.bg-gray-100{--tw-bg-opacity:1;background-color:rgba(243,244,246,var(--tw-bg-opacity))}.px-4{padding-left:1rem;padding-right:1rem}.py-5{padding-top:1.25rem;padding-bottom:1.25rem}.py-2{padding-top:.5rem;padding-bottom:.5rem}.px-3{padding-left:.75rem;padding-right:.75rem}.py-3{padding-top:.75rem;padding-bottom:.75rem}.text-left{text-align:left}.text-right{text-align:right}.font-sans{font-family:Cerebri Sans,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,Apple Color Emoji,Segoe UI Emoji,Segoe UI Symbol,Noto Color Emoji}.text-sm{font-size:.875rem;line-height:1.25rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-4xl{font-size:2.25rem;line-height:2.5rem}.text-2xl{font-size:1.5rem;line-height:2rem}.text-xs{font-size:.75rem;line-height:1rem}.font-semibold{font-weight:600}.font-bold{font-weight:700}.uppercase{text-transform:uppercase}.leading-tight{line-height:1.25}.tracking-wide{letter-spacing:.025em}.text-black{--tw-text-opacity:1;color:rgba(35,31,32,var(--tw-text-opacity))}.text-purple-600{--tw-text-opacity:1;color:rgba(110,37,127,var(--tw-text-opacity))}.text-white{--tw-text-opacity:1;color:rgba(255,255,255,var(--tw-text-opacity))}.underline{text-decoration:underline}.antialiased{-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}.filter{filter:var(--tw-filter)}@font-face{font-family:Cerebri Sans;font-weight:400;font-display:fallback;src:url(../fonts/CerebriSans-Regular.woff2) format("woff2")}@font-face{font-family:Cerebri Sans;font-weight:500;font-display:fallback;src:url(../fonts/CerebriSans-Medium.woff2) format("woff2")}@font-face{font-family:Cerebri Sans;font-weight:600;font-display:fallback;src:url(../fonts/CerebriSans-SemiBold.woff2) format("woff2")}@font-face{font-family:Cerebri Sans;font-weight:700;font-display:fallback;src:url(../fonts/CerebriSans-Bold.woff2) format("woff2")}@font-face{font-family:Cerebri Sans;font-weight:700;font-display:fallback;src:url(../fonts/CerebriSans-ExtraBold.woff2) format("woff2")}table,td,th{border-width:1px;--tw-border-opacity:1;border-color:rgba(229,231,235,var(--tw-border-opacity));--tw-bg-opacity:1;background-color:rgba(255,255,255,var(--tw-bg-opacity));vertical-align:top}table{width:100%}
+</style>
+<body class="min-h-screen overflow-x-hidden font-sans antialiased text-black bg-white">
+
+  <div class="space-y-8 bg-gray-200">
+
+    <!-- START PAGE 1 -->
+    <div class="bg-white border border-gray-200 divide-y divide-gray-200">
+      <div class="grid grid-cols-5 divide-x divide-gray-200">
+        <div class="col-span-3">
+          <div class="px-4 py-5">
+            <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+              focus for the month
+            </p>
+            <ul class="mt-2 space-y-2">
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd" />
+                </svg>
+                <span class="text-sm">
+                  The focus currently is on <span class="font-semibold">'Lowest scoring sub attribute'</span>, X number of customers have stated this as an opportunity.
+                </span>
+              </li>
+
+              <li class="flex items-start">
+                <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667v-5.43a2 2 0 00-1.105-1.79l-.05-.025A4 4 0 0011.055 2H5.64a2 2 0 00-1.962 1.608l-1.2 6A2 2 0 004.44 12H8v4a2 2 0 002 2 1 1 0 001-1v-.667a4 4 0 01.8-2.4l1.4-1.866a4 4 0 00.8-2.4z" />
+                </svg>
+                <span class="text-sm">
+                  The specific skill of focus is <span class="font-semibold">'Most common negative skill'</span> and something we need to focus on going forward.
+                </span>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <hr class="hr-1-page" >
-        </div>            
-        <div class="time-period">
-          <span style="color: #c781da;">TIME PERIOD  
-          </span>
-          <br>
-          <br>
-          <span class="color-white font-size">
-            {{ startProcessedDate }} To {{ endProcessedDate }} 
-          </span>
+
+        <div class="col-span-2">
+          <div class="px-4 py-5 text-right">
+            <img class="w-auto h-10 ml-auto" src="images/logo.png" alt="">
+
+            <h1 class="mt-1 text-lg font-bold leading-tight uppercase">
+              Monthly Data Report
+              <span class="block text-purple-600">
+                September 2021
+              </span>
+            </h1>
+
+            <p class="mt-2 text-sm leading-tight">
+              Location Name / Group Name / Individuals Name
+            </p>
+          </div>
         </div>
-        <div class="time-of-day">
-          <span style="color: #c781da;">TIME OF CREATION  
-          </span>
-          <br>
-          <br>
-          <span class="color-white font-size">
-            {{ currentTime }}
-          </span>
+      </div>
+
+      <div class="grid grid-cols-5 divide-x divide-gray-200">
+        <div class="col-span-3">
+          <div class="px-4 py-5">
+            <div class="grid grid-cols-2 gap-x-8">
+              <div class="flex items-start">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 text-purple-600 bg-purple-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.8 6.5 10.866a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                    Net Promoter Score
+                  </p>
+                  <p class="mt-1 text-4xl font-bold">
+                    50%
+                  </p>
+                  <p class="mt-1 text-sm leading-tight">
+                    Promoter
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div class="flex items-center justify-center flex-shrink-0 w-12 h-12 text-purple-600 bg-purple-100 rounded-full">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M18 5v8a2 2 0 01-2 2h-5l-5 4v-4H4a2 2 0 01-2-2V5a2 2 0 012-2h12a2 2 0 012 2zM7 8H5v2h2V8zm2 0h2v2H9V8zm6 0h-2v2h2V8z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-4">
+                  <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                    Total responses for July 2021
+                  </p>
+                  <p class="mt-1 text-4xl font-bold">
+                    120
+                  </p>
+                  <p class="mt-1 text-sm leading-tight">
+                    +10 from Last Month
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="footer-logo">
-          <img height="55" src="https://stage.servefirst.co.uk/adminlayout/images/logo-white.png">
+
+        <div class="col-span-2">
+          <div class="grid grid-cols-2">
+            <div class="px-4 py-5">
+              <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                July Score
+              </p>
+              <p class="mt-1 text-2xl font-bold">
+                80%
+              </p>
+            </div>
+
+            <div class="px-4 py-5 border-l border-gray-200">
+              <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                YTD Score
+              </p>
+              <p class="mt-1 text-2xl font-bold">
+                80%
+              </p>
+            </div>
+
+            <div class="px-4 py-5 border-t border-gray-200">
+              <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                Rank in the country
+              </p>
+              <p class="mt-1 text-2xl font-bold">
+                10 / 100
+              </p>
+            </div>
+
+            <div class="px-4 py-5 border-t border-l border-gray-200">
+              <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                top performer
+              </p>
+              <p class="mt-1 text-lg font-bold">
+                Bob Smith
+              </p>
+              <p class="text-sm">
+                Location Title
+              </p>
+            </div>
+          </div>
         </div>
-        <div class="footer-yellow">
+      </div>
+
+      <div class="grid grid-cols-5 divide-x divide-gray-200">
+        <div class="col-span-3">
+          <div class="px-4 py-5">
+            <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+              Customer Feedback
+            </p>
+            <p class="mt-2 text-sm">
+              Lots of customer feedback goes here - positive and negative, include the date and linked to see more which goes to our website at the bottom. Include the score or state promoter, passive or detractor...
+            </p>
+            <div class="flex items-center justify-between mt-2">
+              <p class="text-sm">
+                22 July, 2021
+              </p>
+
+              <a href="#" title="" class="px-4 py-2 text-xs font-semibold text-white uppercase bg-purple-600 rounded-md">
+                View
+              </a>
+            </div>
+          </div>
+
+          <div class="px-4 py-5 border-t border-gray-200">
+            <div class="flex items-center">
+              <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+              </svg>
+              <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+                Did you know..
+              </p>
+            </div>
+            <p class="mt-2 text-xs">
+              Net Promoter Score is based around % of promoters (Score a 5/5) - % of Detractors (Score a 1, 2 or 3), you can find out more about Net Promoter Score by clicking on the following <a href="#" class="font-semibold text-purple-600 underline">link</a>
+            </p>
+          </div>
+        </div>
+
+        <div class="col-span-2">
+          <div class="px-4 py-5">
+            <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+              Trended results
+            </p>
+
+            <div class="h-48 mt-2 bg-gray-100 border-2 border-gray-200 border-dashed rounded-md"></div>
+          </div>
         </div>
       </div>
     </div>
-    <!-- page 3-->
-    <div class="page_break">
-      <div class="header">
-        <img  class="header-logo-sf" style="" src="https://stage.servefirst.co.uk/adminlayout/images/logo-yellow.png">
-        <div class="color-white header-text">
-          <span style="font-size: 17px; ">
-            <strong>CUSTOMER FEEDBACK SUMMARY 
-            </strong>
-          </span>
-          <br>
-          <span style="font-size: 10px; top: 25px; position: absolute;"> {{startProcessedDate }} To {{endProcessedDate }}
-          </span>
+    <!-- END PAGE 1 -->
+
+
+    <!-- START PAGE 2 -->
+    <div class="bg-white border border-gray-200 divide-y divide-gray-200">
+      <div class="grid grid-cols-2">
+        <div>
+          <div class="px-4 py-5 text-right">
+            <img class="w-auto h-10" src="images/logo.png" alt="">
+          </div>
+        </div>
+
+        <div>
+          <div class="px-4 py-5 text-right">
+            <h1 class="text-lg font-bold leading-tight uppercase">
+              Monthly Data Report
+              <span class="block text-purple-600">
+                September 2021
+              </span>
+            </h1>
+
+            <p class="mt-2 text-sm leading-tight">
+              Location Name / Group Name / Individuals Name
+            </p>
+          </div>
         </div>
       </div>
-      <div class="header-yellow">
-      </div>
-      <div class="page-padding">
-        <div class=""> 
-          <div class="rounded-box frist-box">
-            <div class="count left-side-box">
-              <strong>
-                <span class="count-number">{{ totalRatings }}
-                </span>
-              </strong>
-              <br>
-              <span class="count-title">Total Ratings 
-              </span> 
-            </div>
-            <div class="right-side-box"> 
-              <div> 
-                {{#if totalRatings > totalRatingsLastMonth }}   
-                <img class="arrow-up " src="https://stage.servefirst.co.uk/front/report_pdf/img/trending-up-regular-24.png" alt="">
-                {{else}}
-                <img class="arrow-up " src="https://stage.servefirst.co.uk/front/report_pdf/img/trending-down-regular-24.png" alt="">
-                {{/#if}}
-                <div class="last-month-data ">{{ totalRatingsLastMonth }}
-                </div>
-                <div class="sentence">{{$data['before_sentence']}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="second-box">
-          <div class="rounded-box ">
-            <div class="count left-side-box">
-              <strong>
-                <span class="count-number">@if ( $data['avg_ratings'] == 0 ) - @else {{$data['avg_ratings'] }}@endif/5
-                </span>
-              </strong>
-              <br>
-              <span class="count-title">Avg. Rating 
-              </span> 
-            </div>
-            <div class="right-side-box"> 
-              <div>
-                @if (  $data['avg_ratings']  >  $data['avg_ratings_last_month']) 
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
-                @else
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
-                @endif
-                <div class="last-month-data">{{$data['avg_ratings_last_month']}}
-                </div>
-                <div class="sentence">{{$data['before_sentence']}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="third-box ">
-          <div class="rounded-box ">
-            <div class="count left-side-box">
-              <strong>
-                <span class="count-number">{{ $data['npsScore']}}
-                </span>
-              </strong>
-              <br>
-              <span class="count-title">Net Promoter Score 
-              </span> 
-            </div>
-            <div class="right-side-box"> 
-              <div>
-                @if (  $data['npsScore']  >  $data['npsScore_last_month']) 
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
-                @else
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
-                @endif
-                <div class="last-month-data">{{$data['npsScore_last_month']}}
-                </div>
-                <div class="sentence">{{$data['before_sentence']}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="fourth-box ">
-          <div class="rounded-box ">
-            <div class="count left-side-box">
-              <strong>
-                <span class="count-number">@if ( $data['avg_ratings'] == 0 ) - @else {{ ( $data['avg_ratings'] * 100 ) / 5   }}@endif%
-                </span>
-              </strong>
-              <br>
-              <span class="count-title">Avg. Rating 
-              </span> 
-            </div>
-            <div class="right-side-box"> 
-              <div>
-                @if (  $data['avg_ratings']  >  $data['avg_ratings_last_month']) 
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-up-regular-24.png')}}" alt="">
-                @else
-                <img class="arrow-up" src="{{asset('front/report_pdf/img/trending-down-regular-24.png')}}" alt="">
-                @endif
-                <div class="last-month-data">{{($data['avg_ratings_last_month'] * 100 ) / 5 }}%
-                </div>
-                <div class="sentence">{{$data['before_sentence']}}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <br>
-        <div>
-          <h3>Overall Distribution
-          </h3>
-        </div>   
-        <div>
-          <div class="a-content">
-            <div class="review-icons">
-              <img src="{{asset('front/report_pdf/img/hate.png')}}" />
-              <br/>
-              <div class="text-center">
-                <p class="font-semibold"> {{$data['overall_ratings']['one']}}
-                </p>
-                <p>{{number_format((float)(($data['overall_ratings']['one'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
-                </p>
-              </div>
-            </div>
-            <div class="review-icons">
-              <img src="{{asset('front/report_pdf/img/disappointed.png')}}" />
-              <br/>
-              <div class="text-center">
-                <p class="font-semibold"> {{$data['overall_ratings']['two']}}
-                </p>
-                <p>{{number_format((float)(($data['overall_ratings']['two'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
-                </p>
-              </div>
-            </div>
-            <div class="review-icons">
-              <img src="{{asset('front/report_pdf/img/neutral.png')}}" />
-              <br/>
-              <div class="text-center">
-                <p class="font-semibold">{{$data['overall_ratings']['three']}}
-                </p>
-                <p>{{number_format((float)(($data['overall_ratings']['three'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
-                </p>
-              </div>
-            </div>
-            <div class="review-icons">
-              <img src="{{asset('front/report_pdf/img/like.png')}}" />
-              <br/>
-              <div class="text-center">
-                <p class="font-semibold"> {{$data['overall_ratings']['four']}}
-                </p>
-                <p>{{number_format((float)(($data['overall_ratings']['four'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
-                </p>
-              </div>
-            </div>
-            <div class="review-icons">
-              <img src="{{asset('front/report_pdf/img/love.png')}}" />
-              <br/>
-              <div class="text-center">
-                <p class="font-semibold"> {{$data['overall_ratings']['five']}}
-                </p>
-                <p>{{number_format((float)(($data['overall_ratings']['five'] * 100 )/$data['overall_ratings']['total']), 2, '.', '')}}%
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <br>
-        <br>
-        <div>
-          <h3>Attributes
-          </h3>
-        </div>
-        <div class="a-content">
-          <table class="data-table">
-            <thead>
-              <tr>
-                <th class="text-left">ATTRIBUTE
-                </th>
-                <th class="text-left">AVG.
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach( $data['attribute_graph'] as $top_attribute_graph_key => $top_attribute_graph_value )
-              @if( $top_attribute_graph_key 
-              < 5 )
-                 <tr>
-              <td class="text-left">{{$top_attribute_graph_value['name']}}
+
+      <div>
+        <table class="w-full text-left divide-y divide-gray-200">
+          <thead>
+            <tr class="divide-x divide-gray-200">
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                #
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Category
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Result
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Comments
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            <tr class="divide-x divide-gray-200">
+              <td class="px-3 py-2">
+                1
               </td>
-              <td class="text-left">{{$top_attribute_graph_value['y']}}
+              <td class="px-3 py-2">
+                Category Name
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+                Sub-Attribute skill clicked and comments were given
               </td>
             </tr>
-          @endif
-          @endforeach
           </tbody>
         </table>
-    </div>
-    </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count}}
-    </span>
-  </div>
-  </div>
-<!-- page 3-->
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; ">
-        <strong>CUSTOMER FEEDBACK SUMMARY 
-        </strong>
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;"> {{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    <div>
-      <h3>Employee Rank
-      </h3>
-    </div>
-    <div class="a-content text-centre ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank
-            </th>
-            <th>Employee
-            </th>
-            <th>Location
-            </th>
-            <th>AVG.
-            </th>
-            <th>No. Ratings
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @if( isset($data['top_employee']) && count($data['top_employee']) > 1  )
-        <tbody>
-          @php
-          $count = 0;
-          @endphp
-          @foreach(  $data['top_employee'] as $employee )
-          @php
-          $count = $count + 1 ;
-          @endphp
-          <tr>
-            <td>{{$count}}
-            </td>
-            <td>{{$employee->name}} 
-            </td>
-            <td>{{$employee->location_name}}
-            </td>
-            <td>@if($employee->rating == 0 ) - @else {{number_format((float)$employee->rating,2)}}  @endif
-            </td>
-            <td>{{$employee->count}}
-            </td>
-          </tr>
-          @endforeach
-          @else
-          <tr>
-            <td colspan="4" class="text-center">
-              No Data
-            </td>
-          </tr>
-          @endif
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count}}
-    </span>
-  </div>
-</div>
-<!-- page 5 -->
-@if ( count($data['latest_reviews'] ) > 0 || count($data['complaints'] ) > 0) 
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; ">
-        <strong>CUSTOMER FEEDBACK SUMMARY 
-        </strong>
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    @if ( count($data['latest_reviews'] ) > 0 )
-    <div>
-      <h3>Latest Reviews
-      </h3>
-    </div>
-    <div class="a-content">
-      @foreach( $data['latest_reviews'] as $location_data_key => $location_data_value  )
-      <div class="comment" style="width: 700px !important; ">
-        <div class="comment-title">
-          <span class="font-semibold review-left" style="width: 400px;">Ratings: {{$location_data_value['rating']}}/5
-            <span class="review-icon"   style="width: 400px;">
-              @for ($i = 0; $i 
-              < $location_data_value['rating'] ; $i++)
-                                     <img style="margin-right: 5px; " src="{{asset('front/report_pdf/img/review.png')}}" />
-              @endfor                 
-            </span>
-          </span>
-          <span class="message-date review-right" style="float:right;width: 20%;"> {{Carbon\Carbon::parse($location_data_value['created_at'])->format('d-m-y H:i:s')}}
-          </span>          
+      </div>
+
+      <div class="px-4 py-5 border-t border-gray-200">
+        <div class="flex items-center">
+          <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+            Did you know..
+          </p>
         </div>
-        <div class="comment-message" > 
-          <span class="" >Location: {{$location_data_value['location_name']}}
-          </span>  
+        <p class="mt-2 text-xs">
+          That by adding your teams to the ServeFirst reporting platform that they can also login to see their performance, also; you have the ability to manage your team and access additional reports to understand how you're performing overall - <a href="#" class="font-semibold text-purple-600 underline">click the link to see how</a>
+        </p>
+      </div>
+    </div>
+    <!-- END PAGE 2 -->
+
+
+    <!-- START PAGE 3 -->
+    <div class="bg-white border border-gray-200 divide-y divide-gray-200">
+      <div class="grid grid-cols-2">
+        <div>
+          <div class="px-4 py-5 text-right">
+            <img class="w-auto h-10" src="images/logo.png" alt="">
+          </div>
         </div>
-        @if ($location_data_value->assign_all == 1)
-        @if(isset($location_data_value['rating_user']) && count($location_data_value['rating_user']) > 0 )
-        @foreach ($location_data_value['rating_user'] as $rating_user)
-        @if(isset($rating_user['user']) && count($rating_user['user']) > 0  )
-        @foreach ($rating_user['user'] as $user)              
-        <div class="comment-message">
-          <span class="font-semibold review-left">Employee : {{$user->name}}
-          </span>  
-        </div>
-        @endforeach
-        @endif
-        @endforeach
-        @endif
-        @else
-        @if ($location_data_value->rating > 3) 
-        <div class="comment-message">
-          <span class="font-semibold review-left">Employee : Team
-          </span>
-        </div>
-        @endif
-        @endif
-        <div class="comment-message">
-          {{$location_data_value['feedback']}}
+
+        <div>
+          <div class="px-4 py-5 text-right">
+            <h1 class="text-lg font-bold leading-tight uppercase">
+              Monthly Data Report
+              <span class="block text-purple-600">
+                September 2021
+              </span>
+            </h1>
+
+            <p class="mt-2 text-sm leading-tight">
+              Location Name / Group Name / Individuals Name
+            </p>
+          </div>
         </div>
       </div>
-      @endforeach
+
+      <div class="px-4 py-3">
+        <p class="font-bold text-purple-600">
+          Action Plan
+        </p>
+      </div>
+
+      <div>
+        <table class="w-full text-left divide-y divide-gray-200">
+          <thead>
+            <tr class="divide-x divide-gray-200">
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Attribute Name
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Action
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Status
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            <tr class="divide-x divide-gray-200">
+              <td class="px-3 py-2">
+                1
+              </td>
+              <td class="px-3 py-2">
+                Category Name
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-4 py-5 border-t border-gray-200">
+        <div class="flex items-center">
+          <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+            Did you know..
+          </p>
+        </div>
+        <p class="mt-2 text-xs">
+          You can create bespoke action plans that filter directly into here if created within your ServeFirst account, here you can create actions, timelines and owners instantly whilst tracking performance. <a href="#" class="font-semibold text-purple-600 underline">Click here to see how</a>
+        </p>
+      </div>
     </div>
-    @endif
-    @if ( count($data['complaints'] ) > 0 )
-    <div>
-      <h3>Complaint Management 
-      </h3>
+    <!-- END PAGE 3 -->
+
+
+    <!-- START PAGE 4 -->
+    <div class="bg-white border border-gray-200 divide-y divide-gray-200">
+      <div class="grid grid-cols-2">
+        <div>
+          <div class="px-4 py-5 text-right">
+            <img class="w-auto h-10" src="images/logo.png" alt="">
+          </div>
+        </div>
+
+        <div>
+          <div class="px-4 py-5 text-right">
+            <h1 class="text-lg font-bold leading-tight uppercase">
+              Monthly Data Report
+              <span class="block text-purple-600">
+                September 2021
+              </span>
+            </h1>
+
+            <p class="mt-2 text-sm leading-tight">
+              Location Name / Group Name / Individuals Name
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <table class="w-full text-left divide-y divide-gray-200">
+          <thead>
+            <tr class="divide-x divide-gray-200">
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                #
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Name
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Cat 1
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Cat 2
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Cat 3
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Cat 4
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Score
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Responses
+              </th>
+              <th class="px-3 py-2 text-xs tracking-wide uppercase">
+                Top Performer
+              </th>
+            </tr>
+          </thead>
+
+          <tbody class="divide-y divide-gray-200">
+            <tr class="divide-x divide-gray-200">
+              <td class="px-3 py-2">
+                1
+              </td>
+              <td class="px-3 py-2">
+                Store Name
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+                90%
+              </td>
+              <td class="px-3 py-2">
+
+              </td>
+              <td class="px-3 py-2">
+                Ben Smith
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="px-4 py-5 border-t border-gray-200">
+        <div class="flex items-center">
+          <svg class="flex-shrink-0 w-5 h-5 mr-2 text-purple-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd" />
+          </svg>
+          <p class="text-sm font-semibold leading-tight text-purple-600 uppercase">
+            Did you know..
+          </p>
+        </div>
+        <p class="mt-2 text-xs">
+          That by adding your teams to the ServeFirst reporting platform that they can also login to see their performance, also; you have the ability to manage your team and access additional reports to understand how you're performing overall - <a href="#" class="font-semibold text-purple-600 underline">click the link to see how</a>
+        </p>
+      </div>
     </div>
-    <div class="a-content text-centre">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th style="width: 100px;">Date
-            </th>
-            <th style="width: 30px;">Rating
-            </th>
-            <th>Location
-            </th>
-            <th>Attributes
-            </th>
-            <th>Feedback 
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @php  $count = 0;  @endphp
-          @foreach( $data['complaints'] as $complaints_key => $complaints_value)
-          <tr>
-            <td style="width: 100px;">{{Carbon\Carbon::parse($complaints_value->created_at)->format('d M , Y')}}
-            </td>
-            <td style="width: 30px;">{{$complaints_value->rating}}
-            </td>
-            <td>{{$complaints_value->location['name']}}
-            </td>
-            <td>{{$complaints_value->attribute_name}}
-            </td>
-            <td>{{$complaints_value->feedback}}
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-    @endif
+    <!-- END PAGE 4 -->
+
   </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count}}
-    </span>
-  </div>
-</div>
-@endif
-<!-- page 4 -->
-@if ( count($data['top_location']) > 1   ||  count($data['low_location']) > 1 )
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    @if (count($data['top_location']) > 1)
-    <div>
-      <h3>Top Ranking Sites
-      </h3>
-    </div>
-    <div class="a-content text-centre ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank
-            </th>
-            <th>Location
-            </th>
-            @if( Auth::user()->type == 'super_admin' )
-            <th>Area
-            </th>
-            @endif
-            <th>AVG. 
-            </th>
-            <th>No. Ratings
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach( $data['top_location'] as $top_location_key => $top_location_value )
-          @if( $top_location_key 
-          < 10 )
-              <tr>
-          <td>{{++$top_location_key}}
-          </td>
-          <td>{{$top_location_value['name']}}
-          </td>
-          @if( Auth::user()->type == 'super_admin' )
-          <td>{{$top_location_value['area']}}
-          </td>
-          @endif
-          <td>{{number_format($top_location_value['ratings'],2)}}
-          </td>
-          <td>{{$top_location_value['count']}}
-          </td>
-        </tr>
-      @endif
-      @endforeach
-      </tbody>
-    </table>
-</div>
-@endif
-@if (count($data['low_location']) > 1  )
-<div>
-  <h3>Bottom Ranking Sites
-  </h3>
-</div>
-<div class="a-content text-centre ">
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Rank
-        </th>
-        <th>Location
-        </th>
-        @if( Auth::user()->type == 'super_admin' )
-        <th>Area
-        </th>
-        @endif
-        <th>AVG. 
-        </th>
-        <th>No. Ratings
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      @foreach( $data['low_location'] as $low_location_key => $low_location_value )
-      @if( $low_location_key  >  (count($data['low_location']) - 4)  )
-      <tr>
-        <td>{{++$low_location_key}}
-        </td>
-        <td>{{$low_location_value['name']}}
-        </td>
-        @if( Auth::user()->type == 'super_admin' )
-        <td>{{$low_location_value['area']}}
-        </td>
-        @endif
-        <td>{{number_format($low_location_value['ratings'],2)}}
-        </td>
-        <td>{{$low_location_value['count']}}
-        </td>
-      </tr>
-      @endif
-      @endforeach
-    </tbody>
-  </table>
-</div>
-@endif
-</div>
-<div class="footer-yellow">
-</div>
-<div class="page-number ">
-</div>
-@php $page_count = $page_count + 1 ; ; @endphp
-<div  class="page-number-text-div">
-  <span class="page-number-text"  >{{$page_count  }}
-  </span>
-</div>
-</div>
-@endif
-<!-- page 5 -->
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; ">
-        <strong>CUSTOMER FEEDBACK SUMMARY
-        </strong>
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    <div>
-      <h3>Daily Ratings Data
-      </h3>
-    </div>
-    <div class="a-content text-centre graph">
-      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['skills_negative_highchart'] }}"/>
-    </div>
-    <div>
-      <h3>Attribute Score
-      </h3>
-    </div>
-    <div class="a-content text-centre graph">
-      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['attribute_graph_data'] }}"/>
-    </div>
-  </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count}}
-    </span>
-  </div>
-</div>
-<!-- page 6 -->
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; "> 
-        <strong> CUSTOMER FEEDBACK SUMMARY
-        </strong>
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    <div>
-      <h3>NPS Scores
-      </h3>
-    </div>
-    <div class="a-content text-centre graph">
-      <img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['nps_data'] }}"/>
-    </div>
-    <!-- @if($data['tag_data'] != null )
-<div>
-<h3>Sector Scores</h3>
-</div>
-<div class="a-content text-centre graph">
-<img  src="https://quickchart.io/chart?width=330&height=200&c={{ $data['tag_data'] }}"/>
-</div>
-@endif -->
-  </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count}}
-    </span>
-  </div>
-</div>
-<!-- page 7 -->
-@if ( count($data['top_location_all']) > 1  )
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    @if (count($data['top_location_all']) > 1)
-    <div>
-      <h3>Location Rank
-      </h3>
-    </div>
-    <div class="a-content text-centre ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank
-            </th>
-            <th>Location
-            </th>
-            @if( Auth::user()->type == 'super_admin' )
-            <th>Area
-            </th>
-            @endif
-            <th>AVG. 
-            </th>
-            <th>No. Ratings
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach( $data['top_location_all'] as $top_location_all_key => $top_location_all_value )
-          <tr>
-            <td>{{++$top_location_all_key}}
-            </td>
-            <td>{{$top_location_all_value['name']}}
-            </td>
-            @if( Auth::user()->type == 'super_admin' )
-            <td>{{$top_location_all_value['area']}}
-            </td>
-            @endif
-            <td>{{number_format($top_location_all_value['ratings'],2)}}
-            </td>
-            <td>{{$top_location_all_value['count']}}
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-    @endif
-  </div>
-  <div class="footer-yellow">
-  </div>
-  <div class="page-number ">
-  </div>
-  @php $page_count = $page_count + 1 ; ; @endphp
-  <div  class="page-number-text-div">
-    <span class="page-number-text"  >{{$page_count  }}
-    </span>
-  </div>
-</div>
-@endif
-<!-- page 8 -->
-@if ( count($data['skills_negative']) > 1  ||  count($data['employees_with_negative_rating']) > 1 || count($data['employees_with_negative_rating']) > 1 )
-<div class="page_break">
-  <div class="header">
-    <img  class="header-logo-sf" style="" src="{{url('/adminlayout/images/pdf/sf-pdf-logo-yellow.png')}}">
-    <div class="color-white header-text">
-      <span style="font-size: 17px; "> CUSTOMER FEEDBACK SUMMARY 
-      </span>
-      <br>
-      <span style="font-size: 10px; top: 25px; position: absolute;">{{$start_processed_date }} To {{$end_processed_date }}
-      </span>
-    </div>
-  </div>
-  <div class="header-yellow">
-  </div>
-  <div class="page-padding">
-    @if (count($data['skills_negative']) > 1)
-    <div>
-      <h3>Weak Skills
-      </h3>
-    </div>
-    <div class="a-content text-centre ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank
-            </th>
-            <th>Skill
-            </th>
-            <th>Count 
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @foreach( $data['skills_negative'] as $skills_negative_key => $skills_negative_value )
-          <tr>
-            <td>{{++$skills_negative_key}}
-            </td>
-            <td>{{$skills_negative_value['name']}}
-            </td>
-            <td>{{$skills_negative_value['y']}}
-            </td>
-          </tr>
-          @endforeach
-        </tbody>
-      </table>
-    </div>
-    @endif
-    <br>
-    @if (count($data['employees_with_negative_rating']) > 1)
-    <div>
-      <h3>Weak People
-      </h3>
-    </div>
-    <div class="a-content text-centre ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Rank
-            </th>
-            <th>Employee
-            </th>
-            <th>Location
-            </th>
-            <th>AVG.
-            </th>
-            <th>No. Ratings
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @if( isset($data['employees_with_negative_rating']) && count($data['employees_with_negative_rating']) > 1  )
-        <tbody>
-          @php
-          $count = 0;
-          @endphp
-          @foreach(  $data['employees_with_negative_rating'] as $employee_negative )
-          @php
-          $count = $count + 1 ;
-          @endphp
-          <tr>
-            <td>{{$count}}
-            </td>
-            <td>{{$employee_negative->name}} 
-            </td>
-            <td>{{$employee_negative->location_name}}
-            </td>
-            <td>@if($employee_negative->rating == 0 ) - @else {{number_format((float)$employee_negative->rating,2)}}  @endif
-            </td>
-            <td>{{$employee_negative->count}}
-            </td>
-          </tr>
-          @endforeach
-          @else
-          <tr>
-            <td colspan="4" class="text-center">
-              No Data
-            </td>
-          </tr>
-          @endif
-        </tbody>
-      </table>
-    </div>
-    @endif
-    <br>
-    @if (count($data['response']) > 1)
-    <div>
-      <h3>Action Plan
-      </h3>
-    </div>
-    <div class="a-content text-left ">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>Action Plan
-            </th>
-            <th>Title
-            </th>
-            <th>Description
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          @php $count = 1 ; @endphp
-          @foreach($data['response'] as $response_key => $response_value)
-          @if( count( $response_value['incidents']) > 0 )
-          @if( $count 
-          <= 3 && $response_value['incidents']['y'] != 0)
-             <tr>
-          <td >{{$count}}. In {{$data['month']}} there were {{$response_value['incidents']['y']}} incidents of " {{$response_value['incidents']['name']}} " at {{$data['location']}}. 
-          </td>
-          @if ($response_value['action_plan'] != null)
-          <td >
-            {{$response_value['action_plan']['action_title']}} 
-          </td>
-          <td>   
-            {{$response_value['action_plan']['action_desc']}}    
-          </td>
-          @endif
-        </tr>
-      @php  $count = $count + 1  ; @endphp
-      @endif
-      @endif
-      @endforeach
-      </tr>
-    </tbody>
-  </table>
-</div>
-@endif
-</div>
-<div class="footer-yellow">
-</div>
-<div class="page-number ">
-</div>
-@php $page_count = $page_count + 1 ; ; @endphp
-<div  class="page-number-text-div">
-  <span class="page-number-text"  >{{$page_count  }}
-  </span>
-</div>
-</div>
-@endif
+
 </body>
+
 </html>

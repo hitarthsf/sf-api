@@ -1,4 +1,4 @@
-FROM node:16-alpine
+FROM 068531097348.dkr.ecr.eu-west-2.amazonaws.com/sf-node-alpine:latest
 
 #RUN apk update || : && apk --no-cache add --virtual builds-deps build-base python
 # && apk add make
