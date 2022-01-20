@@ -2,8 +2,12 @@ import UsersData from "../models/UsersData.js";
 import CompanyData from "../models/CompanyData.js";
 import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
-
+import hbs from "nodemailer-express-handlebars";
+import * as nodemailer from "nodemailer";
+import * as path from "path";
 import _ from "lodash";
+
+
 export const adminMail = async (req, res) => {
 
     
@@ -126,5 +130,50 @@ export const adminMail = async (req, res) => {
         return employee;
         })
       );
-    res.status(200).json({ data: responseEmployeeData, message: "Admin mail cron" });
+      const data = [{ rating: average[0].average, count : count , location_rank : location_rank , employee_rank : employee_rank  }];
+      // Email sending code
+    const filePath = path.join(process.cwd(), "email");
+    const logopath = path.join(process.cwd(), "email/images/logo.png");
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "hitarth.rc@@gmail.com",
+        pass: "mrdldgjyzjfofnek",
+      },
+    });
+
+    const handlebarOptions = {
+      viewEngine: {
+        partialsDir: filePath,
+        defaultLayout: false,
+      },
+      viewPath: filePath,
+    };
+
+    transporter.use("compile", hbs(handlebarOptions));
+    const mailOptions = {
+      from: "youremail@gmail.com",
+      to: "hitarth.rc@gmail.com",
+      subject: "Mail",
+      template: "cronMial",
+      context: {
+        average: average[0].average,
+        count: count[0].rating,
+        location_rank: location_rank[0].locationName,
+        employee_rank: employee_rank[0].employeeName,
+        
+      },
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+
+    // Email sending code end
+    res.status(200).json({ data: data, message: "Admin mail cron" });
 }

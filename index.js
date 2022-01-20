@@ -29,6 +29,13 @@ import dotenv from 'dotenv';
 //import passport from 'passport';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
+import cron from "node-cron";
+import hubSpotRoutes from './routes/hubSpot.js';
+
+
+var task = cron.schedule('* * * * *', () => {
+      cronController.adminMail();
+    });
 // load env
 dotenv.config();
 const app = express();
@@ -61,6 +68,8 @@ app.use('/tag',tagRoutes);
 app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
+app.use('/hubSpot',hubSpotRoutes);
+
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
 
