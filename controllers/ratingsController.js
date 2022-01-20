@@ -397,3 +397,25 @@ export const ratingChat = async (req, res) => {
 
   res.status(200).json({ comments: commets_data });
 };
+
+
+export const changeStatus = async (req, res) => {
+  const rating_id = req.body.rating_id;
+
+ 
+  await RatingData.findOneAndUpdate(
+    { _id: rating_id },
+    {
+      $set: {
+        "resolved_at": req.body.resolved_at,
+        "status": req.body.status,
+        "is_resolved": req.body.is_resolved,
+      },
+    }
+  );
+
+  var ratings = await RatingData.find({ _id: rating_id });
+
+
+  res.status(200).json({"data" : ratings ,"status" : 200 , "message" : "Status Changed " });
+}
