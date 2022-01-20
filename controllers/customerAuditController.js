@@ -4,10 +4,9 @@ import UserData from "../models/UsersData.js";
 import CompanyData from "../models/CompanyData.js";
 import CustomerAuditAnswersData from "../models/CustomerAuditAnswersData.js";
 import * as nodemailer from "nodemailer";
-import fs from "fs";
+
 import * as path from "path";
-import Email from "email-templates";
-import QRCode from "qrcode";
+
 import hbs from "nodemailer-express-handlebars";
 import _ from "lodash";
 import aws from "aws-sdk";
