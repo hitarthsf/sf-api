@@ -102,5 +102,7 @@ dist
 
 # TernJS port file
 .tern-port
-node_modules
-node_modules
+
+# Mac system file
+.DS_Store
+>>>>>>> 1e0a27217dc8a92b2afbad34dc748e2cebcf816c
