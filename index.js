@@ -33,7 +33,7 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
 import cron from "node-cron";
-import hubSpotRoutes from './routes/hubSpot.js';
+
 
 
 var task = cron.schedule('* * * * *', () => {
