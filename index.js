@@ -22,6 +22,9 @@ import tagRoutes from './routes/tag.js';
 import customerAuditRoutes from './routes/customerAudit.js';
 import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
+import hubSpotRoutes from './routes/hubSpot.js';
+import generalRoutes from './routes/general.js';
+
 import apiRoutes from './routes/api.js';
 import cronRoutes from './routes/cron.js'
 //dot env configuration
@@ -69,6 +72,7 @@ app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 app.use('/hubSpot',hubSpotRoutes);
+app.use('/general',generalRoutes);
 
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
@@ -78,7 +82,7 @@ const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.
 const PORT = process.env.PORT || 5000;
 
 app.get("/", async (req, res,next) => {
-      res.send({ success: true, message: 'Welcomw to SFratings Backend.'})
+      res.send({ success: true, message: 'Welcome to SF ratings Backend.'})
 });
 
 mongoose.connect(CONNECTION_URL, {useNewUrlParser: true, useUnifiedTopology: true})
