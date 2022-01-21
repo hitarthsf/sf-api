@@ -4,11 +4,13 @@ import {
   sendMail,
   getHubspotCompanies,
   createContact,
-  assignContactToCompany
+  assignContactToCompany,
+  sendMailDefault
 } from "../controllers/hubspotController.js";
 
 const router = express.Router();
 
+router.post("/sendMailDefault", sendMailDefault);
 router.post("/sendMail", sendMail);
 router.get("/getHubspotCompanies", getHubspotCompanies);
 router.post("/createContact", createContact);
