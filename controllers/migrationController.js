@@ -699,11 +699,11 @@ export const locationSkills = async (req, res) => {
 export const testConnection = async (req, res) => {
   console.log("Vishal");
   const connection = mysql.createConnection({
-    host: "servefirststack-rds-kch7qcnvlrum.ckhpypuhrn9e.eu-west-2.rds.amazonaws.com",
-    user: "servefirst",
+    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+    user: "admin",
     port: 3306,
-    password: "Xt444#bcdEh@D2F",
-    database: "servefirst",
+    password: "Rethinksoft",
+    database: "ratings_db",
   });
 
   return "vishal";
