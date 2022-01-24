@@ -5,8 +5,10 @@ import {
   getHubspotCompanies,
   createContact,
   assignContactToCompany,
-  sendMailDefault
-} from "../controllers/hubspotController.js";
+  sendMailDefault,
+  assignContactToCompany
+} from "../controllers/HubspotController.js";
+
 
 const router = express.Router();
 
