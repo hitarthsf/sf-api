@@ -2,12 +2,13 @@ import UsersData from "../models/UsersData.js";
 import CompanyData from "../models/CompanyData.js";
 import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
-import hbs from "nodemailer-express-handlebars";
-import * as nodemailer from "nodemailer";
-import * as path from "path";
 import _ from "lodash";
 import { sendMail } from "./HubspotController.js"
-
+import hubspot from "@hubspot/api-client";
+const API_KEY = "d2ba2004-5a85-4475-bf5d-91ac88d87090";
+const hubspotClient = new hubspot.Client({
+  apiKey: API_KEY,
+});
 export const adminMail = async (req, res) => {
 
     
@@ -157,8 +158,40 @@ export const adminMail = async (req, res) => {
           }
         }
       ]
-     var mailRespone = await sendMail(data);
-     console.log(mailRespone);
+       // mail sending code started
+    //Message Settings
+   
+   const message = {
+    from: data[0].from,
+    to: data[0].to,
+    replyTo: data[0].replyTo,
+  };
+
+  //Contact Detail
+  const contactProperties = data[0].contactProperties;
+
+  //Custum Values
+  const customProperties = data[0].customProperties;
+
+  const PublicSingleSendRequestEgg = {
+    message,
+    contactProperties,
+    customProperties,
+    emailId: data[0].emailId,
+  };try {
+    const apiResponse =
+      await hubspotClient.marketing.transactional.singleSendApi.sendEmail(
+        PublicSingleSendRequestEgg
+      );
+    res.status(201).json(apiResponse.body);
+  } catch (e) {
+    e.message === "HTTP request failed"
+      ? res.status(400).json(e.response)
+      : res.status(400).json(e);
+  }
+  // mail sending code ended
+     //var mailRespone = await sendMail(data);
+     //console.log(mailRespone);
     //res.status(200).json({ data: data, message: "Admin mail cron" });
 }
 
@@ -285,6 +318,9 @@ export const locationManagerMail = async (req, res) => {
       })
     );
     const RatingDataArray = [{ rating: average[0].average, count : count , location_rank : location_rank , employee_rank : employee_rank  }];
+
+  
+  // mail sending code started
     const data       = [ 
       {
          from : "hitarth.vstech@gmail.com" ,
@@ -311,7 +347,41 @@ export const locationManagerMail = async (req, res) => {
         }
       }
     ]
-   var mailRespone = await sendMail(data);
+   
+   //var mailRespone = await sendMail(data);
+       // mail sending code started
+    //Message Settings
+   
+   const message = {
+    from: data[0].from,
+    to: data[0].to,
+    replyTo: data[0].replyTo,
+  };
+
+  //Contact Detail
+  const contactProperties = data[0].contactProperties;
+
+  //Custum Values
+  const customProperties = data[0].customProperties;
+
+  const PublicSingleSendRequestEgg = {
+    message,
+    contactProperties,
+    customProperties,
+    emailId: data[0].emailId,
+  };try {
+    const apiResponse =
+      await hubspotClient.marketing.transactional.singleSendApi.sendEmail(
+        PublicSingleSendRequestEgg
+      );
+    res.status(201).json(apiResponse.body);
+  } catch (e) {
+    e.message === "HTTP request failed"
+      ? res.status(400).json(e.response)
+      : res.status(400).json(e);
+  }
+  // mail sending code ended
+   
    console.log(mailRespone);
   //res.status(200).json({ data: data, message: "Admin mail cron" });
 }
@@ -465,7 +535,38 @@ export const employeeMail = async (req, res) => {
         }
       }
     ]
-   var mailRespone = await sendMail(data);
-   console.log(mailRespone);
+   //var mailRespone = await sendMail(data);
+      // mail sending code started
+    //Message Settings
+   
+    const message = {
+      from: data[0].from,
+      to: data[0].to,
+      replyTo: data[0].replyTo,
+    };
+  
+    //Contact Detail
+    const contactProperties = data[0].contactProperties;
+  
+    //Custum Values
+    const customProperties = data[0].customProperties;
+  
+    const PublicSingleSendRequestEgg = {
+      message,
+      contactProperties,
+      customProperties,
+      emailId: data[0].emailId,
+    };try {
+      const apiResponse =
+        await hubspotClient.marketing.transactional.singleSendApi.sendEmail(
+          PublicSingleSendRequestEgg
+        );
+      res.status(201).json(apiResponse.body);
+    } catch (e) {
+      e.message === "HTTP request failed"
+        ? res.status(400).json(e.response)
+        : res.status(400).json(e);
+    }
+    // mail sending code ended
   //res.status(200).json({ data: data, message: "Admin mail cron" });
 }

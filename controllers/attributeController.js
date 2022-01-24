@@ -5,13 +5,69 @@ import CompanyData from "../models/CompanyData.js";
 import jwt from "jsonwebtoken";
 
 export const getAttribute = async (req, res) => {
-  //res.send('THIS GOOD');
+  
   const id = req.body.company_id;
+  const page = req.body.page ? req.body.page : 1;
+  var limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  limit = page * limit ;
+  const filterGeneralSearch = req.body.filterGeneralSearch;
   try {
-    //  const AllCompany = await CompanyData.find({"_id":id});
-    const AllCompany = await CompanyData.find({ _id: id });
-    console.log(id);
-    res.status(200).json(AllCompany);
+  
+
+    const AllCompany = await CompanyData.findOne({ _id: id });
+    var attributeArray = [] ; 
+    var count =  0  ; 
+    var filterCount  = 0 ; 
+    
+    await  AllCompany.attributes.map(async ( attribute ) => {  
+      // counts for filter
+      if (filterGeneralSearch)
+      {
+       if (attribute.name.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
+       {
+        filterCount = filterCount + 1 ; 
+       }
+      } 
+      
+      // getting the loop with conditions 
+      if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
+      {
+       if (filterGeneralSearch)
+       {
+        if (attribute.name.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
+        {
+          var attributeObj = { "_id" :attribute._id , "name" : attribute.name , "createdAt" : attribute.createdAt  }
+          attributeArray.push(attributeObj);
+        }
+       } 
+       else{
+        var attributeObj = { "_id" :attribute._id , "name" : attribute.name , "createdAt" : attribute.createdAt  }
+        attributeArray.push(attributeObj); 
+       }
+      }
+      count = count + 1 ; 
+      
+    } );   
+    if (filterGeneralSearch)
+    {
+      res.status(200).json({
+        data: attributeArray,
+        totalCount: filterCount,
+        message: "Attribute Listing !!",
+      });
+    }
+    else
+    {
+      res.status(200).json({
+        data: attributeArray,
+        totalCount: count,
+        message: "Attribute Listing !!",
+      });
+
+    }
+    
+    
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

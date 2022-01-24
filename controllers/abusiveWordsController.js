@@ -27,38 +27,53 @@ export const getAbusiveWords = async (req, res) => {
     );
     var abusiveWord = [] ; 
     var count =  0  ; 
-    
-    await  company.abusive_word.map(async ( word) => {  
+    var filterCount  = 0 ; 
+    await  company.abusive_word.map(async ( word ) => {  
+      // counts for filter
+      if (filterGeneralSearch)
+      {
+       if (word.word.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
+       {
+        filterCount = filterCount + 1 ; 
+       }
+      } 
       
-
-
+      // getting the loop with conditions 
       if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
       {
        if (filterGeneralSearch)
        {
-        if (word.word.includes('kim') )
-
+        if (word.word.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
         {
           var objWord = { "_id" :word._id , "name" : word.word , "createdAt" : word.createdAt  }
           abusiveWord.push(objWord);
         }
-        
        } 
        else{
         var objWord = { "_id" :word._id , "name" : word.word , "createdAt" : word.createdAt  }
         abusiveWord.push(objWord); 
        }
-        
       }
       count = count + 1 ; 
       
     } );   
+    if (filterGeneralSearch)
+    {
+      res.status(200).json({
+        data: abusiveWord,
+        totalCount: filterCount,
+        message: "Abusive Word Listing !!",
+      });
+    }
+    else
+    {
+      res.status(200).json({
+        data: abusiveWord,
+        totalCount: count,
+        message: "Abusive Word Listing !!",
+      });
 
-    res.status(200).json({
-            data: abusiveWord,
-            totalCount: count,
-            message: "Abusive Word Listing !!",
-          });
+    }
     
   } catch (error) {
     res.status(404).json({ message: error.message });

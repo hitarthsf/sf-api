@@ -5,8 +5,8 @@ import {
   getHubspotCompanies,
   createContact,
   assignContactToCompany,
-  sendMailDefault,
-  assignContactToCompany
+  sendMailDefault
+  
 } from "../controllers/HubspotController.js";
 
 
