@@ -699,11 +699,11 @@ export const locationSkills = async (req, res) => {
 export const testConnection = async (req, res) => {
   console.log("Vishal");
   const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
+    host: "servefirststack-rds-kch7qcnvlrum.ckhpypuhrn9e.eu-west-2.rds.amazonaws.com",
+    user: "servefirst",
     port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
+    password: "Xt444#bcdEh@D2F",
+    database: "servefirst",
   });
 
   return "vishal";
@@ -824,5 +824,20 @@ export const migrateAudits = async (req, res) => {
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
+    const allCompanyObj = await CompanyData.find();
+    var locationDataMap = new Map();
+    await allCompanyObj.map(async (singleCompany) => {
+      //Setting locatino object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, location._id);
+      });
+    });
+    console.log(locationDataMap);
+    res.status(201).json(locationDataMap);
   });
 }
