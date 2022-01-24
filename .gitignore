@@ -105,3 +105,6 @@ dist
 
 # Mac system file
 .DS_Store
+
+# Mongo local DB Data files
+/docker-images/mongo-db/db/
