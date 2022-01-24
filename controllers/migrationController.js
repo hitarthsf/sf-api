@@ -828,7 +828,6 @@ export const migrateSecondaryLocation = async (req, res) => {
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
-<<<<<<< HEAD
 
   const allMongoCompanyObj = await CompanyData.find();
 
@@ -881,7 +880,6 @@ export const migrateSecondaryLocation = async (req, res) => {
           );
         }
       );
-=======
     const allCompanyObj = await CompanyData.find();
     var locationDataMap = new Map();
     await allCompanyObj.map(async (singleCompany) => {
@@ -897,7 +895,6 @@ export const migrateSecondaryLocation = async (req, res) => {
     });
     console.log(locationDataMap);
     res.status(201).json(locationDataMap);
->>>>>>> 7d02f4de8ffae35555ed33316031cbf28be0a3d8
   });
 });
 })
