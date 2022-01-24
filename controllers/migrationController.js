@@ -808,4 +808,36 @@ export const createFromOld = async (req, res) => {
   }
 
   res.status(201).json(rating);
-} 
+}
+
+//Action : Audit Script
+//Comment : Copy all audits
+export const migrateAudits = async (req, res) => {
+  const connection = mysql.createConnection({
+    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+    user: "admin",
+    port: 3306,
+    password: "Rethinksoft",
+    database: "ratings_db",
+  });
+
+  connection.connect(async (err) => {
+    if (err) throw err;
+    console.log("You are now connected...");
+    const allCompanyObj = await CompanyData.find();
+    var locationDataMap = new Map();
+    await allCompanyObj.map(async (singleCompany) => {
+      //Setting locatino object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, location._id);
+      });
+    });
+    console.log(locationDataMap);
+    res.status(201).json(locationDataMap);
+  });
+}

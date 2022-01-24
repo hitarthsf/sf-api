@@ -19,9 +19,9 @@ services:
         # image: ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}
         networks:
             - sf-api-network
-        volumes:
-            - ./:/api
-            - /api/node_modules
+        # volumes:
+        #     - ./:/api
+        #     - /api/node_modules
         # ports:
         #     - '5000:5000'
 networks:
