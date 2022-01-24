@@ -6,7 +6,7 @@ import {
   createContact,
   deleteContact,
   assignContactToCompany
-} from "../controllers/hubspotController.js";
+} from "../controllers/HubspotController.js";
 
 const router = express.Router();
 
