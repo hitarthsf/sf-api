@@ -1,7 +1,7 @@
 import express from "express";
 import { MesssageProvider, Messages } from "../core/index.js";
 import AuthUtils from "../utils/AuthUtils.js";
-import UserController from "../controllers/userController.js";
+import UserController from "../controllers/UserController.js";
 
 const { Router } = express;
 

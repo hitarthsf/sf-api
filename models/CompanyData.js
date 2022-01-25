@@ -71,11 +71,9 @@ const company = mongoose.Schema({
       question_id: Array,
       location_skills: Array,
       multi_location_id: Array,
-      app_background_image:String,
-      secondary_location : Array,
+      app_background_image:String
     },
   ],
-  
   user_location: [{ user_id: Number, location_id: String }],
   ratings: [
     {

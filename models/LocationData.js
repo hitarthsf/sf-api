@@ -36,7 +36,6 @@ const location = mongoose.Schema({
   showLocationManager: String,
   allowFrequestRatings: String,
   customerAudit: String,
-  secondary_location : Array,
 });
 
 const LocationData = mongoose.model("location", location);

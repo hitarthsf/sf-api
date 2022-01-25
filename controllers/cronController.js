@@ -2,12 +2,8 @@ import UsersData from "../models/UsersData.js";
 import CompanyData from "../models/CompanyData.js";
 import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
-import hbs from "nodemailer-express-handlebars";
-import * as nodemailer from "nodemailer";
-import * as path from "path";
+
 import _ from "lodash";
-
-
 export const adminMail = async (req, res) => {
 
     
@@ -130,8 +126,5 @@ export const adminMail = async (req, res) => {
         return employee;
         })
       );
-      const data = [{ rating: average[0].average, count : count , location_rank : location_rank , employee_rank : employee_rank  }];
-      
-    
-    res.status(200).json({ data: data, message: "Admin mail cron" });
+    res.status(200).json({ data: responseEmployeeData, message: "Admin mail cron" });
 }

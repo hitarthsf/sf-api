@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { MesssageProvider, Messages } from "../core/index.js";
 import UsersData from "../models/UsersData.js";
-import UserController from "./userController.js";
+import UserController from "./UserController.js";
 import UserLoginData from "../models/UserLoginData.js";
 
 const User = UsersData;

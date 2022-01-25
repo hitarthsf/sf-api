@@ -78,8 +78,9 @@ app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
 
 
-const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration_live?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
+const CONNECTION_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
+console.log(CONNECTION_URL);
 
 app.get("/", async (req, res,next) => {
       res.send({ success: true, message: 'Welcome to SF ratings Backend.'})

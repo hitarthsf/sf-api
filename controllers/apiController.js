@@ -17,13 +17,13 @@ export const locationLogin = async (req, res) => {
             {
                 if (req.body.password)
                 {
-                    if (req.body.password == location.appPassword)
+                    if (req.body.password == location.password)
                     {
                         res.status(200).json({"status" : 200 , "message" : "Location","data" : location ,"allow_cppq" : 1, "url" :"" , "hexnode_flag" : 0});
                     }
                     else
                     {
-                        res.status(400).json({ message: "Invalid Password"});
+                        res.status(404).json({ message: "Invalid Password"});
                     }   
                 }
                 else
@@ -243,18 +243,6 @@ export const getAllData = async (req, res) => {
         if(location._id == req.body.main_location) 
         {   
             locationData = location;
-
-            // Get secondary Location 
-            // another loop to get the names of secondary location
-            var secondaryLocation = [] ; 
-            company.location.map( async ( locationData ) => { 
-                if (location.secondary_location.includes(locationData._id) )
-                {
-                    var secondaryObj = { "id" : locationData._id , "name" : locationData.name}
-                    secondaryLocation.push(secondaryObj);
-                }
-            }) 
-
              // Getting Skill Loop
              company.attributes.forEach((attribute) => {
                 // Check Condition for Positive Skills 
@@ -333,8 +321,7 @@ export const getAllData = async (req, res) => {
         "url" : "",
         "screen_saveer" : screenSaverData,
         "skill_flag" : 0 ,
-        "qr_code" : "",
-        "secondary_location" : secondaryLocation
+        "qr_code" : ""
 
     }
 
@@ -355,30 +342,3 @@ export const curlFunction = async (req, res) => {
   
 }
 
-//Action : migrateSecondaryLocation
-//Comment : Get Secondary Location
-
-export const migrateSecondaryLocation = async (req, res) => {
-
-    const companyData   = await CompanyData.find({});
-    // Company loop 
-    companyData.map(async (company) => {  company.location.map( async ( location ) => { 
-            var secondaryLocation = [] ;
-            if (location._id == req.body.location_id)
-            {
-                // another loop to get the names of secondary location
-                company.location.map( async ( locationData ) => { 
-                        if (location.secondary_location.includes(locationData._id) )
-                        {
-                            var secondaryObj = { "id" : locationData._id , "name" : locationData.name}
-                            secondaryLocation.push(secondaryObj);
-                        }
-                    }) 
-               
-                
-                res.status(200).json({"status" : 200 , "message" : "Secondary Locations"  ,"data" : secondaryLocation});
-            }
-
-        }) 
-    }); 
-}

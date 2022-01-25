@@ -10,9 +10,6 @@ import {
   locationSkills,
   testConnection,
   createFromOld,
-  migrateSecondaryLocation,
-  migrateAudits
-
 } from "../controllers/migrationController.js";
 
 const router = express.Router();
@@ -34,10 +31,5 @@ router.get("/locationSkills", locationSkills);
 router.get("/testConnection", testConnection);
 
 router.post("/createFromOld", createFromOld);
-
-router.post("/migrateSecondaryLocation", migrateSecondaryLocation);
-
-router.get("/migrateAudits", migrateAudits);
-
 
 export default router;

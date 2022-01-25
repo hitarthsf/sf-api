@@ -12,7 +12,7 @@ const rating = mongoose.Schema({
     customer_name: String,
     is_standout: Number,
     is_negative : Number,
-    is_resolved : String,
+    is_resolved : Number,
     is_active : Number,
     user_attented_id :Number,
     resloved_time : String,
@@ -27,8 +27,6 @@ const rating = mongoose.Schema({
     old_location_id: String,
     old_rating_id: String,
     other_feedback: String,
-    status: String,
-    resolved_at: String,
     rating_comments:Array,
     createdAt: {
         type : Date,
