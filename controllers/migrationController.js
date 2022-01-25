@@ -13,11 +13,11 @@ import aws from "aws-sdk";
 //Migration Script For Company, Locations, Company Attributes, Company Skills
 export const migrateCompanies = async (req, res) => {
   const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
+    host: process.env.MYSQL_HOST,
+    user: process.env.MYSQL_USER,
     port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
+    password: process.env.MYSQL_PASS,
+    database: process.env.MYSQL_DB,
   });
   connection.connect(async (err) => {
     if (err) throw err;
