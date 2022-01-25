@@ -784,35 +784,37 @@ export const migrateTags = async (req, res) => {
       locationDataMap.set(location.old_location_id, location._id);
     });
   });
-  
+
   //Get all Tags from mysql
-  await connection.query(`SELECT * FROM tag`, async (err, rows) => {    
-    rows.map(async (row) => {                  
+  await connection.query(`SELECT * FROM tag`, async (err, rows) => {
+    rows.map(async (row) => {
       //Get Company for The Tag
-      await connection.query(`SELECT * FROM tag_region where tag_id = ${row.id}`, async (err, tagArearows) => {        
-        tagArearows.map(async (tagArearow) => {
-          var companyId = companyDataMap.get(
-            tagArearow.location_area_id
-          );
-          
-          //Get all Locations
-          await connection.query(`SELECT * FROM tag_location where tag_id = ${row.id}`, async (err, tagArearows) => {
+      await connection.query(
+        `SELECT * FROM tag_region where tag_id = ${row.id}`,
+        async (err, tagArearows) => {
+          tagArearows.map(async (tagArearow) => {
+            var companyId = companyDataMap.get(tagArearow.location_area_id);
 
-          })
+            //Get all Locations
+            await connection.query(
+              `SELECT * FROM tag_location where tag_id = ${row.id}`,
+              async (err, tagArearows) => {}
+            );
 
-          const tagObj = new TagData({
-            old_id: row.id,
-            name: row.name,
-            company_id : companyId,
-            location_id: [],
-            createdAt: new Date(row.created_at),
-            updatedAt: new Date(row.updated_at)
+            const tagObj = new TagData({
+              old_id: row.id,
+              name: row.name,
+              company_id: companyId,
+              location_id: [],
+              createdAt: new Date(row.created_at),
+              updatedAt: new Date(row.updated_at),
+            });
+            console.log(tagObj);
           });
-          console.log(tagObj);
-        })
-      });
-      
-      //await tagObj.save();      
+        }
+      );
+
+      //await tagObj.save();
     });
     res.status(209).json(`total ${rows.length} user login data are imported.`);
   });
@@ -844,6 +846,85 @@ export const migrateAudits = async (req, res) => {
 
     res.status(201).json(allCompanyObj);
   });
+};
+
+export const migrateSecondaryLocation = async (req, res) => {
+  connection.connect(async (err) => {
+    if (err) throw err;
+    console.log("You are now connected...");
+
+    const allMongoCompanyObj = await CompanyData.find();
+
+    var companyMap = new Map();
+    // location object
+    var locationDataMap = new Map();
+
+    // loop start for company
+    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
+      //Setting locatino object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, locationObject);
+      });
+    });
+
+    // loop ends for company
+
+    // loop for getting data and checking data starts
+    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
+      singleCompany.location.map(async (locationData) => {
+        await connection.query(
+          `SELECT * FROM secondary_locations WHERE location_id=${locationData.old_location_id}`,
+          async (err, rows) => {
+            var secondaryLocation = [];
+            rows.map(async (rowData) => {
+              if (
+                locationDataMap.get(rowData.secondary_location_id.toString())
+              ) {
+                secondaryLocation.push(
+                  locationDataMap
+                    .get(rowData.secondary_location_id.toString())
+                    .nodeId.toString()
+                );
+              }
+            });
+
+            console.log(secondaryLocation);
+            var companyUpdate = await CompanyData.updateOne(
+              { _id: singleCompany._id, "location._id": locationData._id },
+              {
+                $set: {
+                  "location.$.secondary_location": secondaryLocation,
+                },
+              }
+            );
+          }
+        );
+        const allCompanyObj = await CompanyData.find();
+        var locationDataMap = new Map();
+        await allCompanyObj.map(async (singleCompany) => {
+          //Setting locatino object
+          singleCompany.location.map(async (location) => {
+            var locationObject = {
+              nodeId: location._id,
+              companyNodeId: singleCompany._id,
+              old_company_id: singleCompany.old_company_id,
+            };
+            locationDataMap.set(location.old_location_id, location._id);
+          });
+        });
+        console.log(locationDataMap);
+        res.status(201).json(locationDataMap);
+      });
+    });
+  });
+  // loop for getting data and checking data ends
+
+  res.status(200).json({ message: "imported" });
 };
 
 //Action : Test Connection

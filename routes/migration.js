@@ -11,7 +11,6 @@ import {
   testConnection,
   createFromOld,
   migrateTags,
-  migrateAudits,
   migrateSecondaryLocation,
   migrateAudits
 
