@@ -8,7 +8,7 @@ import {
 
 const router = express.Router();
 
-router.get("/fetchPrivacyLocation", getPrivacyLocation);
+router.post("/fetchPrivacyLocation", getPrivacyLocation);
 router.post("/createPrivacyLocation", createPrivacyLocation);
 router.post("/deletePrivacyLocation", deletePrivacyLocation);
 

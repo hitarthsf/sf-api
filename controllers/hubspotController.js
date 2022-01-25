@@ -4,8 +4,54 @@ const hubspotClient = new hubspot.Client({
   apiKey: API_KEY,
 });
 
+
+//General Function With All Parameters From Another Function Hubspot Function to Send Mail to Users
+export function  sendMail  (data)   {
+  
+  //Message Settings
+  const message = {
+    from: data[0].from,
+    to: data[0].to,
+    replyTo: data[0].replyTo,
+  };
+
+  //Contact Detail
+  const contactProperties = data[0].contactProperties;
+
+  //Custum Values
+  const customProperties = data[0].customProperties;
+
+  const PublicSingleSendRequestEgg = {
+    message,
+    contactProperties,
+    customProperties,
+    emailId: data[0].emailId,
+  };
+  console.log(message);
+  // try {
+    
+    const apiCall = async (PublicSingleSendRequestEgg) =>{
+      const apiResponse =
+      await hubspotClient.marketing.transactional.singleSendApi.sendEmail(
+        PublicSingleSendRequestEgg
+      );
+      console.log("test in");  
+      console.log(apiResponse.body);
+      
+      }
+      console.log("test out");  
+    //res.status(201).json(apiResponse.body);
+  // } catch (e) {
+  //   return e ; 
+  
+    //   ? res.status(400).json(e.response)
+    //   : res.status(400).json(e);
+  // }
+};
+
+// we can remove this function if not needed 
 //Hubspot Function to Send Mail to Users
-export const sendMail = async (req, res) => {
+export const sendMailDefault = async (req, res) => {
   //Message Settings
   const message = {
     from: req.body.from,
