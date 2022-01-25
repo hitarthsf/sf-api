@@ -3,7 +3,7 @@ import CompanyData from "../models/CompanyData.js";
 import RatingData from "../models/RatingData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import _ from "lodash";
-import { sendMail } from "./HubspotController.js"
+//import { sendMail } from "./hubspotController.js"
 import hubspot from "@hubspot/api-client";
 const API_KEY = "d2ba2004-5a85-4475-bf5d-91ac88d87090";
 const hubspotClient = new hubspot.Client({
