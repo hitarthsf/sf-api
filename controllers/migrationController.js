@@ -880,6 +880,21 @@ export const migrateSecondaryLocation = async (req, res) => {
           );
         }
       );
+    const allCompanyObj = await CompanyData.find();
+    var locationDataMap = new Map();
+    await allCompanyObj.map(async (singleCompany) => {
+      //Setting locatino object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, location._id);
+      });
+    });
+    console.log(locationDataMap);
+    res.status(201).json(locationDataMap);
   });
 });
 })
