@@ -92,7 +92,7 @@ export const employeeList = async (req, res) => {
 
     
     // get all user 
-    var users = await UsersData.find( { _id: { $ne: req.body.auth_user_id.toString() } , location_id : req.body.location_id   , type : "employee" }   );
+    var users = await UsersData.find( { _id: { $ne: req.body.user_id.toString() } , location_id : req.body.location_id   , type : "employee" }   );
     
     // looping to get formated data 
     res
