@@ -10,7 +10,7 @@ import {
 
 const router = express.Router();
 
-router.get("/fetchActionPlan", getActionPlan);
+router.post("/fetchActionPlan", getActionPlan);
 router.post("/addActionPlan", addActionPlan);
 router.post("/deleteActionPlan", deleteActionPlan);
 router.post("/updateActionPlan", updateActionPlan);

@@ -111,26 +111,62 @@ export const getCompanyGet = async (req, res) => {
 };
 
 export const getLocationListPost = async (req, res) => {
-  //res.send('THIS GOOD');
-  const id = req.body._id;
+  
+  const id = req.body.company_id;
+  const page = req.body.page ? req.body.page : 1;
+  var limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  limit = page * limit ;
+  const filterGeneralSearch = req.body.filterGeneralSearch;
   try {
     const AllCompany = await CompanyData.findOne({ _id: id });
-    // var responseData =  AllCompany.map((comapny) => { 
-    //   company.location.map( (location) => {
-    //     location.comapny_id = comapny._id;
-        
-    //   })
+    
+    var locationArray = [] ; 
+    var count =  0  ; 
+    var filterCount  = 0 ; 
+    await  AllCompany.location.map(async ( location ) => {  
+      // counts for filter
+      if (filterGeneralSearch)
+      {
+       if (location.name.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
+       {
+        filterCount = filterCount + 1 ; 
+       }
+      } 
+      // getting the loop with conditions 
+      if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
+      {
+       if (filterGeneralSearch)
+       {
+        if (location.name.toLowerCase().includes(filterGeneralSearch.toLowerCase()) )
+        {
+          locationArray.push(location);
+        }
+       } 
+       else{
+          locationArray.push(location);
+       }
+      }
+      count = count + 1 ;     
+    } );   
+    if (filterGeneralSearch)
+    {
+      res.status(200).json({
+        data: locationArray,
+        totalCount: filterCount,
+        message: "Location Listing !!",
+      });
+    }
+    else
+    {
+      res.status(200).json({
+        data: locationArray,
+        totalCount: count,
+        message: "Location Listing !!",
+      });
 
-    // })
-    const companyList = [];
-    // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
-    //     fetchedLocations.location.map((location) => {
-    //         companyList.push({
-    //             _id: location._id,
-    //             name: location.name,
-    //         });
-    //     });
-    // }
+    }
+    
 
     res.status(200).json(AllCompany);
   } catch (error) {
@@ -143,16 +179,6 @@ export const getLocation = async (req, res) => {
   const id = req.body._id;
   try {
     const AllCompany = await CompanyData.findOne({ _id: id }, { location: 1 });
-    // const companyList = [];
-    // if (fetchedLocations.location !== undefined && fetchedLocations.location) {
-    //     fetchedLocations.location.map((location) => {
-    //         companyList.push({
-    //             _id: location._id,
-    //             name: location.name,
-    //         });
-    //     });
-    // }
-    res.status(200).json(companyList);
     res.status(200).json(AllCompany);
   } catch (error) {
     res.status(404).json({ message: error.message });
