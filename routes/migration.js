@@ -10,7 +10,8 @@ import {
   locationSkills,
   testConnection,
   createFromOld,
-  migrateAudits
+  migrateTags,
+  migrateAudits,
 } from "../controllers/migrationController.js";
 
 const router = express.Router();
@@ -32,6 +33,8 @@ router.get("/locationSkills", locationSkills);
 router.get("/testConnection", testConnection);
 
 router.post("/createFromOld", createFromOld);
+
+router.get("/migrateTags", migrateTags);
 
 router.get("/migrateAudits", migrateAudits);
 

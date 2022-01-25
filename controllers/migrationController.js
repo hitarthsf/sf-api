@@ -1,4 +1,3 @@
-
 import UserLoginData from "../models/UserLoginData.js";
 import _ from "lodash";
 import mysql from "mysql";
@@ -7,23 +6,26 @@ import RatingData from "../models/RatingData.js";
 import RatingSkillData from "../models/RatingSkillData.js";
 import RatingEmployeeData from "../models/RatingEmployeeData.js";
 import UsersData from "../models/UsersData.js";
+import TagData from "../models/TagData.js";
 import QRCode from "qrcode";
 import aws from "aws-sdk";
 
-//Migration Script For Company, Locations, Company Attributes, Company Skills
+const connection = mysql.createConnection({
+  host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+  user: "admin",
+  port: 3306,
+  password: "Rethinksoft",
+  database: "ratings_db",
+});
+
+//Method : Company Script
+//Comment : Migration Script For Company, Locations, Company Attributes, Company Skills
 export const migrateCompanies = async (req, res) => {
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
 
-    // Fetch Company main object
+    // Get all Company details from MYSQL
     await connection.query("SELECT * FROM location_area", async (err, rows) => {
       if (err) throw err;
       if (rows.length) {
@@ -31,21 +33,23 @@ export const migrateCompanies = async (req, res) => {
           rows.map(async (company) => {
             const companyObject = company;
             companyObject["old_company_id"] = company.id;
-            // Fetch company locations
+            // Fetch Company's All Locations
             await connection.query(
               `SELECT *, location.id as old_location_id FROM location WHERE location_area_id = ${company.id}`,
               async (err, rows) => {
                 companyObject["location"] = rows;
               }
             );
-               //Get Abusive Words
+
+            //Get Abusive Words
             await connection.query(
               `SELECT * FROM abusive_words`,
-              async (err, row) => {                    
-                companyObject["abusive_word"] = row;                    
+              async (err, row) => {
+                companyObject["abusive_word"] = row;
               }
             );
-            // Fetch company attributes & skills
+
+            // Fetch Company's Attributes & Skills
             await connection.query(
               `SELECT 
                             attribute.id as attributeId, 
@@ -100,7 +104,7 @@ export const migrateCompanies = async (req, res) => {
                   }
                 });
                 companyObject["attributes"] = attributes;
-                console.log('Vishal');
+                console.log("Vishal");
                 const newCompany = new CompanyData({
                   ...companyObject,
                   createdAt: new Date().toISOString(),
@@ -122,13 +126,9 @@ export const migrateCompanies = async (req, res) => {
   });
 };
 
+//Method : Users Script
+//Comment : Migrate all roles user Employee, Admin, Manager and Super Admin
 export const migrateUsers = async (req, res) => {
-  const connection = mysql.createConnection({
-    host: "192.168.64.2",
-    user: "hitarth29",
-    password: "Pfbvq3Ed4l/HMycS",
-    database: "ratings_db",
-  });
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
@@ -138,11 +138,9 @@ export const migrateUsers = async (req, res) => {
       mongoCompanyList.map(async (mongoCompany) => {
         const currentCompanyId = mongoCompany.old_company_id;
         await connection.query(
-          `SELECT *  , GROUP_CONCAT(DISTINCT user_location.location_id) as location_ids , user_location.user_id as user_id FROM users
-                                        LEFT JOIN user_location on users.id = user_location.user_id
-                                        WHERE user_location.location_area_id = ${currentCompanyId} GROUP BY user_location.user_id`,
+          `SELECT *, GROUP_CONCAT(DISTINCT user_location.location_id) as location_ids , user_location.user_id as user_id FROM users LEFT JOIN user_location on users.id = user_location.user_id WHERE user_location.location_area_id = ${currentCompanyId} GROUP BY user_location.user_id`,
           async (err, rows) => {
-            // adding if condition to check that are there any users
+            //Add User if any exists
             if (rows.length > 0) {
               rows.map(async (rowUser) => {
                 console.log("user");
@@ -152,7 +150,7 @@ export const migrateUsers = async (req, res) => {
                 userData["company_id"] = mongoCompany._id;
                 if (rowUser.location_ids) {
                   var userLocationIDs = [];
-                  //console.log('mongoCompany.location', mongoCompany.location, rowUser.location_id);
+
                   const fetchedLocation = _.find(
                     mongoCompany.location,
                     (location) => {
@@ -165,6 +163,7 @@ export const migrateUsers = async (req, res) => {
                       }
                     }
                   );
+
                   userData["location_id"] =
                     userLocationIDs.length > 0 ? userLocationIDs : "";
                   userData["old_user_id"] = rowUser.user_id;
@@ -190,37 +189,15 @@ export const migrateUsers = async (req, res) => {
   });
 };
 
+//Method : Migrate Ratings
+//Comment : Migrate all Ratings
 export const migrateRatings = async (req, res) => {
   var page = req.query["page"];
   var skip = (page - 1) * 1000;
 
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
-  // const connection = mysql.createConnection({
-  //     host: '192.168.64.2',
-  //     user: 'hitarth29',
-  //     password: 'Pfbvq3Ed4l/HMycS',
-  //     database: 'ratings_db'
-  // });
-
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
-
-    // await connection.query(`SELECT
-    //         ratings.*,
-    //         rating_customer.name as customer_name,
-    //         rating_customer.email as customer_email,
-    //         rating_customer.phone as customer_phone
-    //         from ratings
-    //         left join rating_customer on ratings.id = rating_customer.ratings_id
-    //         LIMIT 1  `, async (err, ratingRows) => { console.log(ratingRows);} );
-
     const allMongoCompanyObj = await CompanyData.find();
 
     var companyMap = new Map();
@@ -245,7 +222,7 @@ export const migrateRatings = async (req, res) => {
         }
       });
 
-      //Setting locatino object
+      //Setting Location Object
       singleCompany.location.map(async (location) => {
         var locationObject = {
           nodeId: location._id,
@@ -270,80 +247,93 @@ export const migrateRatings = async (req, res) => {
       userMap.set(user.old_user_id, user._id);
     });
 
-    await connection.query(`SELECT
+    await connection.query(
+      `SELECT
             ratings.*,
             rating_customer.name as customer_name,
             rating_customer.email as customer_email,
             rating_customer.phone as customer_phone
             from ratings
             left join rating_customer on ratings.id = rating_customer.ratings_id
-            LIMIT 1000 OFFSET ${skip} `, async (err, ratingRows) => {
-
+            LIMIT 1000 OFFSET ${skip} `,
+      async (err, ratingRows) => {
         ratingRows.map(async (ratingRow) => {
+          const ratingObj = ratingRow;
+          ratingObj["old_location_id"] = ratingRow.location_id;
+          ratingObj["company_id"] = locationDataMap.get(
+            ratingRow.location_id.toString()
+          ).companyNodeId;
+          ratingObj["location_id"] = locationDataMap.get(
+            ratingRow.location_id.toString()
+          ).nodeId;
+          ratingObj["old_rating_id"] = ratingRow.id;
 
-            const ratingObj = ratingRow;
-            ratingObj['old_location_id'] = ratingRow.location_id;
-            ratingObj['company_id'] = locationDataMap.get(ratingRow.location_id.toString()).companyNodeId;
-            ratingObj['location_id'] = locationDataMap.get(ratingRow.location_id.toString()).nodeId;
-            ratingObj['old_rating_id'] = ratingRow.id;
-            
+          const ratingMongoObj = new RatingData({
+            ...ratingObj,
+            createdAt: ratingObj["created_at"],
+          });
 
-            const ratingMongoObj = new RatingData({...ratingObj, createdAt: ratingObj['created_at']});
-            //await ratingMongoObj.save();
-            console.log(ratingMongoObj);
-
-            // skill code
-             await connection.query(`SELECT ratings_skill.*, skills.name, skills.type
+          // skill code
+          await connection.query(
+            `SELECT ratings_skill.*, skills.name, skills.type
                 from ratings_skill
                 left join skills on skills.id = ratings_skill.skills_id
-                WHERE ratings_id = ${ratingObj.id}`, async (err, ratingSkills) => {
-                ratingObj['skills'] = ratingSkills;
+                WHERE ratings_id = ${ratingObj.id}`,
+            async (err, ratingSkills) => {
+              ratingObj["skills"] = ratingSkills;
 
-                ratingSkills.map(async (mySqlRatingSkill) => {
-                        if (mySqlRatingSkill.name) {
-                            let skillId = null;
+              ratingSkills.map(async (mySqlRatingSkill) => {
+                if (mySqlRatingSkill.name) {
+                  let skillId = null;
 
-                            skillId = companyMap.get(locationDataMap.get(ratingObj.old_location_id.toString()).old_company_id).skills.get(mySqlRatingSkill.name);
+                  skillId = companyMap
+                    .get(
+                      locationDataMap.get(ratingObj.old_location_id.toString())
+                        .old_company_id
+                    )
+                    .skills.get(mySqlRatingSkill.name);
 
-                            if (skillId) {
-                                const ratingSkillMongoObj = new RatingSkillData({
-                                    rating_id: ratingMongoObj.id,
-                                    skill_id: skillId,
-                                    rating: ratingRow.rating,
-                                    location_id: ratingObj.location_id,
-                                    company_id: ratingObj.company_id,
-                                    createdAt: ratingMongoObj.createdAt
-                                });
-                                //await ratingSkillMongoObj.save();
-                                console.log(ratingSkillMongoObj)
-                            }
-                        }
-                });
-            });
+                  if (skillId) {
+                    const ratingSkillMongoObj = new RatingSkillData({
+                      rating_id: ratingMongoObj.id,
+                      skill_id: skillId,
+                      rating: ratingRow.rating,
+                      location_id: ratingObj.location_id,
+                      company_id: ratingObj.company_id,
+                      createdAt: ratingMongoObj.createdAt,
+                    });
+                  }
+                }
+              });
+            }
+          );
 
-            await connection.query(`SELECT rating_user.*
+          await connection.query(
+            `SELECT rating_user.*
                 from rating_user
-                WHERE ratings_id = ${ratingObj.id}`, async (err, ratingEmployees) => {
-                ratingObj['employees'] = ratingEmployees;
+                WHERE ratings_id = ${ratingObj.id}`,
+            async (err, ratingEmployees) => {
+              ratingObj["employees"] = ratingEmployees;
 
-                ratingEmployees.map(async (mySqlRatingEmployee) => {
-                    if (mySqlRatingEmployee.user_id) {
-
-                            const ratingEmployeeMongoObj = new RatingEmployeeData({
-                                rating_id: ratingMongoObj.id,
-                                employee_id: userMap.get(mySqlRatingEmployee.user_id.toString()),
-                                rating: ratingRow.rating,
-                                location_id: ratingObj.location_id,
-                                company_id: ratingObj.company_id,
-                                createdAt: ratingMongoObj.createdAt
-                            });
-                            //await ratingEmployeeMongoObj.save();
-                            console.log(ratingEmployeeMongoObj)
-                    }
-                });
-            });
+              ratingEmployees.map(async (mySqlRatingEmployee) => {
+                if (mySqlRatingEmployee.user_id) {
+                  const ratingEmployeeMongoObj = new RatingEmployeeData({
+                    rating_id: ratingMongoObj.id,
+                    employee_id: userMap.get(
+                      mySqlRatingEmployee.user_id.toString()
+                    ),
+                    rating: ratingRow.rating,
+                    location_id: ratingObj.location_id,
+                    company_id: ratingObj.company_id,
+                    createdAt: ratingMongoObj.createdAt,
+                  });
+                }
+              });
+            }
+          );
         });
-    });
+      }
+    );
   });
   console.log("-----------------  DONE  -------------------");
   res.status(209).json(`total numbers of ratings  are imported.`);
@@ -353,20 +343,6 @@ export const migrateRatings = async (req, res) => {
 export const migrateRatingsLoop = async (req, res) => {
   var page = req.query["page"] ? req.query["page"] : 1;
   var skip = (page - 1) * 2500;
-
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
-  // const connection = mysql.createConnection({
-  //     host: '192.168.64.2',
-  //     user: 'hitarth29',
-  //     password: 'Pfbvq3Ed4l/HMycS',
-  //     database: 'ratings_db'
-  // });
 
   connection.connect(async (err) => {
     if (err) throw err;
@@ -462,8 +438,6 @@ export const migrateRatingsLoop = async (req, res) => {
               ...ratingObj,
               createdAt: ratingObj["created_at"],
             });
-            //await ratingMongoObj.save();
-            console.log(ratingMongoObj);
 
             // skill code
             await connection.query(
@@ -495,8 +469,6 @@ export const migrateRatingsLoop = async (req, res) => {
                         company_id: ratingObj.company_id,
                         createdAt: ratingMongoObj.createdAt,
                       });
-                      //await ratingSkillMongoObj.save();
-                      console.log(ratingSkillMongoObj);
                     }
                   }
                 });
@@ -522,8 +494,6 @@ export const migrateRatingsLoop = async (req, res) => {
                       company_id: ratingObj.company_id,
                       createdAt: ratingMongoObj.createdAt,
                     });
-                    //await ratingEmployeeMongoObj.save();
-                    console.log(ratingEmployeeMongoObj);
                   }
                 });
               }
@@ -537,20 +507,9 @@ export const migrateRatingsLoop = async (req, res) => {
   res.status(209).json(`total numbers of ratings  are imported.`);
 };
 
+//Method : Migrate User Login
+//Comment : Migrate all login logs for users
 export const migrateLogins = async (req, res) => {
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
-  // const connection = mysql.createConnection({
-  //     host: '192.168.64.2',
-  //     user: 'hitarth29',
-  //     password: 'Pfbvq3Ed4l/HMycS',
-  //     database: 'ratings_db'
-  // });
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
@@ -576,6 +535,8 @@ export const migrateLogins = async (req, res) => {
   });
 };
 
+//Method : Generate QR Code
+//Comment : Generate QR Code For All Locations
 export const generateLocationQRcode = async (req, res) => {
   const mongoCompanyList = await CompanyData.find();
 
@@ -597,11 +558,14 @@ export const generateLocationQRcode = async (req, res) => {
           base64String.replace(/^data:image\/\w+;base64,/, ""),
           "base64"
         );
+
+        //Set AWS creds
         aws.config.update({
-          accessKeyId: "AKIATVUCPHF35FWG7ZNI",
-          secretAccessKey: "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",
-          region: "us-east-1",
+          accessKeyId: process.env.AWS_S3_API_KEY,
+          secretAccessKey: process.env.AWS_S3_ACCESS_KEY,
+          region: process.env.AWS_S3_ACCESS_REGION,
         });
+
         const s3 = new aws.S3();
         var params = {
           ACL: "public-read",
@@ -616,29 +580,20 @@ export const generateLocationQRcode = async (req, res) => {
               "Error occured while trying to upload to S3 bucket",
               err
             );
-            res
-              .status(409)
-              .json({
-                message: "Error occured while trying to upload to S3 bucket",
-              });
+            res.status(409).json({
+              message: "Error occured while trying to upload to S3 bucket",
+            });
           }
         });
-
         // Qr code generation
       });
     })
   );
 };
 
+//Method : Location Skills Table
+//Comment : Get all locations skills
 export const locationSkills = async (req, res) => {
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
-
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
@@ -696,34 +651,26 @@ export const locationSkills = async (req, res) => {
   });
 };
 
-export const testConnection = async (req, res) => {
-  console.log("Vishal");
-  const connection = mysql.createConnection({
-    host: "servefirststack-rds-kch7qcnvlrum.ckhpypuhrn9e.eu-west-2.rds.amazonaws.com",
-    user: "servefirst",
-    port: 3306,
-    password: "Xt444#bcdEh@D2F",
-    database: "servefirst",
-  });
-
-  return "vishal";
-};
-
-
-
 //Action : createFromOld
-//Comment : Create Rating From Old Ids 
+//Comment : Create Rating From Old Ids
 export const createFromOld = async (req, res) => {
   // getting the data from request
   const data = req.body;
   const skills = data.skills ? data.skills.split(",") : [];
   const employees = data.employees ? data.employees.split(",") : [];
   var is_assign = data.employees ? "1" : "0";
-  // get location_id and company_id from mongodb 
-  var companyData   = await CompanyData.find();
-  var mongoLocation = "" ; 
-  var mongoCompany = "" ; 
-  await companyData.map((comapny) => { comapny.location.map((locationData) =>  { if (locationData.old_location_id == data.location_id) {   mongoLocation = locationData  ; mongoCompany = comapny} } ) }); 
+  // get location_id and company_id from mongodb
+  var companyData = await CompanyData.find();
+  var mongoLocation = "";
+  var mongoCompany = "";
+  await companyData.map((comapny) => {
+    comapny.location.map((locationData) => {
+      if (locationData.old_location_id == data.location_id) {
+        mongoLocation = locationData;
+        mongoCompany = comapny;
+      }
+    });
+  });
 
   // creating rating object
   const ratingObj = {
@@ -759,9 +706,9 @@ export const createFromOld = async (req, res) => {
   }
 
   if (employees.length > 0) {
-    // get user from monogo 
+    // get user from monogo
     employees.map(async (employeeId) => {
-      const mongoUser = await UserData.findOne({"old_user_id": employeeId});
+      const mongoUser = await UserData.findOne({ old_user_id: employeeId });
       const savedEmployees = new RatingEmployeeData({
         rating_id: rating._id,
         employee_id: mongoUser._id,
@@ -775,24 +722,25 @@ export const createFromOld = async (req, res) => {
     });
   }
 
-  // getting the skill array from the company 
+  // getting the skill array from the company
   // getting skill loop
   var skillMap = new Map();
-  await companyData.map((comapny) => { comapny.attribute.forEach((attribute) => {
-    // Positive Skills
-    if (attribute.positive_skills.length > 0) {
-      attribute.positive_skills.map(async (positiveSkills) => {
-        skillMap.set(positiveSkills.old_skill_id, positiveSkills._id);
-      });
-    }
-    //Negative Skills
-    if (attribute.negative_skills.length > 0) {
-      attribute.negative_skills.map(async (negativeSkills) => {
-        skillMap.set(negativeSkills.old_skill_id, negativeSkills._id);
-      });
-    }
-  })
-}); 
+  await companyData.map((comapny) => {
+    comapny.attribute.forEach((attribute) => {
+      // Positive Skills
+      if (attribute.positive_skills.length > 0) {
+        attribute.positive_skills.map(async (positiveSkills) => {
+          skillMap.set(positiveSkills.old_skill_id, positiveSkills._id);
+        });
+      }
+      //Negative Skills
+      if (attribute.negative_skills.length > 0) {
+        attribute.negative_skills.map(async (negativeSkills) => {
+          skillMap.set(negativeSkills.old_skill_id, negativeSkills._id);
+        });
+      }
+    });
+  });
 
   if (skills.length > 0) {
     skills.map(async (skillId) => {
@@ -808,26 +756,82 @@ export const createFromOld = async (req, res) => {
   }
 
   res.status(201).json(rating);
-}
+};
+
+//Action : Tag Script
+//Comment : Copy all Tags
+export const migrateTags = async (req, res) => {
+  connection.connect(async (err) => {
+    if (err) throw err;
+    console.log("You are now connected...");
+  });
+
+  //Get all company and location ids
+  const allCompanyObj = await CompanyData.find();
+  var locationDataMap = new Map();
+  var companyDataMap = new Map();
+  await allCompanyObj.map(async (singleCompany) => {
+    //Setting Company Objects
+    companyDataMap.set(singleCompany.old_company_id, singleCompany._id);
+
+    //Setting Location Objects
+    singleCompany.location.map(async (location) => {
+      var locationObject = {
+        nodeId: location._id,
+        companyNodeId: singleCompany._id,
+        old_company_id: singleCompany.old_company_id,
+      };
+      locationDataMap.set(location.old_location_id, location._id);
+    });
+  });
+  
+  //Get all Tags from mysql
+  await connection.query(`SELECT * FROM tag`, async (err, rows) => {    
+    rows.map(async (row) => {                  
+      //Get Company for The Tag
+      await connection.query(`SELECT * FROM tag_region where tag_id = ${row.id}`, async (err, tagArearows) => {        
+        tagArearows.map(async (tagArearow) => {
+          var companyId = companyDataMap.get(
+            tagArearow.location_area_id
+          );
+          
+          //Get all Locations
+          await connection.query(`SELECT * FROM tag_location where tag_id = ${row.id}`, async (err, tagArearows) => {
+
+          })
+
+          const tagObj = new TagData({
+            old_id: row.id,
+            name: row.name,
+            company_id : companyId,
+            location_id: [],
+            createdAt: new Date(row.created_at),
+            updatedAt: new Date(row.updated_at)
+          });
+          console.log(tagObj);
+        })
+      });
+      
+      //await tagObj.save();      
+    });
+    res.status(209).json(`total ${rows.length} user login data are imported.`);
+  });
+};
 
 //Action : Audit Script
 //Comment : Copy all audits
 export const migrateAudits = async (req, res) => {
-  const connection = mysql.createConnection({
-    host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-    user: "admin",
-    port: 3306,
-    password: "Rethinksoft",
-    database: "ratings_db",
-  });
-
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
     const allCompanyObj = await CompanyData.find();
     var locationDataMap = new Map();
+    var companyDataMap = new Map();
     await allCompanyObj.map(async (singleCompany) => {
-      //Setting locatino object
+      //Setting Company Objects
+      companyDataMap.set(singleCompany.old_company_id, singleCompany._id);
+
+      //Setting Location Objects
       singleCompany.location.map(async (location) => {
         var locationObject = {
           nodeId: location._id,
@@ -837,7 +841,17 @@ export const migrateAudits = async (req, res) => {
         locationDataMap.set(location.old_location_id, location._id);
       });
     });
-    console.log(locationDataMap);
-    res.status(201).json(locationDataMap);
+
+    res.status(201).json(allCompanyObj);
   });
-}
+};
+
+//Action : Test Connection
+//Comment : Test DB connection
+export const testConnection = async (req, res) => {
+  connection.connect(async (err) => {
+    if (err) throw err;
+    console.log("You are now connected...");
+    res.status(201).json("You are now connectd...");
+  });
+};
