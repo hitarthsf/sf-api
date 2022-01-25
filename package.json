@@ -66,6 +66,7 @@
     "multer-s3": "^2.10.0",
     "mysql": "^2.18.1",
     "mysql2": "^2.3.0",
+    "node-cron": "^3.0.0",
     "node-libcurl": "^2.3.3",
     "nodemailer": "^6.7.2",
     "nodemailer-express-handlebars": "^4.0.0",

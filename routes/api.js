@@ -7,7 +7,8 @@ import {
     saveDetails,
     curlFunction,
     getAllData,
-    skillFlag
+    skillFlag,
+    migrateSecondaryLocation
 } from "../controllers/apiController.js";
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.post("/saveDetails", saveDetails);
 router.post("/getAllData", getAllData);
 router.post("/skillFlag", skillFlag);
 router.post("/curlFunction", curlFunction);
+router.post("/secondaryLocation", migrateSecondaryLocation);
 
 
 export default router;

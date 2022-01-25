@@ -32,6 +32,14 @@ import dotenv from 'dotenv';
 //import passport from 'passport';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
+import cron from "node-cron";
+import { adminMail } from "./controllers/cronController.js"
+
+// 0 0 * * 1  At 00:00 on Monday.  * * * * * every minute 
+// for setting crons for mail 
+var cronTask = cron.schedule('0 0 * * 1', () => {
+      //adminMail();
+    });
 // load env
 dotenv.config();
 const app = express();
@@ -66,6 +74,7 @@ app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 app.use('/hubSpot',hubSpotRoutes);
 app.use('/general',generalRoutes);
+
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
 

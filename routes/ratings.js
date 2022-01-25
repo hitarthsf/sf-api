@@ -6,6 +6,7 @@ import {
   singleRating,
   complaintManagement,
   ratingChat,
+  changeStatus
 } from "../controllers/ratingsController.js";
 
 const router = express.Router();
@@ -15,5 +16,5 @@ router.post("/fetch", fetchRating);
 router.post("/singleRating", singleRating);
 router.post("/complaintManagement", complaintManagement);
 router.post("/ratingChat", ratingChat);
-
+router.post("/changeStatus", changeStatus);
 export default router;
