@@ -24,7 +24,7 @@ import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
 import hubSpotRoutes from './routes/hubSpot.js';
 import generalRoutes from './routes/general.js';
-
+import frontEmployeeFeedbackRoutes from './routes/frontEmployeeFeedback.js';
 import apiRoutes from './routes/api.js';
 import cronRoutes from './routes/cron.js'
 //dot env configuration
@@ -77,11 +77,13 @@ app.use('/general',generalRoutes);
 
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
+app.use('/cron',cronRoutes);
+app.use('/frontEmployeeFeedback',frontEmployeeFeedbackRoutes);
 
 
-const CONNECTION_URL = process.env.MONGO_URL;
+const CONNECTION_URL = 'mongodb+srv://free_user:Servefirst2021@cluster0.gdowm.mongodb.net/ratings_migration_live?authSource=admin&replicaSet=atlas-t3f5se-shard-0&readPreference=primary&appname=MongoDB%20Compass&ssl=true';
 const PORT = process.env.PORT || 5000;
-console.log(CONNECTION_URL);
+//console.log(CONNECTION_URL);
 
 app.get("/", async (req, res,next) => {
       res.send({ success: true, message: 'Welcome to SF ratings Backend.'})
