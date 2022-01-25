@@ -10,6 +10,7 @@ import {
   locationSkills,
   testConnection,
   createFromOld,
+  migrateTags,
   migrateSecondaryLocation,
   migrateAudits
 
@@ -36,6 +37,7 @@ router.get("/testConnection", testConnection);
 
 router.post("/createFromOld", createFromOld);
 
+router.get("/migrateTags", migrateTags);
 
 router.post("/migrateSecondaryLocation", migrateSecondaryLocation);
 
