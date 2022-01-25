@@ -4,9 +4,12 @@ import { MesssageProvider, Messages } from "../core/index.js";
 import _ from "lodash";
 export const getPrivacyLocation = async (req, res) => {
   //res.send('THIS GOOD');
-  const id = req.body._id;
-  const companyId = req.query.company_id;
-  if (!companyId) {
+  const id = req.body.company_id;
+  const page = req.body.page ? req.body.page : 1;
+  var limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  limit = page * limit ;
+  if (!id) {
     res
       .status(500)
       .json({
@@ -14,29 +17,30 @@ export const getPrivacyLocation = async (req, res) => {
       });
   }
   try {
-    //  const AllCompany = await CompanyData.find({"_id":id});
-    // make it dynamic
-    const company = await CompanyData.findOne(
-      { _id: companyId },
-      { privacy_location: 1 }
-    );
-    const companyData = await CompanyData.findOne({ _id: companyId });
-    const userLocationId = [];
-    const responseData = await Promise.all(
-      company.privacy_location.map(async (locationData) => {
-        locationData.locationName = "";
-        const fetchedLocation = _.find(companyData.location, (location) => {
-          return location._id == locationData.location_id;
-        });
-        if (fetchedLocation) {
-          locationData.location_id = fetchedLocation.name;
-        }
-      })
-    );
+    const AllCompany = await CompanyData.findOne({ _id: id });
+    var privacyLocationArray = [] ; 
+    var count =  0  ; 
+    
+    
+    await  AllCompany.privacy_location.map(async ( privacyLocation ) => {  
+     
+      // getting the loop with conditions 
+      if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
+      {
+      
+        var privacyLocationObj = { "_id" :privacyLocation._id , "createdAt" : privacyLocation.createdAt  }
+        privacyLocationArray.push(privacyLocationObj); 
+       
+      }
+      count = count + 1 ; 
+      
+    } );   
+      res.status(200).json({
+        data: privacyLocationArray,
+        totalCount: count,
+        message: "Privacy Location!!",
+      });
 
-    res
-      .status(200)
-      .json(company.privacy_location ? company.privacy_location : []);
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

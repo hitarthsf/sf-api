@@ -1,0 +1,48 @@
+version: '3'
+
+services:
+    #Nginx Service
+    # nginx:
+    #     image: nginx:latest
+    #     container_name: nginx_sf_api
+    #     restart: unless-stopped
+    #     tty: true
+    #     ports:
+    #         - "${PORT}:80"
+    #     volumes:
+    #         - ./docker-images/nginx/nginx-dev.conf:/etc/nginx/nginx.conf
+    #     networks:
+    #         - sf-api-network
+    api:
+        build: ./
+        container_name: sf-api
+        # image: ${AWS_USER}.dkr.ecr.${AWS_REGION}.amazonaws.com/${AWS_REPO_NAME}
+        networks:
+            - sf-api-network
+        # volumes:
+        #     - ./:/api
+        #     - /api/node_modules
+        ports:
+            - '5000:5000'
+        environment:
+            - MONGO_URL=mongodb://${MONGO_ROOT_USER}:${MONGO_ROOT_PASSWORD}@mongodb:27017/
+    mongodb:
+        image: mongo:5.0.5-focal
+        container_name: mongo
+        environment:
+            # provide your credentials here
+            - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+            - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
+        ports:
+            - "27017:27017"
+        volumes:
+            # if you wish to setup additional user accounts specific per DB or with different roles you can use following entry point
+            # - "$PWD/mongo-entrypoint/:/docker-entrypoint-initdb.d/"
+            - "$PWD/docker-images/mongo-db/db:/data/db"
+        # no --auth is needed here as presence of username and password add this option automatically
+        command: mongod
+        networks:
+            - sf-api-network
+networks:
+    sf-api-network:
+        driver: bridge

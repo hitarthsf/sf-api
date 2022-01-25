@@ -808,9 +808,12 @@ export const createFromOld = async (req, res) => {
   }
 
   res.status(201).json(rating);
-} 
 
-export const migrateSecondaryLocation = async (req, res) => {
+}
+
+//Action : Audit Script
+//Comment : Copy all audits
+export const migrateAudits = async (req, res) => {
 
   const connection = mysql.createConnection({
     host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
@@ -819,22 +822,67 @@ export const migrateSecondaryLocation = async (req, res) => {
     password: "Rethinksoft",
     database: "ratings_db",
   });
- 
+}
+export const migrateSecondaryLocation = async (req, res) => {
 
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
 
-
-
   const allMongoCompanyObj = await CompanyData.find();
 
-    var companyMap = new Map();
-    // location object
-    var locationDataMap = new Map();
+  var companyMap = new Map();
+  // location object
+  var locationDataMap = new Map();
 
-    // loop start for company
-    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
+  // loop start for company
+  var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
+    //Setting locatino object
+    singleCompany.location.map(async (location) => {
+      var locationObject = {
+        nodeId: location._id,
+        companyNodeId: singleCompany._id,
+        old_company_id: singleCompany.old_company_id,
+      };
+      locationDataMap.set(location.old_location_id, locationObject);
+    }); 
+  });
+  
+  // loop ends for company
+  
+
+  // loop for getting data and checking data starts 
+  var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
+  singleCompany.location.map(async (locationData) => {
+      await connection.query(
+        `SELECT * FROM secondary_locations WHERE location_id=${locationData.old_location_id}`,
+        async (err, rows) => {
+          var secondaryLocation = [];
+          rows.map(async (rowData) => {
+            
+            if (locationDataMap.get(rowData.secondary_location_id.toString())) {
+              secondaryLocation.push(
+                locationDataMap.get(rowData.secondary_location_id.toString()).nodeId.toString()
+              );
+            }
+          });
+          
+          console.log(secondaryLocation);
+          var companyUpdate = await CompanyData.updateOne(
+            
+             
+            { _id: singleCompany._id, "location._id": locationData._id },
+            {
+              $set: {
+                "location.$.secondary_location": secondaryLocation,
+              },
+            }
+          );
+        }
+      );
+    const allCompanyObj = await CompanyData.find();
+    var locationDataMap = new Map();
+    await allCompanyObj.map(async (singleCompany) => {
       //Setting locatino object
       singleCompany.location.map(async (location) => {
         var locationObject = {
@@ -842,45 +890,14 @@ export const migrateSecondaryLocation = async (req, res) => {
           companyNodeId: singleCompany._id,
           old_company_id: singleCompany.old_company_id,
         };
-        locationDataMap.set(location.old_location_id, locationObject);
-      }); 
+        locationDataMap.set(location.old_location_id, location._id);
+      });
     });
-    
-    // loop ends for company
-    
-
-    // loop for getting data and checking data starts 
-    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
-    singleCompany.location.map(async (locationData) => {
-        await connection.query(
-          `SELECT * FROM secondary_locations WHERE location_id=${locationData.old_location_id}`,
-          async (err, rows) => {
-            var secondaryLocation = [];
-            rows.map(async (rowData) => {
-              
-              if (locationDataMap.get(rowData.secondary_location_id.toString())) {
-                secondaryLocation.push(
-                  locationDataMap.get(rowData.secondary_location_id.toString()).nodeId.toString()
-                );
-              }
-            });
-            
-            console.log(secondaryLocation);
-            var companyUpdate = await CompanyData.updateOne(
-              
-               
-              { _id: singleCompany._id, "location._id": locationData._id },
-              {
-                $set: {
-                  "location.$.secondary_location": secondaryLocation,
-                },
-              }
-            );
-          }
-        );
-    });
+    console.log(locationDataMap);
+    res.status(201).json(locationDataMap);
   });
-  })
+});
+})
 // loop for getting data and checking data ends 
 
 res.status(200).json({"message": "imported" });

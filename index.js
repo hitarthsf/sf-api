@@ -22,6 +22,9 @@ import tagRoutes from './routes/tag.js';
 import customerAuditRoutes from './routes/customerAudit.js';
 import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
+import hubSpotRoutes from './routes/hubSpot.js';
+import generalRoutes from './routes/general.js';
+
 import apiRoutes from './routes/api.js';
 import cronRoutes from './routes/cron.js'
 //dot env configuration
@@ -30,11 +33,12 @@ import dotenv from 'dotenv';
 import userRoutes from './routes/user.js';
 import fileUpload from 'express-fileupload';
 import cron from "node-cron";
-import hubSpotRoutes from './routes/hubSpot.js';
+import { adminMail } from "./controllers/cronController.js"
 
-
-var task = cron.schedule('* * * * *', () => {
-      cronController.adminMail();
+// 0 0 * * 1  At 00:00 on Monday.  * * * * * every minute 
+// for setting crons for mail 
+var cronTask = cron.schedule('0 0 * * 1', () => {
+      //adminMail();
     });
 // load env
 dotenv.config();
@@ -69,16 +73,18 @@ app.use('/customerAudit',customerAuditRoutes);
 app.use('/clientSurvey',clientSurveyRoutes);
 app.use('/skillProfile',skillProfileRoutes);
 app.use('/hubSpot',hubSpotRoutes);
+app.use('/general',generalRoutes);
 
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
 
 
-const CONNECTION_URL = 'mongodb://free_user:Servefirst2021@cluster0-shard-00-00.gdowm.mongodb.net:27017,cluster0-shard-00-01.gdowm.mongodb.net:27017,cluster0-shard-00-02.gdowm.mongodb.net:27017/ratings_migration_live?authSource=admin&replicaSet=atlas-t3f5se-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true';
+const CONNECTION_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
+console.log(CONNECTION_URL);
 
 app.get("/", async (req, res,next) => {
-      res.send({ success: true, message: 'Welcomw to SFratings Backend.'})
+      res.send({ success: true, message: 'Welcome to SF ratings Backend.'})
 });
 
 mongoose.connect(CONNECTION_URL, {useNewUrlParser: true, useUnifiedTopology: true})
