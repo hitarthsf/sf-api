@@ -20,11 +20,56 @@ export const createCategory = async (req, res) => {
 
 export const getCategory = async (req, res) => {
   //res.send('THIS GOOD');
+  const page = req.body.page ? req.body.page : 1;
+  const limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  const filterGeneralSearch = req.body.filterGeneralSearch;
   try {
-    const AllCategory = await CategoryData.find({
-      company_id: req.body.company_id,
-    });
-    res.status(200).json(AllCategory);
+    if( filterGeneralSearch )
+    {
+      const AllCategory = await CategoryData.find({
+        company_id: req.body.company_id,
+        name: { $regex: ".*" + filterGeneralSearch + ".*" },
+      })
+        .skip(skip)
+        .limit(limit);
+
+        const AllCategoryConut = await CategoryData.find({
+          company_id: req.body.company_id,
+          name: { $regex: ".*" + filterGeneralSearch + ".*" },
+        }).countDocuments();
+
+          res
+          .status(200)
+          .json({
+            data: AllCategory,
+            totalCount: AllCategoryConut,
+            message: "Category Listing !!",
+          });
+        
+    }
+    else{
+      const AllCategory = await CategoryData.find({
+        company_id: req.body.company_id
+      })
+        .skip(skip)
+        .limit(limit);
+
+        const AllCategoryConut = await CategoryData.find({
+          company_id: req.body.company_id,
+          
+        })
+          .countDocuments();
+          res
+          .status(200)
+          .json({
+            data: AllCategory,
+            totalCount: AllCategoryConut,
+            message: "Category Listing !!",
+          });
+    }
+    
+    
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

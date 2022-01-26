@@ -2,16 +2,35 @@ import CompanyData from "../models/CompanyData.js";
 
 export const getActionPlan = async (req, res) => {
   //res.send('THIS GOOD');
-  //const  id  = req.body._id;
+  const companyId = req.body.company_id;
+  const page = req.body.page ? req.body.page : 1;
+  var limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  limit = page * limit ;
+  const filterGeneralSearch = req.body.filterGeneralSearch;
   try {
+    
     //  const AllCompany = await CompanyData.find({"_id":id});
     // make it dynamic
     const AllCompany = await CompanyData.findOne({
-      _id: "617fb45ad1bf0ec9a8cd3863",
+      _id: req.body.company_id,
     });
+    var actionPlan = [] ; 
+    var count =  0  ; 
+    await  AllCompany.action_plan.map( async ( plan ) => {  
+      // getting the loop with conditions 
+      if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
+      {
+       
+        var objPlan = { "_id" :plan._id , "title" : plan.title , "description" : plan.description , "is_active" :  plan.is_active   , "createdAt" : plan.createdAt  }
+        actionPlan.push(objPlan); 
+       
+      }
+      count = count + 1 ; 
 
-    console.log(AllCompany);
-    res.status(200).json({ data: AllCompany.action_plan, message: "Success" });
+    });
+    
+    res.status(200).json({ data: actionPlan, message: "Success" });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }
@@ -83,7 +102,7 @@ export const deleteActionPlan = async (req, res) => {
   const id = req.body._id;
   // make it dynamic
   await CompanyData.updateOne(
-    { _id: "617fb45ad1bf0ec9a8cd3863" },
+    { _id: req.body.company_id },
     { $pull: { action_plan: { _id: id } } },
     { multi: true },
     function (error, success) {
@@ -96,6 +115,7 @@ export const deleteActionPlan = async (req, res) => {
       }
     }
   );
+  res.status(200).json({ data: [], message: "Action Plan Deleted" });
 };
 
 

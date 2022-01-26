@@ -10,8 +10,10 @@ import {
   locationSkills,
   testConnection,
   createFromOld,
+  migrateTags,
   migrateSecondaryLocation,
   migrateAudits
+
 
 } from "../controllers/migrationController.js";
 
@@ -35,9 +37,10 @@ router.get("/testConnection", testConnection);
 
 router.post("/createFromOld", createFromOld);
 
+router.get("/migrateTags", migrateTags);
+
 router.post("/migrateSecondaryLocation", migrateSecondaryLocation);
 
 router.get("/migrateAudits", migrateAudits);
-
 
 export default router;
