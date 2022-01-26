@@ -6,7 +6,7 @@ import {
   createContact,
   assignContactToCompany,
   sendMailDefault
-} from "../controllers/hubSpotController.js";
+} from "../controllers/hubspotController.js";
 
 
 
