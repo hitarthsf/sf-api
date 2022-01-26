@@ -81,7 +81,7 @@ app.use('/cron',cronRoutes);
 app.use('/frontEmployeeFeedback',frontEmployeeFeedbackRoutes);
 
 
-const CONNECTION_URL = process.env.MONGO_URL ;
+const CONNECTION_URL = process.env.MONGO_URL;
 const PORT = process.env.PORT || 5000;
 
 app.get("/", async (req, res,next) => {
