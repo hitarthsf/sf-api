@@ -9,14 +9,16 @@ import UsersData from "../models/UsersData.js";
 import TagData from "../models/TagData.js";
 import QRCode from "qrcode";
 import aws from "aws-sdk";
+import dotenv from 'dotenv';
+dotenv.config();
 
 const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    port: 3306,
-    password: process.env.MYSQL_PASS,
-    database: process.env.MYSQL_DB,
-  });
+  host: process.env.MYSQL_HOST,
+  user: process.env.MYSQL_USER,
+  port: 3306,
+  password: process.env.MYSQL_PASS,
+  database: process.env.MYSQL_DB
+});
 
 //Method : Company Script
 //Comment : Migration Script For Company, Locations, Company Attributes, Company Skills
@@ -432,13 +434,14 @@ export const migrateRatingsLoop = async (req, res) => {
               ratingRow.location_id.toString()
             ).nodeId;
             ratingObj["old_rating_id"] = ratingRow.id;
-            ratingObj["rating"] = 0;
+            ratingObj["rating"] = ratingRow.rating;
 
             const ratingMongoObj = new RatingData({
               ...ratingObj,
               createdAt: ratingObj["created_at"],
             });
-
+            await ratingMongoObj.save();
+          console.log(ratingMongoObj);
             // skill code
             await connection.query(
               `SELECT ratings_skill.*, skills.name, skills.type 
@@ -464,11 +467,13 @@ export const migrateRatingsLoop = async (req, res) => {
                       const ratingSkillMongoObj = new RatingSkillData({
                         rating_id: ratingMongoObj.id,
                         skill_id: skillId,
-                        rating: 0,
+                        rating: ratingRow.rating,
                         location_id: ratingObj.location_id,
                         company_id: ratingObj.company_id,
                         createdAt: ratingMongoObj.createdAt,
                       });
+                      await ratingSkillMongoObj.save();
+                      console.log(ratingSkillMongoObj)
                     }
                   }
                 });
@@ -489,11 +494,13 @@ export const migrateRatingsLoop = async (req, res) => {
                       employee_id: userMap.get(
                         mySqlRatingEmployee.user_id.toString()
                       ),
-                      rating: 0,
+                      rating: ratingRow.rating,
                       location_id: ratingObj.location_id,
                       company_id: ratingObj.company_id,
                       createdAt: ratingMongoObj.createdAt,
                     });
+                    await ratingEmployeeMongoObj.save();
+                    console.log(ratingEmployeeMongoObj)
                   }
                 });
               }
@@ -598,9 +605,7 @@ export const locationSkills = async (req, res) => {
     if (err) throw err;
     console.log("You are now connected...");
 
-    var companyObj = await CompanyData.find({
-      _id: "61cc461c94a58604f9be7e61",
-    });
+    var companyObj = await CompanyData.find();
     await Promise.all(
       companyObj.map(async (singleCompany) => {
         var locationSkill = [];
