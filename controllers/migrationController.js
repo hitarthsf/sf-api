@@ -290,6 +290,8 @@ export const migrateRatings = async (req, res) => {
             ...ratingObj,
             createdAt: ratingObj["created_at"],
           });
+          await ratingMongoObj.save();
+          console.log(ratingMongoObj);
 
           // skill code
           await connection.query(
@@ -320,6 +322,8 @@ export const migrateRatings = async (req, res) => {
                       company_id: ratingObj.company_id,
                       createdAt: ratingMongoObj.createdAt,
                     });
+                    await ratingSkillMongoObj.save();
+                    console.log(ratingSkillMongoObj)
                   }
                 }
               });
@@ -345,6 +349,8 @@ export const migrateRatings = async (req, res) => {
                     company_id: ratingObj.company_id,
                     createdAt: ratingMongoObj.createdAt,
                   });
+                  await ratingEmployeeMongoObj.save();
+                  console.log(ratingEmployeeMongoObj)
                 }
               });
             }
@@ -433,20 +439,21 @@ export const migrateRatingsLoop = async (req, res) => {
     });
     // static count
     var totalCount = 97123;
-    var loopCount = Math.ceil(totalCount / 2500);
-    for (var i = 1; i <= loopCount + 1; i++) {
-      var limit = i * 2500;
-      var offset = (i - 1) * 2500;
+    var loopCount = Math.ceil(totalCount / 1000);
+    // replace 2 with loopCount in below line to start loop 
+    for (var i = 1; i <= 2 + 1; i++) {
+      var limit = i * 1000;
+      var offset = (i - 1) * 1000;
 
       await connection.query(
-        `SELECT 
-                ratings.*,
-                rating_customer.name as customer_name, 
-                rating_customer.email as customer_email, 
-                rating_customer.phone as customer_phone
-                from ratings 
-                left join rating_customer on ratings.id = rating_customer.ratings_id
-                LIMIT ${limit} OFFSET ${offset} `,
+        `SELECT
+              ratings.*,
+              rating_customer.name as customer_name,
+              rating_customer.email as customer_email,
+              rating_customer.phone as customer_phone
+              from ratings
+              left join rating_customer on ratings.id = rating_customer.ratings_id
+              LIMIT ${limit} OFFSET ${offset} `,
         async (err, ratingRows) => {
           ratingRows.map(async (ratingRow) => {
             const ratingObj = ratingRow;
@@ -466,27 +473,27 @@ export const migrateRatingsLoop = async (req, res) => {
             });
             await ratingMongoObj.save();
             console.log(ratingMongoObj);
+  
             // skill code
             await connection.query(
-              `SELECT ratings_skill.*, skills.name, skills.type 
-                    from ratings_skill 
-                    left join skills on skills.id = ratings_skill.skills_id 
-                    WHERE ratings_id = ${ratingObj.id}`,
+              `SELECT ratings_skill.*, skills.name, skills.type
+                  from ratings_skill
+                  left join skills on skills.id = ratings_skill.skills_id
+                  WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingSkills) => {
                 ratingObj["skills"] = ratingSkills;
-
+  
                 ratingSkills.map(async (mySqlRatingSkill) => {
                   if (mySqlRatingSkill.name) {
                     let skillId = null;
-
+  
                     skillId = companyMap
                       .get(
-                        locationDataMap.get(
-                          ratingObj.old_location_id.toString()
-                        ).old_company_id
+                        locationDataMap.get(ratingObj.old_location_id.toString())
+                          .old_company_id
                       )
                       .skills.get(mySqlRatingSkill.name);
-
+  
                     if (skillId) {
                       const ratingSkillMongoObj = new RatingSkillData({
                         rating_id: ratingMongoObj.id,
@@ -497,20 +504,21 @@ export const migrateRatingsLoop = async (req, res) => {
                         createdAt: ratingMongoObj.createdAt,
                       });
                       await ratingSkillMongoObj.save();
-                      console.log(ratingSkillMongoObj);
+                      console.log(ratingSkillMongoObj)
+                      
                     }
                   }
                 });
               }
             );
-
+  
             await connection.query(
-              `SELECT rating_user.* 
-                    from rating_user
-                    WHERE ratings_id = ${ratingObj.id}`,
+              `SELECT rating_user.*
+                  from rating_user
+                  WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingEmployees) => {
                 ratingObj["employees"] = ratingEmployees;
-
+  
                 ratingEmployees.map(async (mySqlRatingEmployee) => {
                   if (mySqlRatingEmployee.user_id) {
                     const ratingEmployeeMongoObj = new RatingEmployeeData({
@@ -940,9 +948,25 @@ export const migrateSecondaryLocation = async (req, res) => {
 
     const allMongoCompanyObj = await CompanyData.find();
 
-    var companyMap = new Map();
-    // location object
-    var locationDataMap = new Map();
+  var companyMap = new Map();
+  // location object
+  var locationDataMap = new Map();
+
+  // loop start for company
+  var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
+    //Setting locatino object
+    singleCompany.location.map(async (location) => {
+      var locationObject = {
+        nodeId: location._id,
+        companyNodeId: singleCompany._id,
+        old_company_id: singleCompany.old_company_id,
+      };
+      locationDataMap.set(location.old_location_id, locationObject);
+    }); 
+  });
+  
+  // loop ends for company
+  
 
     // loop start for company
     var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
@@ -1067,16 +1091,19 @@ export const saveRatingData = async (req, res) => {
 
     // Decalre an array for rating
     var ratingArray = [];
-
-    // Rating query starts
-    var ratingsDataArray = connection.query(
+    
+    for (let i = 0; i < 2; i++) {
+      console.log("Loop Starts ");
+       // Rating query starts
+       console.log(i);  
+    var ratingsDataArray =  await  connection.query(
       `SELECT
             ratings.*,
             rating_customer.name as customer_name,
             rating_customer.email as customer_email,
             rating_customer.phone as customer_phone
             from ratings
-            left join rating_customer on ratings.id = rating_customer.ratings_id`,
+            left join rating_customer on ratings.id = rating_customer.ratings_id limit 2`,
       async (err, ratingRows) => {
         var getData = ratingRows.map(async (ratingRow) => {
           const ratingObj = ratingRow;
@@ -1093,14 +1120,26 @@ export const saveRatingData = async (req, res) => {
             ...ratingObj,
             createdAt: ratingObj["created_at"],
           });
+          
           ratingArray.push(ratingMongoObj);
         });
-        await Promise.all(getData);
-        Promise.all(getData).then(() => {
-          RatingData.insertMany(ratingArray);
+         Promise.all(getData);
+           Promise.all(getData).then(async() => {
+           RatingData.insertMany(ratingArray, (err, docs) => {
+            if (err) {
+               console.log('Insert Error', err);
+             } else {
+               console.log('Successful Insert');
+               ratingArray = [];
+             }
+          });;
         });
       }
     );
+    console.log("Loop Ends ");
+    }
+    
+   
   });
   res.status(200).json(`Ratings imported`);
 };
@@ -1157,12 +1196,13 @@ export const saveRatingEmployee = async (req, res) => {
   var ratingEmpArray = [];
 
   //Get All Employee Ratings
+  for (let i = 0; i < 2; i++) {
   connection.query(
     `SELECT *, rating_user.user_id as rating_user_id,location.id as location_id, location.location_area_id as location_area_id
     from rating_user
     LEFT JOIN ratings on ratings.id = rating_user.ratings_id
     LEFT JOIN location on location.id = ratings.location_id
-    WHERE rating_user.user_id != 0`,
+    WHERE rating_user.user_id != 0 limit 2`,
     async (err, ratingEmpRows) => {
       var getData = ratingEmpRows.map(async (ratingEmpRow) => {
         const ratingEmpObj = new Object();
@@ -1200,9 +1240,11 @@ export const saveRatingEmployee = async (req, res) => {
         RatingEmployeeData.insertMany(ratingEmpArray);
         console.log(ratingEmpArray);        
         console.log('Rating Employee Saved');
+        ratingEmpArray = [] ;
       });
     }
   );
+  }
   console.log("Finish");
 };
 
@@ -1216,12 +1258,12 @@ export const saveRatingSkillData = async (req, res) => {
     password: process.env.MYSQL_PASS,
     database: process.env.MYSQL_DB,
   });
-  
+  var skillMap = new Map();
   const allMongoCompanyObj = await CompanyData.find();
   // All company loop
   var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
     //Getting Skill Loop
-    var skillMap = new Map();
+    
     singleCompany.attributes.forEach((attribute) => {
       //Positive Skills
       if (attribute.positive_skills.length > 0) {
@@ -1250,6 +1292,7 @@ export const saveRatingSkillData = async (req, res) => {
 
   var ratingArray = [];
   // query starts
+  for (let i = 0; i < 2; i++) {
   var ratingsDataArray = connection.query(
     `SELECT ratings_skill.id , ratings_skill.ratings_id , ratings_skill.skills_id , ratings_skill.created_at , ratings_skill.updated_at ,skills.id as skill_id ,  skills.name as skill_name from ratings_skill left join skills on skills.id = ratings_skill.skills_id limit 2`,
     async (err, ratingSkillRows) => {
@@ -1257,9 +1300,9 @@ export const saveRatingSkillData = async (req, res) => {
         console.log(ratingMap.get(ratingRow.id.toString()));
         const ratingMongoObj = {
           rating_id: ratingMap.get(ratingRow.id.toString()).id,
-          sf_v1_old_rating_id: ratingRow.id,
+          sfv1_old_rating_id: ratingRow.id,
           skill_id: skillMap.get(ratingRow.skill_name.toString()),
-          sf_v1_old_skill_id: ratingRow.skill_id,
+          sfv1_old_skill_id: ratingRow.skill_id,
           rating: ratingMap.get(ratingRow.id.toString()).rating,
           updatedAt: ratingRow.updated_at,
           createdAt: ratingRow.created_at,
@@ -1269,9 +1312,13 @@ export const saveRatingSkillData = async (req, res) => {
       });
       await Promise.all(getData);
       Promise.all(getData).then(() => {
+        RatingSkillData.insertMany(ratingArray);
         console.log(ratingArray);        
         console.log('Rating Skill Saved');
+        ratingArray = [] ;
       });
     }
   );
+  }
+  res.status(200).json(`Ratings Skills saved `);
 };
