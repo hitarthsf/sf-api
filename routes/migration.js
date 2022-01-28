@@ -12,9 +12,10 @@ import {
   createFromOld,
   migrateTags,
   migrateSecondaryLocation,
-  migrateAudits
-
-
+  migrateAudits,
+  saveRatingData,
+  saveRatingEmployee,
+  saveRatingSkillData
 } from "../controllers/migrationController.js";
 
 const router = express.Router();
@@ -42,5 +43,11 @@ router.get("/migrateTags", migrateTags);
 router.post("/migrateSecondaryLocation", migrateSecondaryLocation);
 
 router.get("/migrateAudits", migrateAudits);
+
+router.get("/saveRatingData", saveRatingData);
+
+router.get("/saveRatingEmployee", saveRatingEmployee);
+
+router.get("/saveRatingSkillData", saveRatingSkillData);
 
 export default router;
