@@ -6,6 +6,9 @@ const ratingSkillData = mongoose.Schema({
   rating: Number,
   location_id: String,
   company_id: String,
+  sf_v1_old_rating_id : String ,
+  sf_v1_old_skill_id:String,
+
   createdAt: {
     type: Date,
     default: new Date(),

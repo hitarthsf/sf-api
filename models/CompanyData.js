@@ -14,6 +14,7 @@ const company = mongoose.Schema({
   hubspot_transaction_mails: String,
   old_company_id: Number,
   skills: Array,
+  employee_skill: Array,
   location: [
     {
       location_area_id: String,

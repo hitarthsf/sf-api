@@ -12,7 +12,9 @@ import {
   createFromOld,
   migrateTags,
   migrateSecondaryLocation,
-  migrateAudits
+  migrateAudits,
+  saveRatingData,
+  saveRatingSkillData
 
 
 } from "../controllers/migrationController.js";
@@ -42,5 +44,11 @@ router.get("/migrateTags", migrateTags);
 router.post("/migrateSecondaryLocation", migrateSecondaryLocation);
 
 router.get("/migrateAudits", migrateAudits);
+
+router.get("/saveRatingData", saveRatingData);
+
+router.get("/saveRatingSkillData", saveRatingSkillData);
+
+
 
 export default router;

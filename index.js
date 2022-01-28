@@ -24,7 +24,7 @@ import clientSurveyRoutes from './routes/clientSurvey.js';
 import skillProfileRoutes from './routes/skillProfile.js';
 import hubSpotRoutes from './routes/hubSpot.js';
 import generalRoutes from './routes/general.js';
-//import frontEmployeeFeedbackRoutes from './routes/frontEmployeeFeedback.js';
+import frontEmployeeFeedbackRoutes from './routes/frontEmployeeFeedback.js';
 import apiRoutes from './routes/api.js';
 import cronRoutes from './routes/cron.js'
 //dot env configuration
@@ -78,7 +78,7 @@ app.use('/general',generalRoutes);
 app.use('/api',apiRoutes);
 app.use('/cron',cronRoutes);
 app.use('/cron',cronRoutes);
-//app.use('/frontEmployeeFeedback',frontEmployeeFeedbackRoutes);
+app.use('/frontEmployeeFeedback',frontEmployeeFeedbackRoutes);
 
 
 const CONNECTION_URL = process.env.MONGO_URL ; 

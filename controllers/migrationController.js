@@ -11,11 +11,11 @@ import QRCode from "qrcode";
 import aws from "aws-sdk";
 
 const connection = mysql.createConnection({
-    host: process.env.MYSQL_HOST,
-    user: process.env.MYSQL_USER,
-    port: 3306,
-    password: process.env.MYSQL_PASS,
-    database: process.env.MYSQL_DB,
+  host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
+  user: "admin",
+  port: 3306,
+  password: "Rethinksoft",
+  database: "ratings_db",
   });
 
 //Method : Company Script
@@ -272,6 +272,8 @@ export const migrateRatings = async (req, res) => {
             ...ratingObj,
             createdAt: ratingObj["created_at"],
           });
+          await ratingMongoObj.save();
+          console.log(ratingMongoObj);
 
           // skill code
           await connection.query(
@@ -302,6 +304,8 @@ export const migrateRatings = async (req, res) => {
                       company_id: ratingObj.company_id,
                       createdAt: ratingMongoObj.createdAt,
                     });
+                    await ratingSkillMongoObj.save();
+                    console.log(ratingSkillMongoObj)
                   }
                 }
               });
@@ -327,6 +331,8 @@ export const migrateRatings = async (req, res) => {
                     company_id: ratingObj.company_id,
                     createdAt: ratingMongoObj.createdAt,
                   });
+                  await ratingEmployeeMongoObj.save();
+                  console.log(ratingEmployeeMongoObj)
                 }
               });
             }
@@ -407,20 +413,21 @@ export const migrateRatingsLoop = async (req, res) => {
     });
     // static count
     var totalCount = 97123;
-    var loopCount = Math.ceil(totalCount / 2500);
-    for (var i = 1; i <= loopCount + 1; i++) {
-      var limit = i * 2500;
-      var offset = (i - 1) * 2500;
+    var loopCount = Math.ceil(totalCount / 1000);
+    // replace 2 with loopCount in below line to start loop 
+    for (var i = 1; i <= 2 + 1; i++) {
+      var limit = i * 1000;
+      var offset = (i - 1) * 1000;
 
       await connection.query(
-        `SELECT 
-                ratings.*,
-                rating_customer.name as customer_name, 
-                rating_customer.email as customer_email, 
-                rating_customer.phone as customer_phone
-                from ratings 
-                left join rating_customer on ratings.id = rating_customer.ratings_id
-                LIMIT ${limit} OFFSET ${offset} `,
+        `SELECT
+              ratings.*,
+              rating_customer.name as customer_name,
+              rating_customer.email as customer_email,
+              rating_customer.phone as customer_phone
+              from ratings
+              left join rating_customer on ratings.id = rating_customer.ratings_id
+              LIMIT ${limit} OFFSET ${offset} `,
         async (err, ratingRows) => {
           ratingRows.map(async (ratingRow) => {
             const ratingObj = ratingRow;
@@ -432,56 +439,58 @@ export const migrateRatingsLoop = async (req, res) => {
               ratingRow.location_id.toString()
             ).nodeId;
             ratingObj["old_rating_id"] = ratingRow.id;
-            ratingObj["rating"] = 0;
-
+  
             const ratingMongoObj = new RatingData({
               ...ratingObj,
               createdAt: ratingObj["created_at"],
             });
-
+            await ratingMongoObj.save();
+            console.log(ratingMongoObj);
+  
             // skill code
             await connection.query(
-              `SELECT ratings_skill.*, skills.name, skills.type 
-                    from ratings_skill 
-                    left join skills on skills.id = ratings_skill.skills_id 
-                    WHERE ratings_id = ${ratingObj.id}`,
+              `SELECT ratings_skill.*, skills.name, skills.type
+                  from ratings_skill
+                  left join skills on skills.id = ratings_skill.skills_id
+                  WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingSkills) => {
                 ratingObj["skills"] = ratingSkills;
-
+  
                 ratingSkills.map(async (mySqlRatingSkill) => {
                   if (mySqlRatingSkill.name) {
                     let skillId = null;
-
+  
                     skillId = companyMap
                       .get(
-                        locationDataMap.get(
-                          ratingObj.old_location_id.toString()
-                        ).old_company_id
+                        locationDataMap.get(ratingObj.old_location_id.toString())
+                          .old_company_id
                       )
                       .skills.get(mySqlRatingSkill.name);
-
+  
                     if (skillId) {
                       const ratingSkillMongoObj = new RatingSkillData({
                         rating_id: ratingMongoObj.id,
                         skill_id: skillId,
-                        rating: 0,
+                        rating: ratingRow.rating,
                         location_id: ratingObj.location_id,
                         company_id: ratingObj.company_id,
                         createdAt: ratingMongoObj.createdAt,
                       });
+                      await ratingSkillMongoObj.save();
+                      console.log(ratingSkillMongoObj)
                     }
                   }
                 });
               }
             );
-
+  
             await connection.query(
-              `SELECT rating_user.* 
-                    from rating_user
-                    WHERE ratings_id = ${ratingObj.id}`,
+              `SELECT rating_user.*
+                  from rating_user
+                  WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingEmployees) => {
                 ratingObj["employees"] = ratingEmployees;
-
+  
                 ratingEmployees.map(async (mySqlRatingEmployee) => {
                   if (mySqlRatingEmployee.user_id) {
                     const ratingEmployeeMongoObj = new RatingEmployeeData({
@@ -489,11 +498,13 @@ export const migrateRatingsLoop = async (req, res) => {
                       employee_id: userMap.get(
                         mySqlRatingEmployee.user_id.toString()
                       ),
-                      rating: 0,
+                      rating: ratingRow.rating,
                       location_id: ratingObj.location_id,
                       company_id: ratingObj.company_id,
                       createdAt: ratingMongoObj.createdAt,
                     });
+                    await ratingEmployeeMongoObj.save();
+                    console.log(ratingEmployeeMongoObj)
                   }
                 });
               }
@@ -598,9 +609,7 @@ export const locationSkills = async (req, res) => {
     if (err) throw err;
     console.log("You are now connected...");
 
-    var companyObj = await CompanyData.find({
-      _id: "61cc461c94a58604f9be7e61",
-    });
+    var companyObj = await CompanyData.find({});
     await Promise.all(
       companyObj.map(async (singleCompany) => {
         var locationSkill = [];
@@ -952,3 +961,148 @@ export const testConnection = async (req, res) => {
     res.status(201).json("You are now connectd...");
   });
 };
+
+
+//Action : Only Rating 
+//Comment : saveRatingData 
+export const saveRatingData = async (req, res) => {
+
+ 
+  var page = req.query["page"];
+  var skip = (page - 1) * 1000;
+
+  connection.connect(async (err) => {
+    if (err) throw err;
+    console.log("You are now connected...");
+    const allMongoCompanyObj = await CompanyData.find();
+
+    var companyMap = new Map();
+    // location object
+    var locationDataMap = new Map();
+    // all company loop
+    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
+      
+      //Setting Location Object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, locationObject);
+      });
+
+    });
+
+    // Decalre an array for rating 
+   var ratingArray = [] ;
+   
+   // Rating query starts
+    var ratingsDataArray =  connection.query(
+      `SELECT ratings.*,
+            rating_customer.name as customer_name,
+            rating_customer.email as customer_email,
+            rating_customer.phone as customer_phone
+            from ratings
+            left join rating_customer on ratings.id = rating_customer.ratings_id`,
+      async (err, ratingRows) => {
+        var getData = ratingRows.map(async (ratingRow) => {
+          const ratingObj = ratingRow;
+          ratingObj["old_location_id"] = ratingRow.location_id;
+          ratingObj["company_id"] = locationDataMap.get(
+            ratingRow.location_id.toString()
+          ).companyNodeId;
+          ratingObj["location_id"] = locationDataMap.get(
+            ratingRow.location_id.toString()
+          ).nodeId;
+          ratingObj["old_rating_id"] = ratingRow.id;
+
+          const ratingMongoObj = new RatingData({
+            ...ratingObj,
+            createdAt: ratingObj["created_at"],
+          });
+          ratingArray.push(ratingMongoObj);
+          
+         
+        });
+        await Promise.all(getData);
+          Promise.all(getData).then(() => {
+            console.log(ratingArray);
+             RatingData.insertMany(ratingArray);
+          });
+      }
+    );
+  });
+  res.status(200).json(`Ratings imported`);
+}
+
+//Action : Only Rating  Skill
+//Comment : saveRatingSkillData 
+
+export const saveRatingSkillData = async (req, res) => {
+
+  const allMongoCompanyObj = await CompanyData.find();
+
+    // all company loop
+    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
+      // getting skill loop
+      var skillMap = new Map();
+      singleCompany.attributes.forEach((attribute) => {
+        // Positive Skills
+        if (attribute.positive_skills.length > 0) {
+          attribute.positive_skills.map(async (positiveSkills) => {
+            skillMap.set(positiveSkills.name, positiveSkills._id);
+          });
+        }
+        //Negative Skills
+        if (attribute.negative_skills.length > 0) {
+          attribute.negative_skills.map(async (negativeSkills) => {
+            skillMap.set(negativeSkills.name, negativeSkills._id);
+          });
+        }
+      });
+    });
+
+    const allMongoRatingObj = await RatingData.find();
+    var ratingMap = new Map();
+     allMongoRatingObj.map(async (rating )  => {
+    
+      var ratingObj = {
+        "id" : rating._id,
+        "rating":rating.rating
+      }
+      ratingMap.set(rating.old_rating_id, ratingObj);
+    })
+
+    var ratingArray = [] ; 
+    // query starts 
+    var ratingsDataArray =  connection.query(
+      `SELECT ratings_skill.id , ratings_skill.ratings_id , ratings_skill.skills_id , ratings_skill.created_at , ratings_skill.updated_at ,skills.id as skill_id ,  skills.name as skill_name from ratings_skill left join skills on skills.id = ratings_skill.skills_id limit 2`,
+      async (err, ratingSkillRows) => {
+        var getData = ratingSkillRows.map(async (ratingRow) => {
+          console.log(ratingMap.get(ratingRow.id.toString())) 
+          const ratingMongoObj = 
+          {
+            "rating_id": ratingMap.get(ratingRow.id.toString()).id,
+            "sf_v1_old_rating_id": ratingRow.id,
+            "skill_id": skillMap.get(ratingRow.skill_name.toString()),
+            "sf_v1_old_skill_id": ratingRow.skill_id,
+            "rating": ratingMap.get(ratingRow.id.toString()).rating,
+            "updatedAt" : ratingRow.updated_at,    
+            "createdAt" : ratingRow.created_at,
+
+          }
+          
+         
+          ratingArray.push(ratingMongoObj);
+        });
+        await Promise.all(getData);
+          Promise.all(getData).then(() => {
+            console.log(ratingArray);
+            // RatingData.insertMany(ratingArray);
+          });
+      }
+    );
+
+
+}
