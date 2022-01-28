@@ -14,9 +14,8 @@ import {
   migrateSecondaryLocation,
   migrateAudits,
   saveRatingData,
+  saveRatingEmployee,
   saveRatingSkillData
-
-
 } from "../controllers/migrationController.js";
 
 const router = express.Router();
@@ -47,8 +46,8 @@ router.get("/migrateAudits", migrateAudits);
 
 router.get("/saveRatingData", saveRatingData);
 
+router.get("/saveRatingEmployee", saveRatingEmployee);
+
 router.get("/saveRatingSkillData", saveRatingSkillData);
-
-
 
 export default router;
