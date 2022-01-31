@@ -12,14 +12,6 @@ import aws from "aws-sdk";
 import dotenv from "dotenv";
 dotenv.config();
 
-<<<<<<< HEAD
-const connection = mysql.createConnection({
-  host: "sf-test.czjpm3va57rx.ap-south-1.rds.amazonaws.com",
-  user: "admin",
-  port: 3306,
-  password: "Rethinksoft",
-  database: "ratings_db",
-=======
 //Method : Company Script
 //Comment : Migration Script For Company, Locations, Company Attributes, Company Skills
 export const migrateCompanies = async (req, res) => {
@@ -29,7 +21,6 @@ export const migrateCompanies = async (req, res) => {
     port: 3306,
     password: process.env.MYSQL_PASS,
     database: process.env.MYSQL_DB,
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
   });
 
   connection.connect(async (err) => {
@@ -332,7 +323,7 @@ export const migrateRatings = async (req, res) => {
                       createdAt: ratingMongoObj.createdAt,
                     });
                     await ratingSkillMongoObj.save();
-                    console.log(ratingSkillMongoObj)
+                    console.log(ratingSkillMongoObj);
                   }
                 }
               });
@@ -359,7 +350,7 @@ export const migrateRatings = async (req, res) => {
                     createdAt: ratingMongoObj.createdAt,
                   });
                   await ratingEmployeeMongoObj.save();
-                  console.log(ratingEmployeeMongoObj)
+                  console.log(ratingEmployeeMongoObj);
                 }
               });
             }
@@ -382,24 +373,16 @@ export const migrateRatingsLoop = async (req, res) => {
     database: process.env.MYSQL_DB,
   });
 
-  var page = req.query["page"] ? req.query["page"] : 1;
-  var skip = (page - 1) * 2500;
+  // static count
+  var RECORD_COUNT = 50000;
+  var totalCount = 100000;
+  var loopCount = Math.ceil(totalCount / RECORD_COUNT);
 
   connection.connect(async (err) => {
     if (err) throw err;
     console.log("You are now connected...");
-
-    var countOfTotal = await connection.query(
-      `SELECT count(*) as count from ratings`,
-      async (err, Tcount) => {
-        Tcount.map(async (t_count) => {
-          var totalCount = t_count.count;
-        });
-      }
-    );
-
+  
     const allMongoCompanyObj = await CompanyData.find();
-
     var companyMap = new Map();
     // location object
     var locationDataMap = new Map();
@@ -446,13 +429,11 @@ export const migrateRatingsLoop = async (req, res) => {
     allUser.map(async (user) => {
       userMap.set(user.old_user_id, user._id);
     });
-    // static count
-    var totalCount = 97123;
-    var loopCount = Math.ceil(totalCount / 1000);
-    // replace 2 with loopCount in below line to start loop 
-    for (var i = 1; i <= 2 + 1; i++) {
-      var limit = i * 1000;
-      var offset = (i - 1) * 1000;
+    
+    // replace 2 with loopCount in below line to start loop
+    for (var i = 1; i <= loopCount + 1; i++) {
+      var limit = i * RECORD_COUNT;
+      var offset = (i - 1) * RECORD_COUNT;
 
       await connection.query(
         `SELECT
@@ -474,22 +455,15 @@ export const migrateRatingsLoop = async (req, res) => {
               ratingRow.location_id.toString()
             ).nodeId;
             ratingObj["old_rating_id"] = ratingRow.id;
-<<<<<<< HEAD
-  
-=======
             ratingObj["rating"] = ratingRow.rating;
 
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
             const ratingMongoObj = new RatingData({
               ...ratingObj,
               createdAt: ratingObj["created_at"],
             });
             await ratingMongoObj.save();
             console.log(ratingMongoObj);
-<<<<<<< HEAD
-  
-=======
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
+
             // skill code
             await connection.query(
               `SELECT ratings_skill.*, skills.name, skills.type
@@ -520,11 +494,7 @@ export const migrateRatingsLoop = async (req, res) => {
                         createdAt: ratingMongoObj.createdAt,
                       });
                       await ratingSkillMongoObj.save();
-<<<<<<< HEAD
-                      console.log(ratingSkillMongoObj)
-=======
                       console.log(ratingSkillMongoObj);
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
                     }
                   }
                 });
@@ -551,11 +521,7 @@ export const migrateRatingsLoop = async (req, res) => {
                       createdAt: ratingMongoObj.createdAt,
                     });
                     await ratingEmployeeMongoObj.save();
-<<<<<<< HEAD
-                    console.log(ratingEmployeeMongoObj)
-=======
                     console.log(ratingEmployeeMongoObj);
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
                   }
                 });
               }
@@ -684,11 +650,7 @@ export const locationSkills = async (req, res) => {
     if (err) throw err;
     console.log("You are now connected...");
 
-<<<<<<< HEAD
-    var companyObj = await CompanyData.find({});
-=======
     var companyObj = await CompanyData.find();
->>>>>>> e62513847752eafd6bb7e333587fd659c4ec6eba
     await Promise.all(
       companyObj.map(async (singleCompany) => {
         var locationSkill = [];
@@ -1010,6 +972,21 @@ export const migrateSecondaryLocation = async (req, res) => {
 
     // loop ends for company
 
+    // loop start for company
+    var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
+      //Setting locatino object
+      singleCompany.location.map(async (location) => {
+        var locationObject = {
+          nodeId: location._id,
+          companyNodeId: singleCompany._id,
+          old_company_id: singleCompany.old_company_id,
+        };
+        locationDataMap.set(location.old_location_id, locationObject);
+      });
+    });
+
+    // loop ends for company
+
     // loop for getting data and checking data starts
     var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
       singleCompany.location.map(async (locationData) => {
@@ -1092,8 +1069,10 @@ export const saveRatingData = async (req, res) => {
     database: process.env.MYSQL_DB,
   });
 
-  var page = req.query["page"];
-  var skip = (page - 1) * 1000;
+  // static count
+  var RECORD_COUNT = 5000;
+  var totalCount = 150000;
+  var loopCount = Math.ceil(totalCount / RECORD_COUNT);
 
   connection.connect(async (err) => {
     if (err) throw err;
@@ -1118,40 +1097,73 @@ export const saveRatingData = async (req, res) => {
 
     // Decalre an array for rating
     var ratingArray = [];
-
-    // Rating query starts
-    var ratingsDataArray = connection.query(
-      `SELECT
+    
+    for (let i = 0; i < loopCount + 1; i++) {
+      // if(i === 0) {
+      //   var limit = RECORD_COUNT;
+      //   var offset = 0;
+      // } else {
+      //   var limit = i * RECORD_COUNT;
+      //   var offset = (i - 1) * RECORD_COUNT;
+      // }
+      var offset = i * RECORD_COUNT;
+      var query_string = `SELECT
+      ratings.*,
+      rating_customer.name as customer_name,
+      rating_customer.email as customer_email,
+      rating_customer.phone as customer_phone
+      from ratings
+      left join rating_customer on ratings.id = rating_customer.ratings_id 
+      LIMIT ${RECORD_COUNT} OFFSET ${offset}`;
+      console.log('-----'+i+'-----');
+      console.log(query_string);
+      // Rating query starts
+      var ratingsDataArray = await connection.query(
+        `SELECT
             ratings.*,
             rating_customer.name as customer_name,
             rating_customer.email as customer_email,
             rating_customer.phone as customer_phone
             from ratings
-            left join rating_customer on ratings.id = rating_customer.ratings_id`,
-      async (err, ratingRows) => {
-        var getData = ratingRows.map(async (ratingRow) => {
-          const ratingObj = ratingRow;
-          ratingObj["old_location_id"] = ratingRow.location_id;
-          ratingObj["company_id"] = locationDataMap.get(
-            ratingRow.location_id.toString()
-          ).companyNodeId;
-          ratingObj["location_id"] = locationDataMap.get(
-            ratingRow.location_id.toString()
-          ).nodeId;
-          ratingObj["old_rating_id"] = ratingRow.id;
+            left join rating_customer on ratings.id = rating_customer.ratings_id 
+            LIMIT ${RECORD_COUNT} OFFSET ${offset}`,
+        async (err, ratingRows) => {
+          var getData = ratingRows.map(async (ratingRow) => {
+            const ratingObj = ratingRow;
+            ratingObj["old_location_id"] = ratingRow.location_id;
+            ratingObj["company_id"] = locationDataMap.get(
+              ratingRow.location_id.toString()
+            ).companyNodeId;
+            ratingObj["location_id"] = locationDataMap.get(
+              ratingRow.location_id.toString()
+            ).nodeId;
+            ratingObj["old_rating_id"] = ratingRow.id;
 
-          const ratingMongoObj = new RatingData({
-            ...ratingObj,
-            createdAt: ratingObj["created_at"],
+            const ratingMongoObj = new RatingData({
+              ...ratingObj,
+              createdAt: ratingObj["created_at"],
+            });
+
+            ratingArray.push(ratingMongoObj);
           });
-          ratingArray.push(ratingMongoObj);
-        });
-        await Promise.all(getData);
-        Promise.all(getData).then(() => {
-          RatingData.insertMany(ratingArray);
-        });
-      }
-    );
+          Promise.all(getData);
+          Promise.all(getData).then(async () => {            
+            RatingData.insertMany(ratingArray, (err, docs) => {
+              if (err) {
+                console.log(i);
+                console.log("Insert Error", err);
+                //console.log("Insert Error", err);
+              } else {
+                console.log(i);
+                console.log("Successful Insert");
+                ratingArray = [];
+              }
+            });
+          });
+        }
+      );
+      console.log("Loop Ends ");
+    }
   });
   res.status(200).json(`Ratings imported`);
 };
@@ -1208,52 +1220,59 @@ export const saveRatingEmployee = async (req, res) => {
   var ratingEmpArray = [];
 
   //Get All Employee Ratings
-  connection.query(
-    `SELECT *, rating_user.user_id as rating_user_id,location.id as location_id, location.location_area_id as location_area_id
+  for (let i = 0; i < 2; i++) {
+    connection.query(
+      `SELECT *, rating_user.user_id as rating_user_id,location.id as location_id, location.location_area_id as location_area_id
     from rating_user
     LEFT JOIN ratings on ratings.id = rating_user.ratings_id
     LEFT JOIN location on location.id = ratings.location_id
-    WHERE rating_user.user_id != 0`,
-    async (err, ratingEmpRows) => {
-      var getData = ratingEmpRows.map(async (ratingEmpRow) => {
-        const ratingEmpObj = new Object();
+    WHERE rating_user.user_id != 0 limit 2`,
+      async (err, ratingEmpRows) => {
+        var getData = ratingEmpRows.map(async (ratingEmpRow) => {
+          const ratingEmpObj = new Object();
 
-        ratingEmpObj["rating_id"] = ratingMap
-          .get(ratingEmpRow.ratings_id.toString())
-          .ratingNewId.toString();
-        ratingEmpObj["sfv1_old_rating_id"] = parseInt(ratingEmpRow.ratings_id);
+          ratingEmpObj["rating_id"] = ratingMap
+            .get(ratingEmpRow.ratings_id.toString())
+            .ratingNewId.toString();
+          ratingEmpObj["sfv1_old_rating_id"] = parseInt(
+            ratingEmpRow.ratings_id
+          );
 
-        ratingEmpObj["employee_id"] = userMap.get(ratingEmpRow.rating_user_id);
-        ratingEmpObj["sfv1_old_employee_id"] = ratingEmpRow.rating_user_id;
+          ratingEmpObj["employee_id"] = userMap.get(
+            ratingEmpRow.rating_user_id
+          );
+          ratingEmpObj["sfv1_old_employee_id"] = ratingEmpRow.rating_user_id;
 
-        ratingEmpObj["rating"] = ratingEmpRow.rating;
+          ratingEmpObj["rating"] = ratingEmpRow.rating;
 
-        ratingEmpObj["location_id"] = locationDataMap
-          .get(ratingEmpRow.location_id.toString())
-          .toString();
-        ratingEmpObj["sfv1_old_location_id"] = ratingEmpRow.location_id;
+          ratingEmpObj["location_id"] = locationDataMap
+            .get(ratingEmpRow.location_id.toString())
+            .toString();
+          ratingEmpObj["sfv1_old_location_id"] = ratingEmpRow.location_id;
 
-        ratingEmpObj["company_id"] = companyDataMap
-          .get(ratingEmpRow.location_area_id)
-          .toString();
-        ratingEmpObj["sfv1_old_company_id"] = ratingEmpRow.location_area_id;
+          ratingEmpObj["company_id"] = companyDataMap
+            .get(ratingEmpRow.location_area_id)
+            .toString();
+          ratingEmpObj["sfv1_old_company_id"] = ratingEmpRow.location_area_id;
 
-        const ratingEmpMongoObj = new RatingEmployeeData({
-          ...ratingEmpObj,
-          createdAt: ratingEmpRow.created_at,
+          const ratingEmpMongoObj = new RatingEmployeeData({
+            ...ratingEmpObj,
+            createdAt: ratingEmpRow.created_at,
+          });
+          console.log(ratingEmpMongoObj);
+          ratingEmpArray.push(ratingEmpMongoObj);
         });
-        console.log(ratingEmpMongoObj);
-        ratingEmpArray.push(ratingEmpMongoObj);
-      });
 
-      await Promise.all(getData);
-      Promise.all(getData).then(() => {
-        RatingEmployeeData.insertMany(ratingEmpArray);
-        console.log(ratingEmpArray);        
-        console.log('Rating Employee Saved');
-      });
-    }
-  );
+        await Promise.all(getData);
+        Promise.all(getData).then(() => {
+          RatingEmployeeData.insertMany(ratingEmpArray);
+          console.log(ratingEmpArray);
+          console.log("Rating Employee Saved");
+          ratingEmpArray = [];
+        });
+      }
+    );
+  }
   console.log("Finish");
 };
 
@@ -1267,12 +1286,12 @@ export const saveRatingSkillData = async (req, res) => {
     password: process.env.MYSQL_PASS,
     database: process.env.MYSQL_DB,
   });
-  
+  var skillMap = new Map();
   const allMongoCompanyObj = await CompanyData.find();
   // All company loop
   var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
     //Getting Skill Loop
-    var skillMap = new Map();
+
     singleCompany.attributes.forEach((attribute) => {
       //Positive Skills
       if (attribute.positive_skills.length > 0) {
@@ -1301,28 +1320,33 @@ export const saveRatingSkillData = async (req, res) => {
 
   var ratingArray = [];
   // query starts
-  var ratingsDataArray = connection.query(
-    `SELECT ratings_skill.id , ratings_skill.ratings_id , ratings_skill.skills_id , ratings_skill.created_at , ratings_skill.updated_at ,skills.id as skill_id ,  skills.name as skill_name from ratings_skill left join skills on skills.id = ratings_skill.skills_id limit 2`,
-    async (err, ratingSkillRows) => {
-      var getData = ratingSkillRows.map(async (ratingRow) => {
-        console.log(ratingMap.get(ratingRow.id.toString()));
-        const ratingMongoObj = {
-          rating_id: ratingMap.get(ratingRow.id.toString()).id,
-          sf_v1_old_rating_id: ratingRow.id,
-          skill_id: skillMap.get(ratingRow.skill_name.toString()),
-          sf_v1_old_skill_id: ratingRow.skill_id,
-          rating: ratingMap.get(ratingRow.id.toString()).rating,
-          updatedAt: ratingRow.updated_at,
-          createdAt: ratingRow.created_at,
-        };
+  for (let i = 0; i < 2; i++) {
+    var ratingsDataArray = connection.query(
+      `SELECT ratings_skill.id , ratings_skill.ratings_id , ratings_skill.skills_id , ratings_skill.created_at , ratings_skill.updated_at ,skills.id as skill_id ,  skills.name as skill_name from ratings_skill left join skills on skills.id = ratings_skill.skills_id limit 2`,
+      async (err, ratingSkillRows) => {
+        var getData = ratingSkillRows.map(async (ratingRow) => {
+          console.log(ratingMap.get(ratingRow.id.toString()));
+          const ratingMongoObj = {
+            rating_id: ratingMap.get(ratingRow.id.toString()).id,
+            sfv1_old_rating_id: ratingRow.id,
+            skill_id: skillMap.get(ratingRow.skill_name.toString()),
+            sfv1_old_skill_id: ratingRow.skill_id,
+            rating: ratingMap.get(ratingRow.id.toString()).rating,
+            updatedAt: ratingRow.updated_at,
+            createdAt: ratingRow.created_at,
+          };
 
-        ratingArray.push(ratingMongoObj);
-      });
-      await Promise.all(getData);
-      Promise.all(getData).then(() => {
-        console.log(ratingArray);        
-        console.log('Rating Skill Saved');
-      });
-    }
-  );
+          ratingArray.push(ratingMongoObj);
+        });
+        await Promise.all(getData);
+        Promise.all(getData).then(() => {
+          RatingSkillData.insertMany(ratingArray);
+          console.log(ratingArray);
+          console.log("Rating Skill Saved");
+          ratingArray = [];
+        });
+      }
+    );
+  }
+  res.status(200).json(`Ratings Skills saved `);
 };
