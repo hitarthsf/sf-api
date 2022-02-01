@@ -30,7 +30,7 @@ export const getActionPlan = async (req, res) => {
 
     });
     
-    res.status(200).json({ data: actionPlan, message: "Success" });
+    res.status(200).json({ "data": actionPlan , "totalCount" : count, message: "Success" });
   } catch (error) {
     res.status(404).json({ message: error.message });
   }

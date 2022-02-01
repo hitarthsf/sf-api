@@ -119,8 +119,8 @@ export const getLocationListPost = async (req, res) => {
   limit = page * limit ;
   const filterGeneralSearch = req.body.filterGeneralSearch;
   try {
-    const AllCompany = await CompanyData.findOne({ _id: id });
-    
+    const AllCompany = await CompanyData.findOne({"_id" :id});
+    console.log(AllCompany.location);
     var locationArray = [] ; 
     var count =  0  ; 
     var filterCount  = 0 ; 
