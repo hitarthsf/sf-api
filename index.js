@@ -81,8 +81,9 @@ app.use('/cron',cronRoutes);
 app.use('/frontEmployeeFeedback',frontEmployeeFeedbackRoutes);
 
 
-const CONNECTION_URL = process.env.MONGO_URL;
+const CONNECTION_URL = process.env.MONGO_URL ; 
 const PORT = process.env.PORT || 5000;
+//console.log(CONNECTION_URL);
 
 app.get("/", async (req, res,next) => {
       res.send({ success: true, message: 'Welcome to SF ratings Backend.'})
@@ -90,7 +91,7 @@ app.get("/", async (req, res,next) => {
 
 mongoose.connect(CONNECTION_URL, {useNewUrlParser: true, useUnifiedTopology: true})
       .then(() => app.listen(PORT, () => console.log(`Server running on port: ${PORT}`)))
-      .catch((error) => console.log(error.message));  
+      .catch((error) => console.log(error.message));
 
 mongoose.set('useFindAndModify', false);
 

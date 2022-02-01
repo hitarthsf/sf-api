@@ -472,19 +472,18 @@ export const migrateRatingsLoop = async (req, res) => {
                   WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingSkills) => {
                 ratingObj["skills"] = ratingSkills;
-
+  
                 ratingSkills.map(async (mySqlRatingSkill) => {
                   if (mySqlRatingSkill.name) {
                     let skillId = null;
-
+  
                     skillId = companyMap
                       .get(
-                        locationDataMap.get(
-                          ratingObj.old_location_id.toString()
-                        ).old_company_id
+                        locationDataMap.get(ratingObj.old_location_id.toString())
+                          .old_company_id
                       )
                       .skills.get(mySqlRatingSkill.name);
-
+  
                     if (skillId) {
                       const ratingSkillMongoObj = new RatingSkillData({
                         rating_id: ratingMongoObj.id,
@@ -501,14 +500,14 @@ export const migrateRatingsLoop = async (req, res) => {
                 });
               }
             );
-
+  
             await connection.query(
               `SELECT rating_user.*
                   from rating_user
                   WHERE ratings_id = ${ratingObj.id}`,
               async (err, ratingEmployees) => {
                 ratingObj["employees"] = ratingEmployees;
-
+  
                 ratingEmployees.map(async (mySqlRatingEmployee) => {
                   if (mySqlRatingEmployee.user_id) {
                     const ratingEmployeeMongoObj = new RatingEmployeeData({
@@ -938,9 +937,25 @@ export const migrateSecondaryLocation = async (req, res) => {
 
     const allMongoCompanyObj = await CompanyData.find();
 
-    var companyMap = new Map();
-    // location object
-    var locationDataMap = new Map();
+  var companyMap = new Map();
+  // location object
+  var locationDataMap = new Map();
+
+  // loop start for company
+  var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => { 
+    //Setting locatino object
+    singleCompany.location.map(async (location) => {
+      var locationObject = {
+        nodeId: location._id,
+        companyNodeId: singleCompany._id,
+        old_company_id: singleCompany.old_company_id,
+      };
+      locationDataMap.set(location.old_location_id, locationObject);
+    }); 
+  });
+  
+  // loop ends for company
+  
 
     // loop start for company
     var companyDataLoop = allMongoCompanyObj.map(async (singleCompany) => {
