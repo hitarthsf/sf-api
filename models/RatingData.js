@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const rating = mongoose.Schema({
-
+    
     location_id: String,
     company_id: String,
     user_id: String,
