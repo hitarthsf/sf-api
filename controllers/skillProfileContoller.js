@@ -21,15 +21,29 @@ export const createSkillProfile = async (req, res) => {
 
 export const fetchSkillProfile = async (req, res) => {
   const company_id = req.body.company_id;
-
+  const page = req.body.page ? req.body.page : 1;
+  var limit = req.body.perPage ? parseInt(req.body.perPage) : 1;
+  const skip = (page - 1) * limit;
+  limit = page * limit ;
   try {
-    var skillProfile = await CompanyData.findOne({ _id: company_id });
-    res
-      .status(200)
-      .json({
-        data: skillProfile.skill_profile,
-        message: "Skill Profile Listing !",
-      });
+    var AllCompany = await CompanyData.findOne({ _id: company_id });
+    var skillProfileArray = [] ; 
+    var count =  0  ; 
+    await  AllCompany.skill_profile.map( async ( skillProfile ) => {  
+      // getting the loop with conditions 
+      if ( parseInt(count) >= parseInt(skip) && parseInt(count) < parseInt(limit)   ) 
+      {
+       
+        
+        skillProfileArray.push(skillProfile); 
+       
+      }
+      count = count + 1 ; 
+
+    });
+    
+    res.status(200).json({ "data": skillProfileArray , "totalCount" : count, message: "Success" });
+    
   } catch (error) {
     res.status(409).json({ message: error.message });
   }

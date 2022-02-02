@@ -108,6 +108,7 @@ export const createAbusiveWords = async (req, res) => {
 
 export const deleteAbusiveWords = async (req, res) => {
   const id = req.body._id;
+
   const companyId = req.body.company_id;
   if (!companyId) {
     res
@@ -121,8 +122,8 @@ export const deleteAbusiveWords = async (req, res) => {
   // CompanyData.update( {"_id":"6111149b961aa70d06fe58f1"}, { $pull: { votes: { $gte: 6 } } } )
   // make it dynamic
   await CompanyData.updateOne(
-    { _id: companyId },
-    { $pull: { abusive_word: { _id: id } } },
+    { _id: req.body.company_id },
+    { $pull: { abusive_word: { "_id": id } } },
     { multi: true },
     function (error, success) {
       if (error) {
@@ -134,4 +135,10 @@ export const deleteAbusiveWords = async (req, res) => {
       }
     }
   );
+
+  res
+      .status(200)
+      .json({
+        message: "Abusive word deleted",
+      });
 };
